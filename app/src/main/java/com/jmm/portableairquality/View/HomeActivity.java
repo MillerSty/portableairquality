@@ -14,12 +14,16 @@ import android.util.Log;
 import android.view.DragAndDropPermissions;
 import android.view.DragEvent;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 //import com.jmm.portableairquality.Manifest;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
+import com.google.android.material.navigation.NavigationView;
 import com.jmm.portableairquality.Model.permissionConfig;
 import com.jmm.portableairquality.R;
 
@@ -27,8 +31,8 @@ import java.io.OptionalDataException;
 import java.security.Permission;
 import java.util.Arrays;
 
-public class HomeActivity extends AppCompatActivity {
-
+public class HomeActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
+    BottomNavigationView navbot;
     TextView display;
     Button blueblue;
 Button booboo;
@@ -53,16 +57,21 @@ String denied=" Permission Dnied: ";
 //        checkpermission(Manifest.permission.WRITE_EXTERNAL SOTRAGE,PERMISSION_CODE)
 //        Manifest.
 //        int[] a=permissionConfig.array();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 //
 //        for(int i=0;i<PERMISSIONS.length;i++){
 //            checkPermission(PERMISSIONS[0],a[0] );}
 
+
         blueblue=findViewById(R.id.bluetoothbtn);
         display=findViewById(R.id.display);
         booboo=findViewById(R.id.changeColor);
 
+        navbot=findViewById(R.id.bottom_nav);
+        navbot.setOnNavigationItemSelectedListener(this);
+        navbot.setSelectedItemId(R.id.menu_home);
         Log.d("Color",Integer.toHexString(R.color.red_200));
 
 
@@ -79,6 +88,7 @@ blueblue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(flag){
+                    Log.d("Button","Button");
                     display.setBackground(getResources().getDrawable(R.drawable.sensor_display_red));
                     flag=!flag;
                 }
@@ -86,7 +96,27 @@ blueblue.setOnClickListener(new View.OnClickListener() {
             }
         });
     }
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
 
+        switch (id) {
+            case R.id.menu_settings:
+                Intent goToSettings=new Intent(HomeActivity.this, ConnectDevice.class);
+                startActivity(goToSettings);
+                return true;
+            case R.id.menu_home:
+                Toast.makeText(this," CLICKED HOME", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.menu_history:
+                Toast.makeText(this," CLICKED HISTORY", Toast.LENGTH_SHORT).show();
+                return true;
+            default:
+                return false;
+        }
+
+    }
+}
 
 
 //    @Override
@@ -194,11 +224,11 @@ blueblue.setOnClickListener(new View.OnClickListener() {
 
 
 //}
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu){
-        getMenuInflater().inflate(R.menu.bottom_bar,menu);
-//     Manifest.permission.
-        return super.onCreateOptionsMenu(menu);
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu){
+//        getMenuInflater().inflate(R.menu.bottom_bar,menu);
+////     Manifest.permission.
+//        return super.onCreateOptionsMenu(menu);
+//    }
 
-}
+//}

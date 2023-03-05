@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:layout_constraintBottom_toBottomOf="parent"
+
     >
 <!--    android:gravity="bottom"-->
 <!--    app:elevation="1000dp"-->
 
 
     <item
-        android:id="@+id/accelerator"
+        android:id="@+id/menu_home"
         android:contentDescription="me"
-        android:icon="@drawable/ic_accelerator_24px"
-        android:title="Fuck"
+        android:icon="@drawable/ic_home"
+        android:title="Home"
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/rotation"
-        android:contentDescription="poop"
-        android:icon="@drawable/ic_3d_rotation_24px"
-        android:title="This"
+        android:id="@+id/menu_history"
+        android:contentDescription="menu_history"
+        android:icon="@drawable/ic_history"
+        android:title="History"
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/dashboard"
+        android:id="@+id/menu_settings"
         android:contentDescription="Toiler"
-        android:icon="@drawable/ic_dashboard_24px"
-        android:title="Shit"
+        android:icon="@drawable/ic_settings"
+        android:title="Settings"
         app:showAsAction="ifRoom" />
 </menu>
