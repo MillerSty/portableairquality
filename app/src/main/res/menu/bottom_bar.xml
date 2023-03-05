@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:layout_constraintBottom_toBottomOf="parent"
+    >
+<!--    android:gravity="bottom"-->
+<!--    app:elevation="1000dp"-->
+
+
+    <item
+        android:id="@+id/accelerator"
+        android:contentDescription="me"
+        android:icon="@drawable/ic_accelerator_24px"
+        android:title="Fuck"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/rotation"
+        android:contentDescription="poop"
+        android:icon="@drawable/ic_3d_rotation_24px"
+        android:title="This"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/dashboard"
+        android:contentDescription="Toiler"
+        android:icon="@drawable/ic_dashboard_24px"
+        android:title="Shit"
+        app:showAsAction="ifRoom" />
+</menu>
