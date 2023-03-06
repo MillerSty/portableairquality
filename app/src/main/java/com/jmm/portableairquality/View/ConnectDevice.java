@@ -1,5 +1,6 @@
 package com.jmm.portableairquality.View;
 
+import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -19,10 +20,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.jmm.portableairquality.Controller.BluetoothControl;
+import com.jmm.portableairquality.Controller.BluetoothModel;
 import com.jmm.portableairquality.R;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
@@ -48,7 +50,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.jmm.portableairquality.Controller.BluetoothControl;
+import com.jmm.portableairquality.Controller.BluetoothModel;
 import com.jmm.portableairquality.R;
 
 import java.io.IOException;
@@ -60,7 +62,7 @@ import java.util.UUID;
 // this was made following this tutorial https://www.youtube.com/watch?v=wLRQ9EClYuA
 public class ConnectDevice extends AppCompatActivity {
     static String TAG = "CONNECT_DEVICE_ACTIVITY";
-    String MAC_ADD = "24:F:28:1A:72:9E"; //for esp thing
+    String MAC_ADD = "24:6F:28:1A:72:9E"; //for esp thing
     //String MAC_ADD = "F4:4E:FD:F0:FA:FA"; //try with home bt speaker
     TextView mStatusBlueTv, mPairedTv, mReading;
     ImageView mBlueIv;
@@ -68,7 +70,7 @@ public class ConnectDevice extends AppCompatActivity {
     BluetoothAdapter bluetoothAdapter;
     BluetoothSocket bluetoothsocket;
     Handler handler;
-    BluetoothControl bluetoothControl;
+    BluetoothModel bluetoothDriver;
     ArrayList<String> appendable;
     private static final int REQUEST_ENABLE_BT = 0;
     private static final int REQUEST_DISCOVER_BT = 1;
@@ -93,6 +95,7 @@ public class ConnectDevice extends AppCompatActivity {
         //adapter
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         //TODO feature we worked on
+        handler = new Handler(Looper.myLooper());
 
 //checkBT(); //checks if bluetooth is enabled?
 
@@ -100,7 +103,11 @@ public class ConnectDevice extends AppCompatActivity {
         mgetRead.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                callRead();
+                try {
+                    callRead();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 //mgetRead.setText(Reading)
             }
         });
@@ -151,9 +158,10 @@ public class ConnectDevice extends AppCompatActivity {
         mPairedBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String str="";
+                String str = "";
                 if (bluetoothAdapter.isEnabled()) {
                     mPairedTv.setText("Paired Devices: ");
+
                     Set<BluetoothDevice> devices = bluetoothAdapter.getBondedDevices();
                     for (BluetoothDevice device : devices) {
                         appendable.add("Device "+device.getName()+ " ,"+ device);
@@ -212,14 +220,9 @@ public class ConnectDevice extends AppCompatActivity {
                 ParcelUuid[] uuid = device.getUuids();
                 String uid = uuid[0].toString();
                 bluetoothsocket = device.createRfcommSocketToServiceRecord(UUID.fromString(uid));
-                bluetoothAdapter.cancelDiscovery();
+                //bluetoothAdapter.cancelDiscovery();
                 bluetoothsocket.connect();
-                bluetoothControl = new BluetoothControl(bluetoothsocket, handler);
-                bluetoothControl.start();
-
-                String str = "hel";
-                byte[] byteArr = str.getBytes("UTF-8");
-                bluetoothControl.write(byteArr);
+                bluetoothDriver = new BluetoothModel(bluetoothsocket, handler);
             } catch (IOException e) {
                 Log.d(TAG, "HELLO ERROR MY OLD FRIEND");
             }
@@ -234,6 +237,9 @@ public class ConnectDevice extends AppCompatActivity {
                     //bluetooth is on
                     mBlueIv.setBackgroundColor(getResources().getColor(R.color.red_200));
                     showToast("Bluetooth is on");
+                } else if (resultCode == RESULT_CANCELED){
+                    mBlueIv.setBackgroundColor(getResources().getColor(R.color.black));
+                    showToast("Bluetooth could not On");
                 } else {
                     mBlueIv.setBackgroundColor(getResources().getColor(R.color.black));
                     showToast("Bluetooth could not On");
@@ -249,20 +255,19 @@ public class ConnectDevice extends AppCompatActivity {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
-    private void callRead() {
+    private void callRead() throws IOException {
         //connect to PAQ
         //TODO createListener, if it doesnt work off the bat
-        handler = new Handler(Looper.getMainLooper()) {
-            @Override
-            public void handleMessage(Message messageReceived) {
-                super.handleMessage(messageReceived);
-                if (messageReceived.what == BluetoothControl.MessageConstants.MESSAGE_READ) {
-                    String readMessage = (String) messageReceived.obj;
-                    float temp = Float.parseFloat(readMessage);
-                    mgetRead.setText((int) temp);
-                }
+        try {
+            String str = "1";
+            byte[] byteArr = str.getBytes("UTF-8");
+            bluetoothDriver.write(byteArr);
+        } catch(Exception e) {
+            // nothing
+        }
+        byte[] msg = bluetoothDriver.read();
 
-            }
-        };
+        mReading.setText((int)msg[0] + " " + (int)msg[1]+ " " + (int)msg[2]+ " " + (int)msg[3]);
+
     }
 }

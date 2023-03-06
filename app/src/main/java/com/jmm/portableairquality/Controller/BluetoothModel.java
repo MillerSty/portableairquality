@@ -3,13 +3,11 @@ package com.jmm.portableairquality.Controller;
 import static android.app.PendingIntent.getActivity;
 
 import android.bluetooth.BluetoothDevice;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -20,41 +18,19 @@ import androidx.core.app.ActivityCompat;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.UUID;
-
-import static android.app.PendingIntent.getActivity;
-
-import android.bluetooth.BluetoothDevice;
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.Manifest;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothServerSocket;
-import android.bluetooth.BluetoothSocket;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.util.Log;
-
-import androidx.core.app.ActivityCompat;
 
 import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.util.UUID;
 
 
-public class BluetoothControl extends Thread {
+public class BluetoothModel extends Thread {
     private BluetoothSocket bluetoothSocket;
     private BluetoothAdapter bluetoothAdapter;
     private InputStream inputStream;
     private OutputStream outputStream;
     BluetoothDevice bluetoothDevice;
     private byte[] byteBuffer;
-    private static String TAG="BluetoothControl.java";
+    private static String TAG="BluetoothModel.java";
     Handler handler;
     Message message;
     public interface MessageConstants{
@@ -64,7 +40,7 @@ public class BluetoothControl extends Thread {
 
 
     Context context;
-    public BluetoothControl(BluetoothSocket bluetoothSocket,Handler newHandler) throws IOException {
+    public BluetoothModel(BluetoothSocket bluetoothSocket,Handler newHandler) throws IOException {
         this.bluetoothSocket = bluetoothSocket;
         BluetoothSocket temp=null;
         InputStream tmpI=null;
@@ -87,15 +63,6 @@ public class BluetoothControl extends Thread {
     }
 
     public void runs() throws IOException {
-        byte[] buffer=new byte[1024];
-        int bytes;
-        byteBuffer=new byte[]{11};
-        write(byteBuffer);
-//        while(true){
-//            inputStream.read(buffer);
-////            message.what=STATE
-//            handler.obtainMessage(5,bytes,-1,buffer).sendToTarget();
-//        }
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
         while(true) {
             try{
@@ -107,7 +74,7 @@ public class BluetoothControl extends Thread {
                 newMessage.obj = response;
                 handler.sendMessage(newMessage);
                 // ----
-                bluetoothSocket.close();
+                //bluetoothSocket.close();
             }
 
             catch(Exception e) {
@@ -120,8 +87,8 @@ public class BluetoothControl extends Thread {
     public void write(byte[] bytes) throws IOException {
         try {
             outputStream.write(bytes);
-            Message writtenMessage= handler.obtainMessage(MessageConstants.MESSAGE_WRITE,-1,-1,byteBuffer);
-            writtenMessage.sendToTarget();
+            //Message writtenMessage= handler.obtainMessage(MessageConstants.MESSAGE_WRITE,-1,-1,byteBuffer);
+            //writtenMessage.sendToTarget();
         }catch(IOException e){
             Log.d(TAG," Error sending data "+e.toString());
             Message writeErrorMsg=handler.obtainMessage(MessageConstants.MESSAGE_TOAST);
@@ -129,8 +96,24 @@ public class BluetoothControl extends Thread {
             bundle.putString("Toast", " couldnt send data to server device");
             writeErrorMsg.setData(bundle);
             handler.sendMessage(writeErrorMsg);
-
         }
+    }
+
+    public byte[] read() {
+        byte[] buffer = new byte[256];
+        int bytes;
+
+        // Keep looping to listen for received messages
+        while (true) {
+            try {
+                bytes = inputStream.read(buffer);
+                break;//read bytes from input buffer
+            } catch (IOException e) {
+                break;
+            }
+        }
+
+        return buffer;
     }
 
     //To get a UUID to use with your app, you can use one of the many random UUID generators on the web, then initialize a UUID with fromString(String).
