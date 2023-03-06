@@ -25,6 +25,8 @@ import com.jmm.portableairquality.R;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
@@ -63,7 +65,6 @@ import java.util.UUID;
 public class ConnectDevice extends AppCompatActivity {
     static String TAG = "CONNECT_DEVICE_ACTIVITY";
     String MAC_ADD = "24:6F:28:1A:72:9E"; //for esp thing
-    //String MAC_ADD = "F4:4E:FD:F0:FA:FA"; //try with home bt speaker
     TextView mStatusBlueTv, mPairedTv, mReading;
     ImageView mBlueIv;
     Button mOnbtn, mOffBtn, mDiscoverableBtn, mPairedBtn, mcreateListener, mgetRead;
@@ -97,7 +98,16 @@ public class ConnectDevice extends AppCompatActivity {
         //TODO feature we worked on
         handler = new Handler(Looper.myLooper());
 
-//checkBT(); //checks if bluetooth is enabled?
+        // if bluetooth is enabled, create a listener
+        if (checkBT()) {
+            try {
+                createListener(MAC_ADD);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            turnOnBluetooth();
+        }
 
 
         mgetRead.setOnClickListener(new View.OnClickListener() {
@@ -108,49 +118,31 @@ public class ConnectDevice extends AppCompatActivity {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-                //mgetRead.setText(Reading)
             }
         });
         mOnbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!bluetoothAdapter.isEnabled()) {
-                    showToast("Turning on bluetooth...");
-                    //intent to on bluetooth
-                    Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                    startActivityForResult(intent, REQUEST_ENABLE_BT);
-                } else {
-                    showToast("Bluetooth already on");
-                }
-
+                turnOnBluetooth();
                 checkBT();
             }
         });
+
+
         mOffBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (bluetoothAdapter.isEnabled()) {
-                    bluetoothAdapter.disable();
-                    showToast("Turning bluetooth off");
-                    mBlueIv.setBackgroundColor(getResources().getColor(R.color.black));
-                } else {
-                    showToast("Bluetooth is already off");
-                }
+                turnOffBluetooth();
                 checkBT();
             }
 
         });
 
-//discover blutooth btn
+        //discover blutooth btn
         mDiscoverableBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!bluetoothAdapter.isDiscovering()) {
-                    showToast("Making your device discoverable");
-                    Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-                    startActivityForResult(intent, REQUEST_DISCOVER_BT);
-                }
-
+                startDiscovery();
             }
         });
 
@@ -158,24 +150,7 @@ public class ConnectDevice extends AppCompatActivity {
         mPairedBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String str = "";
-                if (bluetoothAdapter.isEnabled()) {
-                    mPairedTv.setText("Paired Devices: ");
-
-                    Set<BluetoothDevice> devices = bluetoothAdapter.getBondedDevices();
-                    for (BluetoothDevice device : devices) {
-                        appendable.add("Device "+device.getName()+ " ,"+ device);
-                        //mPairedTv.setText("\nDevice: " + device.getAlias() + " \nMAC: " + device);
-                    }
-                } else {
-                    //bluetooth is off so cant get paired devices
-                    showToast("Turn on bt to get paired devices");
-                }
-                for(int i=0;i<appendable.size();i++){
-                    str= str+" \n "+appendable.get(i);
-
-                }
-                mPairedTv.setText(str);
+                getPairedDevices();
             }
         });
 
@@ -192,8 +167,74 @@ public class ConnectDevice extends AppCompatActivity {
 
     }
 
-    public void checkBT() {
+    void startDiscovery() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        if (!bluetoothAdapter.isDiscovering()) {
+            showToast("Making your device discoverable");
+            Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+            startActivityForResult(intent, REQUEST_DISCOVER_BT);
+        }
+    }
+
+    void turnOnBluetooth() {
+        if (!bluetoothAdapter.isEnabled()) {
+            showToast("Turning on bluetooth...");
+            //intent to on bluetooth
+            Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            startActivityForResult(intent, REQUEST_ENABLE_BT);
+        } else {
+            showToast("Bluetooth already on");
+        }
+
+        checkBT();
+    }
+
+    void turnOffBluetooth() {
+        if (bluetoothAdapter.isEnabled()) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                showToast("No permission to turn off?");
+                return;
+            }
+            bluetoothAdapter.disable();
+            showToast("Turning bluetooth off");
+            mBlueIv.setBackgroundColor(getResources().getColor(R.color.black));
+        } else {
+            showToast("Bluetooth is already off");
+        }
+    }
+
+    void getPairedDevices() {
+        String str = "";
+        if (bluetoothAdapter.isEnabled()) {
+            mPairedTv.setText("Paired Devices: ");
+
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            Set<BluetoothDevice> devices = bluetoothAdapter.getBondedDevices();
+            for (BluetoothDevice device : devices) {
+                appendable.add("Device "+device.getName()+ " ,"+ device);
+                //mPairedTv.setText("\nDevice: " + device.getAlias() + " \nMAC: " + device);
+            }
+        } else {
+            //bluetooth is off so cant get paired devices
+            showToast("Turn on bt to get paired devices");
+        }
+        for(int i=0;i<appendable.size();i++){
+            str= str+" \n "+appendable.get(i);
+
+        }
+        mPairedTv.setText(str);
+    }
+
+    public Boolean checkBT() {
         //check if bluetooth is available or not
+        Boolean status = false;
         if (bluetoothAdapter == null) {
             mStatusBlueTv.setText("Bluetooth is not available");
         } else {
@@ -203,13 +244,14 @@ public class ConnectDevice extends AppCompatActivity {
         //if bluetooth is enabled  set image view accordingly
         if (bluetoothAdapter.isEnabled()) {
             mBlueIv.setBackgroundColor(getResources().getColor(R.color.red_200));
+            status = true;
         } else {
             mBlueIv.setBackgroundColor(getResources().getColor(R.color.black));
         }
         for (int i = 0; i < appendable.size(); i++) {
             mPairedTv.append(appendable.get(i));
         }
-
+        return status;
     }
 
     //TODO Functionality we worked on
@@ -259,15 +301,18 @@ public class ConnectDevice extends AppCompatActivity {
         //connect to PAQ
         //TODO createListener, if it doesnt work off the bat
         try {
-            String str = "1";
+            String str = "0";
             byte[] byteArr = str.getBytes("UTF-8");
             bluetoothDriver.write(byteArr);
         } catch(Exception e) {
             // nothing
         }
         byte[] msg = bluetoothDriver.read();
+        int co2 = (msg[1] << 8 | msg[0]) & 0xFFFF;
+        int voc = (msg[3] << 8 | msg[2]) & 0xFFFF;
+        int temp = 0;
+        int hum = 0;
 
-        mReading.setText((int)msg[0] + " " + (int)msg[1]+ " " + (int)msg[2]+ " " + (int)msg[3]);
-
+        mReading.setText(co2 + ", " + voc + "\n" + temp + ", " + hum);
     }
 }
