@@ -310,8 +310,12 @@ public class ConnectDevice extends AppCompatActivity {
         byte[] msg = bluetoothDriver.read();
         int co2 = (msg[1] << 8 | msg[0]) & 0xFFFF;
         int voc = (msg[3] << 8 | msg[2]) & 0xFFFF;
-        int temp = 0;
-        int hum = 0;
+        int tempInt = msg[4] & 0xFF;
+        int tempFrac = msg[5] & 0xFF;
+        int humInt = msg[6] & 0xFF;
+        int humFrac = msg[7] &0xFF;
+        float temp = tempInt + tempFrac/100;
+        float hum = humInt + humFrac/100;
 
         mReading.setText(co2 + ", " + voc + "\n" + temp + ", " + hum);
     }
