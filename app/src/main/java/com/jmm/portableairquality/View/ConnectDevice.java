@@ -139,12 +139,12 @@ public class ConnectDevice extends AppCompatActivity {
         });
 
         //discover blutooth btn
-        mDiscoverableBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startDiscovery();
-            }
-        });
+//        mDiscoverableBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                startDiscovery();
+//            }
+//        });
 
         //get paired devices btn click
         mPairedBtn.setOnClickListener(new View.OnClickListener() {
@@ -236,20 +236,20 @@ public class ConnectDevice extends AppCompatActivity {
         //check if bluetooth is available or not
         Boolean status = false;
         if (bluetoothAdapter == null) {
-            mStatusBlueTv.setText("Bluetooth is not available");
+            //mStatusBlueTv.setText("Bluetooth is not available");
         } else {
-            mStatusBlueTv.setText("Bluetooth is available");
+            //mStatusBlueTv.setText("Bluetooth is available");
         }
 
         //if bluetooth is enabled  set image view accordingly
         if (bluetoothAdapter.isEnabled()) {
-            mBlueIv.setBackgroundColor(getResources().getColor(R.color.red_200));
+            //mBlueIv.setBackgroundColor(getResources().getColor(R.color.red_200));
             status = true;
         } else {
-            mBlueIv.setBackgroundColor(getResources().getColor(R.color.black));
+            //mBlueIv.setBackgroundColor(getResources().getColor(R.color.black));
         }
         for (int i = 0; i < appendable.size(); i++) {
-            mPairedTv.append(appendable.get(i));
+            //mPairedTv.append(appendable.get(i));
         }
         return status;
     }
@@ -264,7 +264,7 @@ public class ConnectDevice extends AppCompatActivity {
                 bluetoothsocket = device.createRfcommSocketToServiceRecord(UUID.fromString(uid));
                 //bluetoothAdapter.cancelDiscovery();
                 bluetoothsocket.connect();
-                bluetoothDriver = new BluetoothModel(bluetoothsocket, handler);
+                bluetoothDriver = new BluetoothModel(bluetoothsocket);
             } catch (IOException e) {
                 Log.d(TAG, "HELLO ERROR MY OLD FRIEND");
             }
@@ -308,15 +308,17 @@ public class ConnectDevice extends AppCompatActivity {
             // nothing
         }
         byte[] msg = bluetoothDriver.read();
-        int co2 = (msg[1] << 8 | msg[0]) & 0xFFFF;
-        int voc = (msg[3] << 8 | msg[2]) & 0xFFFF;
+        int co2 = ((msg[1] & 0xFF) << 8 | msg[0] & 0xFF);
+        int voc = ((msg[3] & 0xFF) << 8 | msg[2] & 0xFF);
         int tempInt = msg[4] & 0xFF;
         int tempFrac = msg[5] & 0xFF;
         int humInt = msg[6] & 0xFF;
         int humFrac = msg[7] &0xFF;
-        float temp = tempInt + tempFrac/100;
-        float hum = humInt + humFrac/100;
+        float temp = tempInt + (float)tempFrac/100;
+        float hum = humInt + (float)humFrac/100;
 
-        mReading.setText(co2 + ", " + voc + "\n" + temp + ", " + hum);
+        String text = co2 + "ppm, " + voc + "ppb\n" + temp + "°C, " + hum + "%";
+
+        mReading.setText(text);
     }
 }

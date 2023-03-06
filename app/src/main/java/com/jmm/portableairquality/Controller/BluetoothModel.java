@@ -29,19 +29,11 @@ public class BluetoothModel {
     private InputStream inputStream;
     private OutputStream outputStream;
     private static String TAG="BluetoothModel.java";
-    Handler handler;
-    public interface MessageConstants{
-        public static int MESSAGE_READ=0;
-        public static int MESSAGE_WRITE=1;
-        public static int MESSAGE_TOAST=2;
-    }
 
-    Context context;
-    public BluetoothModel(BluetoothSocket bluetoothSocket,Handler newHandler) throws IOException {
+    public BluetoothModel(BluetoothSocket bluetoothSocket) throws IOException {
         this.bluetoothSocket = bluetoothSocket;
         InputStream tmpI=null;
         OutputStream tmpO=null;
-        handler=newHandler;
         bluetoothAdapter=BluetoothAdapter.getDefaultAdapter();
         try{
             tmpI= bluetoothSocket.getInputStream();
