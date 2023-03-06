@@ -254,7 +254,6 @@ public class ConnectDevice extends AppCompatActivity {
         return status;
     }
 
-    //TODO Functionality we worked on
     public void createListener(String mac_address) throws IOException {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
             try {
@@ -264,7 +263,7 @@ public class ConnectDevice extends AppCompatActivity {
                 bluetoothsocket = device.createRfcommSocketToServiceRecord(UUID.fromString(uid));
                 //bluetoothAdapter.cancelDiscovery();
                 bluetoothsocket.connect();
-                bluetoothDriver = new BluetoothModel(bluetoothsocket);
+                //bluetoothDriver = new BluetoothModel(bluetoothsocket, );
             } catch (IOException e) {
                 Log.d(TAG, "HELLO ERROR MY OLD FRIEND");
             }
@@ -303,7 +302,7 @@ public class ConnectDevice extends AppCompatActivity {
         try {
             String str = "0";
             byte[] byteArr = str.getBytes("UTF-8");
-            bluetoothDriver.write(byteArr);
+            bluetoothDriver.requestData();
         } catch(Exception e) {
             // nothing
         }

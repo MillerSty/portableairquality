@@ -1,14 +1,17 @@
 package com.jmm.portableairquality.View;
-
+import static java.lang.Thread.sleep;
+import com.jmm.portableairquality.Model.Data;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.PermissionChecker;
 
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.os.ParcelUuid;
 import android.util.Log;
 import android.view.MenuItem;
@@ -17,7 +20,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 
@@ -26,7 +28,6 @@ import com.jmm.portableairquality.Controller.BluetoothModel;
 import com.jmm.portableairquality.R;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class HomeActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
@@ -37,7 +38,6 @@ public class HomeActivity extends AppCompatActivity implements BottomNavigationV
     TextView humDisplay;
 
     Button booboo;
-    Boolean flag=false;
 
     BluetoothAdapter bluey;
     BluetoothSocket sockey;
@@ -45,6 +45,8 @@ public class HomeActivity extends AppCompatActivity implements BottomNavigationV
     private static final int REQUEST_ENABLE_BT = 0;
     String MAC_ADD = "24:6F:28:1A:72:9E"; //SparkFun Thing MAC Address
     static String TAG = "CONNECT_DEVICE_ACTIVITY";
+
+    Handler handler;
 
     String[] PERMISSIONS = {
             android.Manifest.permission.BLUETOOTH,
@@ -77,17 +79,30 @@ public class HomeActivity extends AppCompatActivity implements BottomNavigationV
         navbot.setSelectedItemId(R.id.menu_home);
         Log.d("Color",Integer.toHexString(R.color.red_200));
 
-
         booboo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                readSensorData();
+                if (Data.sensorData != null) {
+                    Log.d(TAG, Data.sensorData.toString());
+                }
             }
         });
 
-
         bluey = BluetoothAdapter.getDefaultAdapter();
+        initHandler();
+
         initBT();
+        Thread updateData = new Thread(() -> {
+            while(true) {
+                parseSensorData();
+                try {
+                    sleep(100);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        updateData.start();
     }
 
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -96,19 +111,19 @@ public class HomeActivity extends AppCompatActivity implements BottomNavigationV
 
         switch (id) {
             case R.id.menu_settings:
-                Intent goToSettings=new Intent(HomeActivity.this, ConnectDevice.class);
-                startActivity(goToSettings);
+                //Intent goToSettings=new Intent(HomeActivity.this, ConnectDevice.class);
+                //startActivity(goToSettings);
+                showToast("CLICKED SETTINGS");
                 return true;
             case R.id.menu_home:
-                Toast.makeText(this," CLICKED HOME", Toast.LENGTH_SHORT).show();
+                showToast("CLICKED HOME");
                 return true;
             case R.id.menu_history:
-                Toast.makeText(this," CLICKED HISTORY", Toast.LENGTH_SHORT).show();
+                showToast("CLICKED HISTORY");
                 return true;
             default:
                 return false;
         }
-
     }
 
 //    void setBooboo() {
@@ -119,6 +134,36 @@ public class HomeActivity extends AppCompatActivity implements BottomNavigationV
 //        }
 //        else{display.setBackground(getResources().getDrawable(R.drawable.sensor_display_yellow));   flag=!flag;}
 //    }
+
+    void initHandler() {
+        handler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(Message msg) {
+                if (msg.what == 1) {
+                    if (Data.sensorData == null) {return;}
+                    int co2 = ((Data.sensorData[1] & 0xFF) << 8 | Data.sensorData[0] & 0xFF);
+                    int voc = ((Data.sensorData[3] & 0xFF) << 8 | Data.sensorData[2] & 0xFF);
+                    int tempInt = Data.sensorData[4] & 0xFF;
+                    int tempFrac = Data.sensorData[5] & 0xFF;
+                    int humInt = Data.sensorData[6] & 0xFF;
+                    int humFrac = Data.sensorData[7] &0xFF;
+                    float temp = tempInt + (float)tempFrac/100;
+                    float hum = humInt + (float)humFrac/100;
+
+                    String co2Text = "eCO2:\n"+ co2 + "ppm";
+                    String vocText = "tVOC\n"+ voc + "ppb";
+                    String tempText = "Temp:\n"+ temp + "°C";
+                    String humText = "Humidity:\n"+ hum + "%";
+
+                    co2Display.setText(co2Text);
+                    vocDisplay.setText(vocText);
+                    tempDisplay.setText(tempText);
+                    humDisplay.setText(humText);
+                    //TODO save data to DB
+                }
+            }
+        };
+    }
 
     void initBT() {
         // check if bluetooth is on and request user if not
@@ -140,43 +185,18 @@ public class HomeActivity extends AppCompatActivity implements BottomNavigationV
                 ParcelUuid[] uuid = device.getUuids();
                 String uid = uuid[0].toString();
                 sockey = device.createRfcommSocketToServiceRecord(UUID.fromString(uid));
-                //bluetoothAdapter.cancelDiscovery();
                 sockey.connect();
                 drivey = new BluetoothModel(sockey);
+                drivey.start();
             } catch (IOException e) {
                 Log.d(TAG, "Socket Creation Failed");
             }
-            // if no ask user and then create socket
         }
     }
 
-    void readSensorData() {
-        try {
-            String str = "0";
-            byte[] byteArr = str.getBytes("UTF-8");
-            drivey.write(byteArr);
-        } catch(Exception e) {
-            // nothing
-        }
-        byte[] msg = drivey.read();
-        int co2 = ((msg[1] & 0xFF) << 8 | msg[0] & 0xFF);
-        int voc = ((msg[3] & 0xFF) << 8 | msg[2] & 0xFF);
-        int tempInt = msg[4] & 0xFF;
-        int tempFrac = msg[5] & 0xFF;
-        int humInt = msg[6] & 0xFF;
-        int humFrac = msg[7] &0xFF;
-        float temp = tempInt + (float)tempFrac/100;
-        float hum = humInt + (float)humFrac/100;
-
-        String co2Text = "eCO2:\n"+ co2 + "ppm";
-        String vocText = "tVOC\n"+ voc + "ppb";
-        String tempText = "Temp:\n"+ temp + "°C";
-        String humText = "Humidity:\n"+ hum + "%";
-
-        co2Display.setText(co2Text);
-        vocDisplay.setText(vocText);
-        tempDisplay.setText(tempText);
-        humDisplay.setText(humText);
+    void parseSensorData() {
+        Message msg = new Message();
+        handler.sendEmptyMessage(1);
     }
 
     //toast message function
@@ -184,8 +204,6 @@ public class HomeActivity extends AppCompatActivity implements BottomNavigationV
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }
-
-
 
 //    @Override
 //    public void onRequestPermissionsResult(int requestCode,
