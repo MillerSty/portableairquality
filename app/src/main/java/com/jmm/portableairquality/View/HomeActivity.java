@@ -1,19 +1,12 @@
 package com.jmm.portableairquality.View;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.PermissionChecker;
 
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.DragAndDropPermissions;
-import android.view.DragEvent;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -22,19 +15,12 @@ import android.widget.Toast;
 
 //import com.jmm.portableairquality.Manifest;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
-import com.google.android.material.navigation.NavigationView;
-import com.jmm.portableairquality.Model.permissionConfig;
 import com.jmm.portableairquality.R;
-
-import java.io.OptionalDataException;
-import java.security.Permission;
-import java.util.Arrays;
 
 public class HomeActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
     BottomNavigationView navbot;
     TextView display;
-    Button blueblue;
+
 Button booboo;
 PermissionChecker pc;
 Boolean flag=false;
@@ -65,8 +51,8 @@ String denied=" Permission Dnied: ";
 //            checkPermission(PERMISSIONS[0],a[0] );}
 
 
-        blueblue=findViewById(R.id.bluetoothbtn);
-        display=findViewById(R.id.display);
+
+        display=findViewById(R.id.sensorRead1);
         booboo=findViewById(R.id.changeColor);
 
         navbot=findViewById(R.id.bottom_nav);
@@ -75,15 +61,6 @@ String denied=" Permission Dnied: ";
         Log.d("Color",Integer.toHexString(R.color.red_200));
 
 
-
-
-blueblue.setOnClickListener(new View.OnClickListener() {
-    @Override
-    public void onClick(View view) {
-        Intent intent=new Intent(getApplicationContext(),ConnectDevice.class);
-        startActivity(intent);
-    }
-});
         booboo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

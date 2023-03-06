@@ -83,12 +83,12 @@ public class ConnectDevice extends AppCompatActivity {
         appendable = new ArrayList<>();
         //viewbinding instead to initialize things
         mReading = findViewById(R.id.ReadTv);
-        mStatusBlueTv = findViewById(R.id.statusBluetoothtv);
+//        mStatusBlueTv = findViewById(R.id.statusBluetoothtv);
         mPairedTv = findViewById(R.id.pairedTv);
         mBlueIv = findViewById(R.id.blueIv);
         mOnbtn = findViewById(R.id.onBtn);
         mOffBtn = findViewById(R.id.offBtn);
-        mDiscoverableBtn = findViewById(R.id.discoverableBtn);
+//        mDiscoverableBtn = findViewById(R.id.discoverableBtn);
         mPairedBtn = findViewById(R.id.pairedBtn);
         mgetRead = findViewById(R.id.btnRead);
         mcreateListener = findViewById(R.id.createListener);
