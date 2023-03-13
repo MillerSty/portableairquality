@@ -5,8 +5,7 @@ plugins {
 android {
     namespace 'com.jmm.portableairquality'
     compileSdk 33
-    aaptOptions.cruncherEnabled = false
-    aaptOptions.useNewCruncher = false
+
     defaultConfig {
         applicationId "com.jmm.portableairquality"
         minSdk 24

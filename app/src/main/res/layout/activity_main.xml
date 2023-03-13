@@ -4,91 +4,89 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".View.HomeView"
-    android:background="@color/coconut_cream">
-
-    <TextView
-        android:id="@+id/sensorRead"
-        android:layout_width="142dp"
-        android:layout_height="132dp"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="336dp"
-        android:background="@drawable/sensor_display_green"
-        android:gravity="center"
-        android:text="Hello World!"
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    tools:context=".View.HomeActivity">
 
     <TextView
         android:id="@+id/co2Display"
         android:layout_width="142dp"
         android:layout_height="132dp"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="104dp"
+        android:layout_marginTop="50dp"
         android:background="@drawable/sensor_display_green"
-        android:elevation="1.0dp"
         android:gravity="center"
-        android:shadowColor="#2B2828"
         android:text="CO2"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:id="@+id/sensorRead"
+        android:layout_width="142dp"
+        android:layout_height="132dp"
+
+        android:layout_marginTop="50dp"
+        android:background="@drawable/sensor_display_green"
+        android:gravity="center"
+        android:text="Hello World!"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/co2Display" />
+
+    <TextView
         android:id="@+id/vocDisplay"
         android:layout_width="142dp"
         android:layout_height="132dp"
-        android:layout_marginTop="104dp"
-        android:layout_marginEnd="24dp"
+
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="50dp"
         android:background="@drawable/sensor_display_green"
         android:gravity="center"
         android:text="VOC"
         android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/co2Display"
         app:layout_constraintTop_toTopOf="parent" />
-
-
-    <TextView
-        android:id="@+id/humDisplay"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="88dp"
-        android:layout_marginTop="40dp"
-        android:text="Humidity"
-        android:textSize="24sp"
-        app:layout_constraintStart_toEndOf="@+id/sensorRead"
-        app:layout_constraintTop_toBottomOf="@+id/vocDisplay" />
 
     <TextView
         android:id="@+id/tempDisplay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="84dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="50dp"
         android:text="Temperature"
         android:textSize="24sp"
         app:layout_constraintStart_toEndOf="@+id/sensorRead"
-        app:layout_constraintTop_toBottomOf="@+id/humDisplay" />
+        app:layout_constraintTop_toBottomOf="@+id/vocDisplay" />
+
+    <TextView
+        android:id="@+id/humDisplay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="10dp"
+        android:text="Humidity"
+        android:textSize="24sp"
+        app:layout_constraintStart_toEndOf="@+id/sensorRead"
+        app:layout_constraintTop_toBottomOf="@+id/tempDisplay" />
+
+    <Button
+        android:id="@+id/changeColor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="100dp"
+        android:text="Button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:background="#fdfdf2"
         android:id="@+id/bottom_nav"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:menu="@menu/bottom_bar"
-        tools:layout_editor_absoluteX="0dp" />
-
-    <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="53dp"
-        android:layout_height="60dp"
-        app:srcCompat="@drawable/humidity"
-        tools:layout_editor_absoluteX="207dp"
-        tools:layout_editor_absoluteY="276dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_bar" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

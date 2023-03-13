@@ -99,16 +99,16 @@ public class ConnectDevice extends AppCompatActivity {
         handler = new Handler(Looper.myLooper());
 
         // if bluetooth is enabled, create a listener
-//        if (checkBT()) {
-//            try {
-//                createListener(MAC_ADD);
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
-//        } else {
-//            turnOnBluetooth();
-//        }
-        startDiscovery();
+        if (checkBT()) {
+            try {
+                createListener(MAC_ADD);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            turnOnBluetooth();
+        }
+
 
         mgetRead.setOnClickListener(new View.OnClickListener() {
             @Override
