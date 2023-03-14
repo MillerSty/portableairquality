@@ -3,19 +3,18 @@
     xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
-    <uses-permission android:name="android.permission.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"/>
-    <uses-permission   android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission   android:name="android.permission.BLUETOOTH_ADMIN"/>
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN"/>
+    <uses-permission   android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission   android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"/>
     <uses-permission   android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission   android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 <!--    the two hardware.bluetooth declarations specify it needs to be this type of bluetooth-->
 <!--    https://developer.android.com/guide/topics/connectivity/bluetooth/permissions-->
 <!--    <uses-feature android:name="android.hardware.bluetooth" android:required="true"/>-->
-<!--    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>-->
-<!--    <uses-permission   android:name="android.permission.ACCESS_COARSE_LOCATION"/>-->
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
 
     <application
         android:allowBackup="true"
@@ -35,7 +34,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".View.ConnectDevice"/>
     </application>
 
 </manifest>
