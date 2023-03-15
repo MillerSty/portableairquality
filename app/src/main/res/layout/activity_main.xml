@@ -86,9 +86,10 @@
         android:id="@+id/imageView2"
         android:layout_width="53dp"
         android:layout_height="60dp"
-        app:srcCompat="@drawable/humidity"
-        tools:layout_editor_absoluteX="207dp"
-        tools:layout_editor_absoluteY="276dp" />
+        android:layout_marginBottom="56dp"
+        app:layout_constraintBottom_toTopOf="@+id/tempDisplay"
+        app:layout_constraintEnd_toStartOf="@+id/humDisplay"
+        app:srcCompat="@drawable/humidity" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
