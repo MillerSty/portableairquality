@@ -25,15 +25,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Portableairquality"
         tools:targetApi="24">
-        <activity
-            android:name=".View.HomeActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".View.SettingsView"/>
+        <activity android:name=".View.HistoryView"/>
     </application>
 
 </manifest>

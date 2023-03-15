@@ -19,8 +19,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -40,7 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class HomeActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
+public class HomeView extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
     private static final int REQUEST_ENABLE_BT = 1;
     private static final int ACCESS_LOCATION_REQUEST = 2;
 
@@ -49,7 +47,6 @@ public class HomeActivity extends AppCompatActivity implements BottomNavigationV
     TextView vocDisplay;
     TextView tempDisplay;
     TextView humDisplay;
-    Button booboo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,18 +58,9 @@ public class HomeActivity extends AppCompatActivity implements BottomNavigationV
         vocDisplay = findViewById(R.id.vocDisplay);
         tempDisplay = findViewById(R.id.tempDisplay);
         humDisplay = findViewById(R.id.humDisplay);
-        booboo = findViewById(R.id.changeColor);
         navbot = findViewById(R.id.bottom_nav);
         navbot.setOnNavigationItemSelectedListener(this);
         navbot.setSelectedItemId(R.id.menu_home);
-        Log.d("Color", Integer.toHexString(R.color.red_200));
-
-        booboo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // test button
-            }
-        });
 
         registerReceiver(locationReceiver, new IntentFilter(LocationManager.MODE_CHANGED_ACTION));
         registerReceiver(ccsReceiver, new IntentFilter(BluetoothHandler.MEASUREMENT_CCS));
@@ -274,7 +262,7 @@ public class HomeActivity extends AppCompatActivity implements BottomNavigationV
 
     private boolean checkLocationServices() {
         if (!areLocationServicesEnabled()) {
-            new AlertDialog.Builder(HomeActivity.this)
+            new AlertDialog.Builder(HomeView.this)
                     .setTitle("Location services are not enabled")
                     .setMessage("Scanning for Bluetooth peripherals requires locations services to be enabled.") // Want to enable?
                     .setPositiveButton("Enable", new DialogInterface.OnClickListener() {
@@ -315,7 +303,7 @@ public class HomeActivity extends AppCompatActivity implements BottomNavigationV
         if (allGranted) {
             permissionsGranted();
         } else {
-            new AlertDialog.Builder(HomeActivity.this)
+            new AlertDialog.Builder(HomeView.this)
                     .setTitle("Permission is required for scanning Bluetooth peripherals")
                     .setMessage("Please grant permissions")
                     .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
