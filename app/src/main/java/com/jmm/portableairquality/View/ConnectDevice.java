@@ -303,7 +303,7 @@ public class ConnectDevice extends AppCompatActivity {
         try {
             String str = "0";
             byte[] byteArr = str.getBytes("UTF-8");
-            bluetoothDriver.write(byteArr);
+//            bluetoothDriver.write(byteArr);
         } catch(Exception e) {
             // nothing
         }
