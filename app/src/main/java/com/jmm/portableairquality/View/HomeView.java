@@ -73,19 +73,15 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
         switch (id) {
             case R.id.menu_settings:
-                //Intent goToSettings=new Intent(HomeActivity.this, ConnectDevice.class);
-                //startActivity(goToSettings);
-                showToast("CLICKED SETTINGS");
-                return true;
+                Intent goToSettings=new Intent(this, SettingsView.class);
+                startActivity(goToSettings);
             case R.id.menu_home:
-                showToast("CLICKED HOME");
                 return true;
             case R.id.menu_history:
-                showToast("CLICKED HISTORY");
-                return true;
+                Intent goToHistory=new Intent(this, HistoryView.class);
+                startActivity(goToHistory);
             default:
                 return false;
         }
@@ -316,5 +312,67 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
                     .show();
         }
     }
+
+    public int PPxToPercent(int sensorReading,String sensor){
+        if(sensor.equals("co2")){
+            return sensorReading=sensorReading/10_000; // this is going to be very small
+
+        } else if (sensor.equals("voc")) {
+            return sensorReading=sensorReading/1_000_000;
+        }
+        else if (sensor.equals("pm")){ //ug per cumib meter, ug/m3
+            return -1;
+        }
+        else return -1;
+    }
+    //reverse PPxToPercent
+    public int PercentToPPx(int sensorReading,String sensor){
+        if(sensor.equals("co2")){
+            return sensorReading=sensorReading*10_000; // this is going to be very small
+
+        } else if (sensor.equals("voc")) {
+            return sensorReading=sensorReading*1_000_000;
+        }
+        else if (sensor.equals("pm")){ //ug per cumib meter, ug/m3
+            return -1;
+        }
+        else return -1;
+    }
+    //TODO set colors and text?
+    public void textViewHandler(String sensor,int readingInt){
+        boolean flagRed=false,flagYellow=false,flagGreen=false;
+        switch(sensor){
+            case "co2":
+                if(readingInt>=0&&readingInt<=1000){
+                    co2Display.setBackground(getResources().getDrawable(R.drawable.sensor_display_green));
+//                flagGreen
+                }
+                else if(readingInt>1000&&readingInt<=8000){
+                    co2Display.setBackground(getResources().getDrawable(R.drawable.sensor_display_yellow));
+//                flagYellow
+                }
+                else {
+                    co2Display.setBackground(getResources().getDrawable(R.drawable.sensor_display_red));
+//                flagRed
+                } break; //0-1000 ppm is good(green), 1500-800 unhealthy(yellow), 800-30000 serious health risk(orange), 30000+ critical (red) [ppm]
+            case "voc":
+                if(readingInt>=0&&readingInt<=220){
+                    vocDisplay.setBackground(getResources().getDrawable(R.drawable.sensor_display_green));
+//                flagGreen
+                }
+                else if(readingInt>220&&readingInt<=660){
+                    vocDisplay.setBackground(getResources().getDrawable(R.drawable.sensor_display_yellow));
+//                flagYellow
+                }
+                else {
+                    vocDisplay.setBackground(getResources().getDrawable(R.drawable.sensor_display_red));
+//                flagRed
+                } break;//0-220 is good (green), 220-660 ( yellow), 660-2000(orange), 2000+(red) [ppb]
+            case"pm":
+                //not implemented yet
+                break;
+            default:break;}
+    }
+
 }
 
