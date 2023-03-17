@@ -1,0 +1,80 @@
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+
+// Create a new SensorDataDatabaseHelper object
+SensorDataDatabaseHelper dbHelper = new SensorDataDatabaseHelper(context);
+
+// Add some sensor data to the database
+dbHelper.addSensorData(new Date(), 37.7749, -122.4194, 72.5, 0.6, 8.1, 17.4, 0.4, 0.5);
+dbHelper.addSensorData(new Date(), 37.7749, -122.4194, 71.2, 0.5, 7.3, 16.2, 0.3, 0.4);
+dbHelper.addSensorData(new Date(), 37.7749, -122.4194, 70.1, 0.6, 8.9, 18.1, 0.5, 0.6);
+
+// Get all sensor data from the database and process the cursor
+Cursor cursor = dbHelper.getAllSensorData();
+if (cursor.moveToFirst()) {
+    do {
+        // Get the values from the cursor
+        long timestamp = cursor.getLong(cursor.getColumnIndex(SensorDataDatabaseHelper.COLUMN_TIMESTAMP));
+        double latitude = cursor.getDouble(cursor.getColumnIndex(SensorDataDatabaseHelper.COLUMN_LATITUDE));
+        double longitude = cursor.getDouble(cursor.getColumnIndex(SensorDataDatabaseHelper.COLUMN_LONGITUDE));
+        double temperature = cursor.getDouble(cursor.getColumnIndex(SensorDataDatabaseHelper.COLUMN_TEMPERATURE));
+        double humidity = cursor.getDouble(cursor.getColumnIndex(SensorDataDatabaseHelper.COLUMN_HUMIDITY));
+        double pm = cursor.getDouble(cursor.getColumnIndex(SensorDataDatabaseHelper.COLUMN_PM));
+        double nox = cursor.getDouble(cursor.getColumnIndex(SensorDataDatabaseHelper.COLUMN_NOX));
+        double co = cursor.getDouble(cursor.getColumnIndex(SensorDataDatabaseHelper.COLUMN_CO));
+        double voc = cursor.getDouble(cursor.getColumnIndex(SensorDataDatabaseHelper.COLUMN_VOC));
+
+        // Do something with the values
+        Log.d(TAG, "Sensor data: timestamp=" + timestamp +
+                   ", latitude=" + latitude +
+                   ", longitude=" + longitude +
+                   ", temperature=" + temperature +
+                   ", humidity=" + humidity +
+                   ", pm=" + pm +
+                   ", nox=" + nox +
+                   ", co=" + co +
+                   ", voc=" + voc);
+    } while (cursor.moveToNext());
+}
+
+// Close the cursor 
+cursor.close();
+
+//create a test date
+long timestamp = new Date(2023, 2, 1).getTime() / 1000; // convert to UNIX timestamp
+Cursor cursor = dbHelper.getSensorDataAfterTimestamp(timestamp);
+
+if (cursor != null && cursor.moveToFirst()) {
+    do {
+        // Retrieve data from the cursor
+        long timestamp = cursor.getLong(cursor.getColumnIndexOrThrow(SensorDataDatabaseHelper.COLUMN_TIMESTAMP));
+        double latitude = cursor.getDouble(cursor.getColumnIndexOrThrow(SensorDataDatabaseHelper.COLUMN_LATITUDE));
+        double longitude = cursor.getDouble(cursor.getColumnIndexOrThrow(SensorDataDatabaseHelper.COLUMN_LONGITUDE));
+        double temperature = cursor.getDouble(cursor.getColumnIndexOrThrow(SensorDataDatabaseHelper.COLUMN_TEMPERATURE));
+        double humidity = cursor.getDouble(cursor.getColumnIndexOrThrow(SensorDataDatabaseHelper.COLUMN_HUMIDITY));
+        double pm = cursor.getDouble(cursor.getColumnIndexOrThrow(SensorDataDatabaseHelper.COLUMN_PM));
+        double nox = cursor.getDouble(cursor.getColumnIndexOrThrow(SensorDataDatabaseHelper.COLUMN_NOX));
+        double co = cursor.getDouble(cursor.getColumnIndexOrThrow(SensorDataDatabaseHelper.COLUMN_CO));
+        double voc = cursor.getDouble(cursor.getColumnIndexOrThrow(SensorDataDatabaseHelper.COLUMN_VOC));
+
+        // Do something with the retrieved data
+        Log.d(TAG, "Timestamp: " + timestamp);
+        Log.d(TAG, "Latitude: " + latitude);
+        Log.d(TAG, "Longitude: " + longitude);
+        Log.d(TAG, "Temperature: " + temperature);
+        Log.d(TAG, "Humidity: " + humidity);
+        Log.d(TAG, "PM: " + pm);
+        Log.d(TAG, "NOx: " + nox);
+        Log.d(TAG, "CO: " + co);
+        Log.d(TAG, "VOC: " + voc);
+    } while (cursor.moveToNext());
+}
+// close the cursor after you're done with it.
+cursor.close();
+//close dbHelper when application closes
+dbHelper.close()
+

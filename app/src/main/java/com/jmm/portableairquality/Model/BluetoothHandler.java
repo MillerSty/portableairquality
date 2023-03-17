@@ -73,6 +73,7 @@ public class BluetoothHandler {
                 sendMeasurement(intent, peripheral);
             } else if (characteristicUUID.equals(DHT_CHAR_UUID)) {
                 DhtMeasurement measurement = new DhtMeasurement(value);
+
                 Intent intent = new Intent(MEASUREMENT_DHT);
                 intent.putExtra(MEASUREMENT_DHT_EXTRA, measurement);
                 sendMeasurement(intent, peripheral);
