@@ -37,5 +37,4 @@
         <activity android:name=".View.SettingsView"/>
         <activity android:name=".View.HistoryView"/>
     </application>
-
 </manifest>
