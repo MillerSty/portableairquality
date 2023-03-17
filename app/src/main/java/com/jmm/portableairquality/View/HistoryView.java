@@ -24,12 +24,17 @@ import com.jmm.portableairquality.R;
 
 import java.sql.Array;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import com.jmm.portableairquality.Model.SensorDataDatabaseHelper;
 
 public class HistoryView extends AppCompatActivity {
     BottomNavigationView navbot;
     LineChart chart;
     List<DataEntry> data;
+    long period = 10; //length of time that one wants to get data from in seconds
+    SensorDataDatabaseHelper db = new SensorDataDatabaseHelper(getApplicationContext());
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -39,7 +44,7 @@ public class HistoryView extends AppCompatActivity {
         navbot=findViewById(R.id.bottom_nav);
         navbot.setOnNavigationItemSelectedListener(this::onNavigationItemSelected);
         navbot.setSelectedItemId(R.id.menu_history);
-        //some function here to get the data from the database
+        data = db.getEntriesAfterTimestamp(new Date().getTime() - (1000*period));
         updateChart(data);
         registerReceiver(refresh, new IntentFilter(BluetoothHandler.MEASUREMENT_CCS)); //basic attempt at making automated refresh
     }
@@ -80,7 +85,6 @@ public class HistoryView extends AppCompatActivity {
         co2Data.setAxisDependency(YAxis.AxisDependency.RIGHT); //set it to the right AXIS because it's all negative values
         LineDataSet vocData = new LineDataSet(voc, "VOCs");
         vocData.setAxisDependency(YAxis.AxisDependency.RIGHT);
-
         List<ILineDataSet> sets = new ArrayList<ILineDataSet>();
         sets.add(co2Data);
         sets.add(vocData);
@@ -93,8 +97,14 @@ public class HistoryView extends AppCompatActivity {
     private final BroadcastReceiver refresh = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            //function to pull new data from database
+            data = db.getEntriesAfterTimestamp(new Date().getTime() - (1000*period));
             updateChart(data);
         }
     };
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(refresh);
+    }
 }

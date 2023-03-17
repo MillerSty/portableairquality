@@ -5,7 +5,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
 
@@ -58,7 +62,7 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
                               double PM, double NOX, double CO, double VOC) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(COLUMN_TIMESTAMP, (int)(timestamp.getTime() / 1000)); //gives UNIX timestamp
+        values.put(COLUMN_TIMESTAMP, (timestamp.getTime())); //gives UNIX timestamp, doesn't need to be divided, already in ms
         values.put(COLUMN_LATITUDE, latitude);
         values.put(COLUMN_LONGITUDE, longitude);
         values.put(COLUMN_TEMPERATURE, temperature);
@@ -131,5 +135,15 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
         String[] selectionArgs = {String.valueOf(timestamp)};
         Cursor cursor = db.query(TABLE_NAME, columns, selection, selectionArgs, null, null, null);
         return cursor;
+    }
+
+    public List<DataEntry> getEntriesAfterTimestamp(long timestamp) {
+        Cursor c = getSensorDataByTimestamp(timestamp);
+        List<DataEntry> list = new ArrayList<DataEntry>();
+        for (;!c.isLast(); c.moveToNext()) {
+            list.add(new DataEntry(c.getFloat(c.getColumnIndexOrThrow(COLUMN_CO)), c.getFloat(c.getColumnIndexOrThrow(COLUMN_VOC)), c.getFloat(c.getColumnIndexOrThrow(COLUMN_TEMPERATURE)), c.getFloat(c.getColumnIndexOrThrow(COLUMN_HUMIDITY)), c.getFloat(c.getColumnIndexOrThrow(COLUMN_PM10)),(float)c.getLong(c.getColumnIndexOrThrow(COLUMN_TIMESTAMP)) / 1000));
+        }
+        Collections.sort(list);
+        return list;
     }
 }

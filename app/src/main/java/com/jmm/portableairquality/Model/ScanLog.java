@@ -6,7 +6,7 @@ public class ScanLog {
     private BluetoothHandler btHandler;
     private Timer timer;
 
-    public SensorPollingTask(BluetoothHandler btHandler) {
+    public void SensorPollingTask(BluetoothHandler btHandler) {
         this.btHandler = btHandler;
         this.timer = new Timer();
     }
@@ -25,4 +25,4 @@ public class ScanLog {
         timer.cancel();
     }
 }
-}
+
