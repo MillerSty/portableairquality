@@ -1,3 +1,5 @@
+package com.jmm.portableairquality.Model;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -16,7 +18,9 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_LONGITUDE = "longitude";
     private static final String COLUMN_TEMPERATURE = "temperature";
     private static final String COLUMN_HUMIDITY = "humidity";
-    private static final String COLUMN_PM = "pm";
+    private static final String COLUMN_PM1 = "pm1";
+    private static final String COLUMN_PM2 = "pm2";
+    private static final String COLUMN_PM10 = "pm10";
     private static final String COLUMN_NOX = "nox";
     private static final String COLUMN_CO = "co";
     private static final String COLUMN_VOC = "voc";
@@ -27,10 +31,12 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
                     COLUMN_LONGITUDE + " REAL, " +
                     COLUMN_TEMPERATURE + " REAL, " +
                     COLUMN_HUMIDITY + " REAL, " +
-                    COLUMN_PM + " REAL, " +
+                    COLUMN_PM1 + " REAL, " +
+                    COLUMN_PM2 + " REAL, " +
+                    COLUMN_PM10 + " REAL, " +
                     COLUMN_NOX + " REAL, " +
-                    COLUMN_CO + " REAL, " +
-                    COLUMN_VOC + " REAL)";
+                    COLUMN_CO + " INTIGER, " +
+                    COLUMN_VOC + " INTIGER)";
 
     public SensorDataDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -57,7 +63,9 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_LONGITUDE, longitude);
         values.put(COLUMN_TEMPERATURE, temperature);
         values.put(COLUMN_HUMIDITY, humidity);
-        values.put(COLUMN_PM, PM);
+        values.put(COLUMN_PM1, PM);
+        values.put(COLUMN_PM2, PM);
+        values.put(COLUMN_PM10, PM);
         values.put(COLUMN_NOX, NOX);
         values.put(COLUMN_CO, CO);
         values.put(COLUMN_VOC, VOC);
@@ -73,7 +81,9 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
                 COLUMN_LONGITUDE,
                 COLUMN_TEMPERATURE,
                 COLUMN_HUMIDITY,
-                COLUMN_PM,
+                COLUMN_PM1,
+                COLUMN_PM2,
+                COLUMN_PM10,
                 COLUMN_NOX,
                 COLUMN_CO,
                 COLUMN_VOC
@@ -90,7 +100,9 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
                 COLUMN_LONGITUDE,
                 COLUMN_TEMPERATURE,
                 COLUMN_HUMIDITY,
-                COLUMN_PM,
+                COLUMN_PM1,
+                COLUMN_PM2,
+                COLUMN_PM10,
                 COLUMN_NOX,
                 COLUMN_CO,
                 COLUMN_VOC
@@ -108,7 +120,9 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
                 COLUMN_LONGITUDE,
                 COLUMN_TEMPERATURE,
                 COLUMN_HUMIDITY,
-                COLUMN_PM,
+                COLUMN_PM1,
+                COLUMN_PM2,
+                COLUMN_PM10,
                 COLUMN_NOX,
                 COLUMN_CO,
                 COLUMN_VOC
