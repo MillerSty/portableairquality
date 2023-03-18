@@ -11,19 +11,17 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.jmm.portableairquality.Controller.AlarmDialogue;
-import com.jmm.portableairquality.Model.sensors;
+import com.jmm.portableairquality.Model.SensorSingleton;
 import com.jmm.portableairquality.R;
 
 public class SettingsView extends AppCompatActivity {
     BottomNavigationView navbot;
     ImageView alarm;
     Switch swiss;
-    sensors Sensor;
+    SensorSingleton Sensor;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 

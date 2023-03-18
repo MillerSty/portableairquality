@@ -1,33 +1,32 @@
 package com.jmm.portableairquality.Controller;
 
-import android.app.Dialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 
-import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-import com.jmm.portableairquality.Model.sensors;
+import com.jmm.portableairquality.Model.SensorSingleton;
 import com.jmm.portableairquality.R;
 
 public class AlarmDialogue extends DialogFragment {
-    protected EditText co2AlarmLevel,vocAlarmLevel,pmAlarmLevel;
-    protected Button save,cancel;
-    sensors Sensors;
-//    public AlarmDialogue() {
+    //TODO extend pmAlarmLevel for 1,2,10
+    protected EditText co2AlarmLevel, vocAlarmLevel, pm1AlarmLevel,pm2AlarmLevel,pm10AlarmLevel;
+    protected Button save, cancel;
+    SensorSingleton sensorSingleton;
+
+    //    public AlarmDialogue() {
 //        // Required empty public constructor
 //    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         //inflate layout
-        View view=inflater.inflate(R.layout.alarm_dialogue, container);
+        View view = inflater.inflate(R.layout.alarm_dialogue, container);
         init(view);
         //do code for stuff here
 
@@ -35,11 +34,11 @@ public class AlarmDialogue extends DialogFragment {
             @Override
             public void onClick(View view) {
                 //save data
-                sensors.Instance.setCo2Alarm(Integer.parseInt(co2AlarmLevel.getText().toString()));
-                sensors.Instance.setVocAlarm(Integer.parseInt(vocAlarmLevel.getText().toString()));
-                sensors.Instance.setPmAlarm(Integer.parseInt(pmAlarmLevel.getText().toString()));
-                //log works therefore singleton works
-                Log.d("TAG",Integer.toString(sensors.Instance.getCo2Alarm()));
+                sensorSingleton.Instance.setCo2Alarm(Integer.parseInt(co2AlarmLevel.getText().toString()));
+                sensorSingleton.Instance.setVocAlarm(Integer.parseInt(vocAlarmLevel.getText().toString()));
+                sensorSingleton.Instance.setPm1Alarm(Integer.parseInt(pm1AlarmLevel.getText().toString()));
+                sensorSingleton.Instance.setPm2Alarm(Integer.parseInt(pm2AlarmLevel.getText().toString()));
+                sensorSingleton.Instance.setPm10Alarm(Integer.parseInt(pm10AlarmLevel.getText().toString()));
                 dismiss();
 
             }
@@ -55,13 +54,15 @@ public class AlarmDialogue extends DialogFragment {
         return view;
     }
 
-    private void init(View v){
-        co2AlarmLevel=v.findViewById(R.id.etCo2Alarm);
-        vocAlarmLevel=v.findViewById(R.id.etVocAlarm);
-        pmAlarmLevel=v.findViewById(R.id.etPmAlarm);
-        save=v.findViewById(R.id.btnSave);
-        cancel=v.findViewById(R.id.btnCancel);
-        Sensors=new sensors();
+    private void init(View v) {
+        co2AlarmLevel = v.findViewById(R.id.etCo2Alarm);
+        vocAlarmLevel = v.findViewById(R.id.etVocAlarm);
+        pm1AlarmLevel = v.findViewById(R.id.etPm1Alarm);
+        pm2AlarmLevel = v.findViewById(R.id.etPm2Alarm);
+        pm10AlarmLevel = v.findViewById(R.id.etPm10Alarm);
+        save = v.findViewById(R.id.btnSave);
+        cancel = v.findViewById(R.id.btnCancel);
+        sensorSingleton = new SensorSingleton();
 
     }
 }

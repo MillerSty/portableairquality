@@ -7,112 +7,181 @@
 
     <TextView
         android:id="@+id/tvCo2Alarm"
-        android:layout_marginStart="15dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="35dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="5dp"
         android:text="Set Co2 level"
-        android:textSize="24sp"
+        android:textSize="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView4"
-        android:layout_marginStart="15dp"
-        android:layout_width="280dp"
-        android:layout_height="60dp"
+        android:layout_width="277dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="4dp"
         android:text="Good Co2 levels are between 0-2000 . Decent is 2000-6000. Terrible is 6000+"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvCo2Alarm" />
 
     <EditText
         android:id="@+id/etCo2Alarm"
-        android:layout_marginStart="15dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="4dp"
         android:ems="10"
         android:inputType="number"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
     <TextView
-        android:id="@+id/tvVocAlarm2"
-        android:layout_marginStart="15dp"
+        android:id="@+id/tvVocAlarm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="46dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="5dp"
         android:text="Set VOC level"
-        android:textSize="24sp"
+        android:textSize="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etCo2Alarm" />
 
     <TextView
         android:id="@+id/textView5"
-        android:layout_marginStart="15dp"
         android:layout_width="280dp"
-        android:layout_height="60dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="4dp"
         android:text="Good Voc levels are between 0-200 . Decent is 200-600. Terrible is 600+"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvVocAlarm2" />
+        app:layout_constraintTop_toBottomOf="@+id/tvVocAlarm" />
 
     <EditText
         android:id="@+id/etVocAlarm"
-        android:layout_marginStart="15dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="18dp"
         android:ems="10"
         android:inputType="number"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
     <TextView
-        android:id="@+id/tvPmAlarm"
+        android:id="@+id/tvPm1Alarm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="94dp"
-        android:text="Set Pm level"
-        android:textSize="24sp"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="5dp"
+        android:text="Set Pm1 level"
+        android:textSize="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etVocAlarm" />
 
     <TextView
         android:id="@+id/textView6"
-        android:layout_marginStart="15dp"
-        android:layout_width="280dp"
-        android:layout_height="60dp"
+        android:layout_width="277dp"
+        android:layout_height="41dp"
+        android:layout_marginStart="18dp"
+
+        android:layout_marginTop="4dp"
         android:text="Good Pm levels are between 0-200 . Decent is 200-600. Terrible is 600+"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvPmAlarm" />
+        app:layout_constraintTop_toBottomOf="@+id/tvPm1Alarm" />
 
     <EditText
-        android:id="@+id/etPmAlarm"
-        android:layout_marginStart="15dp"
+        android:id="@+id/etPm1Alarm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="18dp"
         android:ems="10"
         android:inputType="number"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
-    <Button
-        android:id="@+id/btnSave"
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="277dp"
+        android:layout_height="41dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="4dp"
+        android:text="Good Pm levels are between 0-200 . Decent is 200-600. Terrible is 600+"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvPm2Alarm" />
+
+    <TextView
+        android:id="@+id/tvPm2Alarm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="73dp"
-        android:backgroundTint="#717070"
-        android:text="Save"
-        app:layout_constraintStart_toEndOf="@+id/btnCancel"
-        app:layout_constraintTop_toTopOf="@+id/btnCancel" />
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="5dp"
+        android:text="Set Pm2.5 level"
+        android:textSize="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/etPm1Alarm" />
+
+    <EditText
+        android:id="@+id/etPm2Alarm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="18dp"
+        android:ems="10"
+        android:inputType="number"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView8" />
+
+    <TextView
+        android:id="@+id/tvPm10Alarm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="5dp"
+        android:text="Set Pm2.5 level"
+        android:textSize="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/etPm2Alarm" />
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="277dp"
+        android:layout_height="41dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="4dp"
+        android:text="Good Pm levels are between 0-200 . Decent is 200-600. Terrible is 600+"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvPm10Alarm" />
+
+    <EditText
+        android:id="@+id/etPm10Alarm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="18dp"
+        android:ems="10"
+        android:inputType="number"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
     <Button
         android:id="@+id/btnCancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="44dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:backgroundTint="#717070"
         android:text="Cancel"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etPmAlarm" />
+        app:layout_constraintTop_toBottomOf="@+id/etPm10Alarm" />
+
+    <Button
+        android:id="@+id/btnSave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="56dp"
+        android:layout_marginTop="52dp"
+        android:backgroundTint="#717070"
+        android:text="Save"
+        app:layout_constraintStart_toEndOf="@+id/btnCancel"
+        app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
