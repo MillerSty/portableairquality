@@ -22,7 +22,7 @@ import com.welie.blessed.HciStatus;
 
 public class BluetoothHandler {
     private static final String MAC_ADD = "24:6F:28:1A:72:9E"; //SparkFun Thing MAC Address
-
+//private static final String MAC_ADD = "70:B8:F6:5C:C3:6E"; //simulated device
     public static final String MEASUREMENT_CCS = "paq.measurement.css";
     public static final String MEASUREMENT_CCS_EXTRA = "paq.measurement.css.extra";
     public static final String MEASUREMENT_DHT = "paq.measurement.dht";
