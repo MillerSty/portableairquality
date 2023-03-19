@@ -1,5 +1,6 @@
 // code adapted from https://github.com/weliem/blessed-android/blob/master/app/src/main/java/com/welie/blessedexample/BluetoothHandler.java
 package com.jmm.portableairquality.Model;
+import com.jmm.portableairquality.Model.SensorDataDatabaseHelper;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothGattCharacteristic;
@@ -10,6 +11,8 @@ import android.os.Handler;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Date;
 import java.util.UUID;
 
 import com.welie.blessed.BluetoothCentralManager;
@@ -48,6 +51,11 @@ public class BluetoothHandler {
     private final Context context;
     private final Handler handler = new Handler();
 
+    SensorDataDatabaseHelper db;
+
+    long co2, voc;
+    float temp, hum, pm1, pm2, pm10;
+
     private final BluetoothPeripheralCallback peripheralCallback = new BluetoothPeripheralCallback() {
         @Override
         public void onServicesDiscovered(@NonNull BluetoothPeripheral peripheral) {
@@ -68,27 +76,33 @@ public class BluetoothHandler {
 
             if (characteristicUUID.equals(CCS_CHAR_UUID)) {
                 CcsMeasurement measurement = new CcsMeasurement(value);
+                co2 = measurement.co2;
+                voc = measurement.voc;
                 Intent intent = new Intent(MEASUREMENT_CCS);
                 intent.putExtra(MEASUREMENT_CCS_EXTRA, measurement);
                 sendMeasurement(intent, peripheral);
             } else if (characteristicUUID.equals(DHT_CHAR_UUID)) {
                 DhtMeasurement measurement = new DhtMeasurement(value);
-
+                temp = measurement.temp;
+                hum = measurement.hum;
                 Intent intent = new Intent(MEASUREMENT_DHT);
                 intent.putExtra(MEASUREMENT_DHT_EXTRA, measurement);
                 sendMeasurement(intent, peripheral);
             } else if (characteristicUUID.equals(PM1_CHAR_UUID)) {
                 Pm1Measurement measurement = new Pm1Measurement(value);
+                pm1 = measurement.pm1;
                 Intent intent = new Intent(MEASUREMENT_PM1);
                 intent.putExtra(MEASUREMENT_PM1_EXTRA, measurement);
                 sendMeasurement(intent, peripheral);
             } else if (characteristicUUID.equals(PM2_CHAR_UUID)) {
                 Pm2Measurement measurement = new Pm2Measurement(value);
+                pm2 = measurement.pm2;
                 Intent intent = new Intent(MEASUREMENT_PM2);
                 intent.putExtra(MEASUREMENT_PM2_EXTRA, measurement);
                 sendMeasurement(intent, peripheral);
             } else if (characteristicUUID.equals(PM10_CHAR_UUID)) {
                 Pm10Measurement measurement = new Pm10Measurement(value);
+                pm10 = measurement.pm10;
                 Intent intent = new Intent(MEASUREMENT_PM10);
                 intent.putExtra(MEASUREMENT_PM10_EXTRA, measurement);
                 sendMeasurement(intent, peripheral);
@@ -144,20 +158,38 @@ public class BluetoothHandler {
         }
     };
 
-    public static synchronized BluetoothHandler getInstance(Context context) {
+    public static synchronized BluetoothHandler getInstance(Context context, SensorDataDatabaseHelper db) {
         if (btHandler == null) {
-            btHandler = new BluetoothHandler(context.getApplicationContext());
+            btHandler = new BluetoothHandler(context.getApplicationContext(), db);
         }
         return btHandler;
     }
 
-    private BluetoothHandler(Context context) {
+    private BluetoothHandler(Context context, SensorDataDatabaseHelper db) {
         this.context = context;
+        this.db = db;
 
         btCentral = new BluetoothCentralManager(context, managerCallback, new Handler());
 
         btCentral.startPairingPopupHack();
         startScan();
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                while(true) {
+                    //todo getlocation
+                    int latitude = 0;
+                    int longitude = 0;
+                    db.addSensorData(new Date(), latitude, longitude, temp, hum, pm1, pm2, pm10, 0, co2, voc);
+                    try {
+                        sleep(2000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        };
+        thread.start();
     }
 
     private void startScan() {

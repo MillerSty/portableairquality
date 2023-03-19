@@ -6,13 +6,15 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
+public class SensorDataDatabaseHelper extends SQLiteOpenHelper implements Serializable {
 
+    public static boolean exists;
     private static final String DATABASE_NAME = "sensor_data.db";
     private static final int DATABASE_VERSION = 1;
 
@@ -30,17 +32,17 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_VOC = "voc";
     private static final String CREATE_TABLE =
             "CREATE TABLE " + TABLE_NAME + " (" +
-                    COLUMN_TIMESTAMP + " INTEGER, " +
-                    COLUMN_LATITUDE + " REAL, " +
-                    COLUMN_LONGITUDE + " REAL, " +
-                    COLUMN_TEMPERATURE + " REAL, " +
-                    COLUMN_HUMIDITY + " REAL, " +
-                    COLUMN_PM1 + " REAL, " +
-                    COLUMN_PM2 + " REAL, " +
-                    COLUMN_PM10 + " REAL, " +
-                    COLUMN_NOX + " REAL, " +
-                    COLUMN_CO + " INTIGER, " +
-                    COLUMN_VOC + " INTIGER)";
+                    COLUMN_TIMESTAMP + " INTEGER," +
+                    COLUMN_LATITUDE + " REAL," +
+                    COLUMN_LONGITUDE + " REAL," +
+                    COLUMN_TEMPERATURE + " REAL," +
+                    COLUMN_HUMIDITY + " REAL," +
+                    COLUMN_PM1 + " REAL," +
+                    COLUMN_PM2 + " REAL," +
+                    COLUMN_PM10 + " REAL," +
+                    COLUMN_NOX + " REAL," +
+                    COLUMN_CO + " INTEGER," +
+                    COLUMN_VOC + " INTEGER)";
 
     public SensorDataDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -48,7 +50,10 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(CREATE_TABLE);
+        if (!exists) {
+            db.execSQL(CREATE_TABLE);
+            exists = true;
+        }
     }
 
     @Override
@@ -59,7 +64,7 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
 
     public void addSensorData(Date timestamp, double latitude, double longitude,
                               double temperature, double humidity,
-                              double PM, double NOX, double CO, double VOC) {
+                              double PM1 , double PM2, double PM10, double NOX, double CO, double VOC) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_TIMESTAMP, (timestamp.getTime())); //gives UNIX timestamp, doesn't need to be divided, already in ms
@@ -67,9 +72,9 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_LONGITUDE, longitude);
         values.put(COLUMN_TEMPERATURE, temperature);
         values.put(COLUMN_HUMIDITY, humidity);
-        values.put(COLUMN_PM1, PM);
-        values.put(COLUMN_PM2, PM);
-        values.put(COLUMN_PM10, PM);
+        values.put(COLUMN_PM1, PM1);
+        values.put(COLUMN_PM2, PM2);
+        values.put(COLUMN_PM10, PM10);
         values.put(COLUMN_NOX, NOX);
         values.put(COLUMN_CO, CO);
         values.put(COLUMN_VOC, VOC);
@@ -138,12 +143,21 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public List<DataEntry> getEntriesAfterTimestamp(long timestamp) {
-        Cursor c = getSensorDataByTimestamp(timestamp);
+        Cursor cursor = getSensorDataByTimestamp(timestamp);
         List<DataEntry> list = new ArrayList<DataEntry>();
-        for (;!c.isLast(); c.moveToNext()) {
-            list.add(new DataEntry(c.getFloat(c.getColumnIndexOrThrow(COLUMN_CO)), c.getFloat(c.getColumnIndexOrThrow(COLUMN_VOC)), c.getFloat(c.getColumnIndexOrThrow(COLUMN_TEMPERATURE)), c.getFloat(c.getColumnIndexOrThrow(COLUMN_HUMIDITY)), c.getFloat(c.getColumnIndexOrThrow(COLUMN_PM10)),(float)c.getLong(c.getColumnIndexOrThrow(COLUMN_TIMESTAMP)) / 1000));
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                float co2Entry = cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_CO));
+                float vocEntry = cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_VOC));
+                float tempEntry = cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_TEMPERATURE));
+                float humEntry = cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_HUMIDITY));
+                float pm = cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_PM10));
+                float timestmp = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_TIMESTAMP)) / 1000f;
+
+                DataEntry dataEntry = new DataEntry(co2Entry, vocEntry, tempEntry, humEntry, pm, timestmp);
+                list.add(dataEntry);
+            } while (cursor.moveToNext());
         }
-        Collections.sort(list);
         return list;
     }
 }

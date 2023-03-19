@@ -20,6 +20,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -40,6 +41,7 @@ import com.jmm.portableairquality.Model.DhtMeasurement;
 import com.jmm.portableairquality.Model.Pm10Measurement;
 import com.jmm.portableairquality.Model.Pm1Measurement;
 import com.jmm.portableairquality.Model.Pm2Measurement;
+import com.jmm.portableairquality.Model.SensorDataDatabaseHelper;
 import com.jmm.portableairquality.Model.SensorSingleton;
 import com.jmm.portableairquality.R;
 
@@ -57,6 +59,8 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
     BottomNavigationView navbot;
     TextView co2Display, vocDisplay, tempDisplay, humDisplay, pm1Display, pm2Display, pm10Display;
     public int co2, voc;
+
+    public SensorDataDatabaseHelper db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +81,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel);
         }
-
+        db = new SensorDataDatabaseHelper(getApplicationContext());
     }
 
     protected void onStart() {
@@ -206,6 +210,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
                 return true;
             case R.id.menu_history:
                 Intent goToHistory = new Intent(this, HistoryView.class);
+                goToHistory.putExtra("db", db);
                 startActivity(goToHistory);
             default:
                 return false;
@@ -220,7 +225,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
     }
 
     private void initBtHandler() {
-        BluetoothHandler.getInstance(getApplicationContext());
+        BluetoothHandler.getInstance(getApplicationContext(), db);
     }
 
     private BluetoothManager getBluetoothManager() {
@@ -293,7 +298,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
     };
 
     private BluetoothPeripheral getPeripheral(String peripheralAddress) {
-        BluetoothCentralManager central = BluetoothHandler.getInstance(getApplicationContext()).btCentral;
+        BluetoothCentralManager central = BluetoothHandler.getInstance(getApplicationContext(), db).btCentral;
         return central.getPeripheral(peripheralAddress);
     }
 

@@ -34,16 +34,16 @@ public class HistoryView extends AppCompatActivity {
     LineChart chart;
     List<DataEntry> data;
     long period = 10; //length of time that one wants to get data from in seconds
-    SensorDataDatabaseHelper db = new SensorDataDatabaseHelper(getApplicationContext());
+    SensorDataDatabaseHelper db;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
         chart = (LineChart) findViewById(R.id.chart);
         navbot=findViewById(R.id.bottom_nav);
         navbot.setOnNavigationItemSelectedListener(this::onNavigationItemSelected);
         navbot.setSelectedItemId(R.id.menu_history);
+        db = (SensorDataDatabaseHelper) getIntent().getSerializableExtra("db");
         data = db.getEntriesAfterTimestamp(new Date().getTime() - (1000*period));
         updateChart(data);
         registerReceiver(refresh, new IntentFilter(BluetoothHandler.MEASUREMENT_CCS)); //basic attempt at making automated refresh
@@ -72,6 +72,7 @@ public class HistoryView extends AppCompatActivity {
     }
 
     private void updateChart(List<DataEntry> historicalData) { //send this function sorted historical data of arbitrary length
+        // todo handle empty list
         float present = historicalData.get(historicalData.size()-1).timestamp;
         List<Entry> co2 = new ArrayList<Entry>();
         List<Entry> voc = new ArrayList<Entry>();
