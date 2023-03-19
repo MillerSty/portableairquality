@@ -34,11 +34,16 @@ public class AlarmDialogue extends DialogFragment {
             @Override
             public void onClick(View view) {
                 //save data
-                sensorSingleton.Instance.setCo2Alarm(Integer.parseInt(co2AlarmLevel.getText().toString()));
-                sensorSingleton.Instance.setVocAlarm(Integer.parseInt(vocAlarmLevel.getText().toString()));
-                sensorSingleton.Instance.setPm1Alarm(Integer.parseInt(pm1AlarmLevel.getText().toString()));
-                sensorSingleton.Instance.setPm2Alarm(Integer.parseInt(pm2AlarmLevel.getText().toString()));
-                sensorSingleton.Instance.setPm10Alarm(Integer.parseInt(pm10AlarmLevel.getText().toString()));
+                if(!co2AlarmLevel.getText().toString().isEmpty()){
+                sensorSingleton.Instance.setCo2Alarm(Integer.parseInt(co2AlarmLevel.getText().toString()));}
+                if(!vocAlarmLevel.getText().toString().isEmpty()){
+                sensorSingleton.Instance.setVocAlarm(Integer.parseInt(vocAlarmLevel.getText().toString()));}
+                if(!pm1AlarmLevel.getText().toString().isEmpty()){
+                sensorSingleton.Instance.setPm1Alarm(Integer.parseInt(pm1AlarmLevel.getText().toString()));}
+                if(!pm2AlarmLevel.getText().toString().isEmpty()){
+                sensorSingleton.Instance.setPm2Alarm(Integer.parseInt(pm2AlarmLevel.getText().toString()));}
+                if(!pm10AlarmLevel.getText().toString().isEmpty()){
+                sensorSingleton.Instance.setPm10Alarm(Integer.parseInt(pm10AlarmLevel.getText().toString()));}
                 dismiss();
 
             }

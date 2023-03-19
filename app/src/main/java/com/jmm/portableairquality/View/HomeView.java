@@ -11,6 +11,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
@@ -54,7 +55,8 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
     private static final int ACCESS_LOCATION_REQUEST = 2;
     private SensorSingleton sensorSingleton;
     BottomNavigationView navbot;
-    TextView co2Display,vocDisplay,tempDisplay,humDisplay,pm1Display,pm2Display,pm10Display;
+    TextView co2Display, vocDisplay, tempDisplay, humDisplay, pm1Display, pm2Display, pm10Display;
+    public int co2, voc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,94 +72,105 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         registerReceiver(pm1Receiver, new IntentFilter(BluetoothHandler.MEASUREMENT_PM1));
         registerReceiver(pm2Receiver, new IntentFilter(BluetoothHandler.MEASUREMENT_PM2));
         registerReceiver(pm10Receiver, new IntentFilter(BluetoothHandler.MEASUREMENT_PM10));
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
-            NotificationChannel channel=new NotificationChannel("my note","My notif",NotificationManager.IMPORTANCE_DEFAULT);
-            NotificationManager manager= getSystemService(NotificationManager.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel("my note", "My notif", NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel);
         }
 
     }
-protected void onStart() {
-    super.onStart();
+
+    protected void onStart() {
+        super.onStart();
 
 
-
-    co2Display.addTextChangedListener(new TextWatcher() {
-        @Override
-        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        co2Display.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 //            int co2=SensorDataDatabaseHelper.COLUMN_CO;
-//            if( co2>SensorSingleton.Instance.getCo2Alarm()){
-//            Notification("Co2");}
-        }
-        @Override
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        }
 
-        @Override
-        public void afterTextChanged(Editable editable) {
-        }
-    });
-    vocDisplay.addTextChangedListener(new TextWatcher() {
-        @Override
-        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                textViewHandler("co2",co2);
+            if( co2>SensorSingleton.Instance.getCo2Alarm()){
+            Notification("Co2");}
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        });
+        vocDisplay.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 //            int voc=SensorDataDatabaseHelper.COLUMN_VOC;
-//            if( voc>SensorSingleton.Instance.getVocAlarm()){
-//                Notification("Voc");}
-        }
-        @Override
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        }
+                                textViewHandler("voc",voc);
+            if( voc>SensorSingleton.Instance.getVocAlarm()){
+                Notification("Voc");}
+            }
 
-        @Override
-        public void afterTextChanged(Editable editable) {
-        }
-    });
-    pm1Display.addTextChangedListener(new TextWatcher() {
-        @Override
-        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        });
+        pm1Display.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 //            float pm1=SensorDataDatabaseHelper.COLUMN_PM1;
+                //                textViewHandler("pm1",pm1);
 //            if( pm1>SensorSingleton.Instance.getPm1Alarm()){
 //                Notification("Pm1");}
-        }
-        @Override
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        }
+            }
 
-        @Override
-        public void afterTextChanged(Editable editable) {
-        }
-    });
-    pm2Display.addTextChangedListener(new TextWatcher() {
-        @Override
-        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        });
+        pm2Display.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 //            float pm2=SensorDataDatabaseHelper.COLUMN_PM2;
+                //                textViewHandler("pm2",pm2);
 //            if( pm2>SensorSingleton.Instance.getPm2Alarm()){
 //                Notification("Pm2");}
-        }
-        @Override
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        }
+            }
 
-        @Override
-        public void afterTextChanged(Editable editable) {
-        }
-    });
-    pm10Display.addTextChangedListener(new TextWatcher() {
-        @Override
-        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        });
+        pm10Display.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 //            float pm10=SensorDataDatabaseHelper.COLUMN_PM10;
+                //                textViewHandler("pm10",pm10);
 //            if( pm10>SensorSingleton.Instance.getPm10Alarm()){
 //                Notification("Pm10");}
-        }
-        @Override
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        }
+            }
 
-        @Override
-        public void afterTextChanged(Editable editable) {
-        }
-    });
-}
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        });
+    }
 
     @SuppressLint("MissingPermission")
     @Override
@@ -232,8 +245,10 @@ protected void onStart() {
         public void onReceive(Context context, Intent intent) {
             BluetoothPeripheral peripheral = getPeripheral(intent.getStringExtra(BluetoothHandler.MEASUREMENT_EXTRA_PERIPHERAL));
             CcsMeasurement measurement = (CcsMeasurement) intent.getSerializableExtra(BluetoothHandler.MEASUREMENT_CCS_EXTRA);
-            co2Display.setText("Co2:\n"+Long.toString(measurement.co2));
-            vocDisplay.setText("VOC:\n"+Long.toString(measurement.voc));
+            co2 = (int)measurement.co2;
+            co2Display.setText("Co2:\n" + Long.toString(measurement.co2));
+            voc = (int)measurement.voc;
+            vocDisplay.setText("VOC:\n" + Long.toString(measurement.voc));
         }
     };
 
@@ -242,8 +257,8 @@ protected void onStart() {
         public void onReceive(Context context, Intent intent) {
             BluetoothPeripheral peripheral = getPeripheral(intent.getStringExtra(BluetoothHandler.MEASUREMENT_EXTRA_PERIPHERAL));
             DhtMeasurement measurement = (DhtMeasurement) intent.getSerializableExtra(BluetoothHandler.MEASUREMENT_DHT_EXTRA);
-            tempDisplay.setText(Float.toString(measurement.temp)+"\u00B0");
-            humDisplay.setText(Float.toString(measurement.hum)+"%");
+            tempDisplay.setText(Float.toString(measurement.temp) + "\u00B0");
+            humDisplay.setText(Float.toString(measurement.hum) + "%");
         }
     };
 
@@ -252,7 +267,7 @@ protected void onStart() {
         public void onReceive(Context context, Intent intent) {
             BluetoothPeripheral peripheral = getPeripheral(intent.getStringExtra(BluetoothHandler.MEASUREMENT_EXTRA_PERIPHERAL));
             Pm1Measurement measurement = (Pm1Measurement) intent.getSerializableExtra(BluetoothHandler.MEASUREMENT_PM1_EXTRA);
-            pm1Display.setText("PM1:\n"+Integer.toString(measurement.pm1));
+            pm1Display.setText("PM1:\n" + Integer.toString(measurement.pm1));
 
         }
     };
@@ -262,7 +277,7 @@ protected void onStart() {
         public void onReceive(Context context, Intent intent) {
             BluetoothPeripheral peripheral = getPeripheral(intent.getStringExtra(BluetoothHandler.MEASUREMENT_EXTRA_PERIPHERAL));
             Pm2Measurement measurement = (Pm2Measurement) intent.getSerializableExtra(BluetoothHandler.MEASUREMENT_PM2_EXTRA);
-            pm2Display.setText("PM2:\n"+Integer.toString(measurement.pm2));
+            pm2Display.setText("PM2:\n" + Integer.toString(measurement.pm2));
 
         }
     };
@@ -272,7 +287,7 @@ protected void onStart() {
         public void onReceive(Context context, Intent intent) {
             BluetoothPeripheral peripheral = getPeripheral(intent.getStringExtra(BluetoothHandler.MEASUREMENT_EXTRA_PERIPHERAL));
             Pm10Measurement measurement = (Pm10Measurement) intent.getSerializableExtra(BluetoothHandler.MEASUREMENT_PM10_EXTRA);
-            pm10Display.setText("PM10:\n"+Integer.toString(measurement.pm10));
+            pm10Display.setText("PM10:\n" + Integer.toString(measurement.pm10));
 
         }
     };
@@ -405,30 +420,41 @@ protected void onStart() {
                     .show();
         }
     }
+
     @SuppressLint("MissingPermission")
-    public void Notification(String sensor_alert){
+    public void Notification(String sensor_alert) {
+        Intent notifyIntent = new Intent(this, HomeView.class);
+// Set the Activity to start in a new, empty task
+        notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+// Create the PendingIntent
+        PendingIntent notifyPendingIntent = PendingIntent.getActivity(
+                this, 0, notifyIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
         NotificationCompat.Builder builder;
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
-            NotificationChannel channel=new NotificationChannel("my note","My big note",NotificationManager.IMPORTANCE_DEFAULT);
-            NotificationManager manager= getSystemService(NotificationManager.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel("my note", "My big note", NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel);
-            builder= new NotificationCompat.Builder(HomeView.this, "my note");
+            builder = new NotificationCompat.Builder(HomeView.this, "my note");
             builder.setChannelId("my note");
-        }
-        else{
-            builder= new NotificationCompat.Builder(HomeView.this,"my notif");
+        } else {
+            builder = new NotificationCompat.Builder(HomeView.this, "my notif");
         }
 
-        builder.setContentTitle(sensor_alert+" beyond threshold")
-                .setContentText(sensor_alert+" has gone beyond the limit set.")
+        builder.setContentTitle(sensor_alert + " beyond threshold")
+                .setContentText(sensor_alert + " has gone beyond the limit set.")
                 .setSmallIcon(R.drawable.humidity)
-                .setAutoCancel(true);
+                .setAutoCancel(true)
+                .setContentIntent(notifyPendingIntent);
         //can also set intent to go to when clicked
-        NotificationManagerCompat managerCompat= NotificationManagerCompat.from(HomeView.this);
+        NotificationManagerCompat managerCompat = NotificationManagerCompat.from(HomeView.this);
 
         //TODO add permission check android.permission.POST_NOTIFICATIONS
-        managerCompat.notify(1,builder.build());
+        managerCompat.notify(1, builder.build());
     }
+
     public int PPxToPercent(int sensorReading, String sensor) {
         if (sensor.equals("co2")) {
             return sensorReading = sensorReading / 10_000; // this is going to be very small
@@ -481,7 +507,7 @@ protected void onStart() {
                 }
                 break;//0-220 is good (green), 220-660 ( yellow), 660-2000(orange), 2000+(red) [ppb]
             case "pm1":
-                //TODO Set default values, these are copied from Co2
+                //TODO Set default for PM values, these are copied from Co2
                 if (readingInt >= 0 && readingInt <= 1111) {
                     co2Display.setBackground(getResources().getDrawable(R.drawable.sensor_display_green));
 //                flagGreen
@@ -528,9 +554,9 @@ protected void onStart() {
         vocDisplay = findViewById(R.id.vocDisplay);
         tempDisplay = findViewById(R.id.tempDisplay);
         humDisplay = findViewById(R.id.humDisplay);
-        pm1Display=findViewById(R.id.pm1Display);
-        pm2Display=findViewById(R.id.pm2Display);
-        pm10Display=findViewById(R.id.pm10Display);
+        pm1Display = findViewById(R.id.pm1Display);
+        pm2Display = findViewById(R.id.pm2Display);
+        pm10Display = findViewById(R.id.pm10Display);
         navbot = findViewById(R.id.bottom_nav);
         navbot.setOnNavigationItemSelectedListener(this);
         navbot.setSelectedItemId(R.id.menu_home);
