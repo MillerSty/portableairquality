@@ -38,6 +38,8 @@ public class BluetoothHandler {
     public static final String MEASUREMENT_PM10_EXTRA = "paq.measurement.pm10.extra";
     public static final String MEASUREMENT_EXTRA_PERIPHERAL = "paq.measurement.peripheral";
 
+    public static final String UPDATED = "paq.measurement.updated";
+
     private static final UUID PAQ_SERVICE_UUID = UUID.fromString("87843d21-fd03-4307-8a95-bd3d76b49644");
 
     private static final UUID CCS_CHAR_UUID = UUID.fromString("5f551915-bdc8-4bac-b9df-12256620e1cf");
@@ -72,38 +74,42 @@ public class BluetoothHandler {
         public void onCharacteristicUpdate(@NotNull BluetoothPeripheral peripheral, @NotNull byte[] value, @NotNull BluetoothGattCharacteristic characteristic, @NotNull GattStatus status) {
             if (status != GattStatus.SUCCESS) return;
 
+            // send intent to update the graph
+            Intent intent = new Intent(UPDATED);
+            sendMeasurement(intent, peripheral);
+
             UUID characteristicUUID = characteristic.getUuid();
 
             if (characteristicUUID.equals(CCS_CHAR_UUID)) {
                 CcsMeasurement measurement = new CcsMeasurement(value);
                 co2 = measurement.co2;
                 voc = measurement.voc;
-                Intent intent = new Intent(MEASUREMENT_CCS);
+                intent = new Intent(MEASUREMENT_CCS);
                 intent.putExtra(MEASUREMENT_CCS_EXTRA, measurement);
                 sendMeasurement(intent, peripheral);
             } else if (characteristicUUID.equals(DHT_CHAR_UUID)) {
                 DhtMeasurement measurement = new DhtMeasurement(value);
                 temp = measurement.temp;
                 hum = measurement.hum;
-                Intent intent = new Intent(MEASUREMENT_DHT);
+                intent = new Intent(MEASUREMENT_DHT);
                 intent.putExtra(MEASUREMENT_DHT_EXTRA, measurement);
                 sendMeasurement(intent, peripheral);
             } else if (characteristicUUID.equals(PM1_CHAR_UUID)) {
                 Pm1Measurement measurement = new Pm1Measurement(value);
                 pm1 = measurement.pm1;
-                Intent intent = new Intent(MEASUREMENT_PM1);
+                intent = new Intent(MEASUREMENT_PM1);
                 intent.putExtra(MEASUREMENT_PM1_EXTRA, measurement);
                 sendMeasurement(intent, peripheral);
             } else if (characteristicUUID.equals(PM2_CHAR_UUID)) {
                 Pm2Measurement measurement = new Pm2Measurement(value);
                 pm2 = measurement.pm2;
-                Intent intent = new Intent(MEASUREMENT_PM2);
+                intent = new Intent(MEASUREMENT_PM2);
                 intent.putExtra(MEASUREMENT_PM2_EXTRA, measurement);
                 sendMeasurement(intent, peripheral);
             } else if (characteristicUUID.equals(PM10_CHAR_UUID)) {
                 Pm10Measurement measurement = new Pm10Measurement(value);
                 pm10 = measurement.pm10;
-                Intent intent = new Intent(MEASUREMENT_PM10);
+                intent = new Intent(MEASUREMENT_PM10);
                 intent.putExtra(MEASUREMENT_PM10_EXTRA, measurement);
                 sendMeasurement(intent, peripheral);
             }
@@ -158,16 +164,15 @@ public class BluetoothHandler {
         }
     };
 
-    public static synchronized BluetoothHandler getInstance(Context context, SensorDataDatabaseHelper db) {
+    public static synchronized BluetoothHandler getInstance(Context context) {
         if (btHandler == null) {
-            btHandler = new BluetoothHandler(context.getApplicationContext(), db);
+            btHandler = new BluetoothHandler(context.getApplicationContext());
         }
         return btHandler;
     }
 
-    private BluetoothHandler(Context context, SensorDataDatabaseHelper db) {
+    private BluetoothHandler(Context context) {
         this.context = context;
-        this.db = db;
 
         btCentral = new BluetoothCentralManager(context, managerCallback, new Handler());
 
@@ -176,11 +181,14 @@ public class BluetoothHandler {
         Thread thread = new Thread() {
             @Override
             public void run() {
+                SensorDataDatabaseHelper db = SensorDataDatabaseHelper.getInstance(context);
+                Date date;
                 while(true) {
                     //todo getlocation
                     int latitude = 0;
                     int longitude = 0;
-                    db.addSensorData(new Date(), latitude, longitude, temp, hum, pm1, pm2, pm10, 0, co2, voc);
+                    date = new Date();
+                    db.addSensorData(date, latitude, longitude, temp, hum, pm1, pm2, pm10, 0, co2, voc);
                     try {
                         sleep(2000);
                     } catch (InterruptedException e) {

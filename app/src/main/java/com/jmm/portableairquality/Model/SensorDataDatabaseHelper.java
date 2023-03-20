@@ -5,16 +5,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteQueryBuilder;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-public class SensorDataDatabaseHelper extends SQLiteOpenHelper implements Serializable {
+public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
 
-    public static boolean exists;
     private static final String DATABASE_NAME = "sensor_data.db";
     private static final int DATABASE_VERSION = 1;
 
@@ -44,22 +43,28 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper implements Serial
                     COLUMN_CO + " INTEGER," +
                     COLUMN_VOC + " INTEGER)";
 
+    static SensorDataDatabaseHelper instance;
+
     public SensorDataDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        if (!exists) {
-            db.execSQL(CREATE_TABLE);
-            exists = true;
-        }
+        db.execSQL(CREATE_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         onCreate(db);
+    }
+
+    public static synchronized SensorDataDatabaseHelper getInstance(Context context) {
+        if (instance == null) {
+            instance = new SensorDataDatabaseHelper(context);
+        }
+        return instance;
     }
 
     public void addSensorData(Date timestamp, double latitude, double longitude,
@@ -121,6 +126,7 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper implements Serial
         Cursor cursor = db.query(TABLE_NAME, columns, selection, selectionArgs, null, null, null);
         return cursor;
     }
+
     public Cursor getSensorDataAfterTimestamp(long timestamp) {
         SQLiteDatabase db = getReadableDatabase();
         String[] columns = {
@@ -138,26 +144,32 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper implements Serial
         };
         String selection = COLUMN_TIMESTAMP + " >= ?";
         String[] selectionArgs = {String.valueOf(timestamp)};
-        Cursor cursor = db.query(TABLE_NAME, columns, selection, selectionArgs, null, null, null);
+        // Cursor cursor = db.query(TABLE_NAME, columns, selection, selectionArgs, null, null, null);
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        builder.setTables(TABLE_NAME);
+        Cursor cursor = builder.query(db, columns, selection,
+                selectionArgs, null, null, null);
+
         return cursor;
     }
 
     public List<DataEntry> getEntriesAfterTimestamp(long timestamp) {
-        Cursor cursor = getSensorDataByTimestamp(timestamp);
+        Cursor cursor = getSensorDataAfterTimestamp(timestamp);
         List<DataEntry> list = new ArrayList<DataEntry>();
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                float co2Entry = cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_CO));
-                float vocEntry = cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_VOC));
+        if (cursor.getCount() > 0) {
+            for (cursor.moveToFirst(); !cursor.isLast(); cursor.moveToNext()) {
+                int co2Entry = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CO));
+                int vocEntry = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_VOC));
                 float tempEntry = cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_TEMPERATURE));
                 float humEntry = cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_HUMIDITY));
                 float pm = cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_PM10));
-                float timestmp = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_TIMESTAMP)) / 1000f;
+                long timestmp = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_TIMESTAMP));
 
                 DataEntry dataEntry = new DataEntry(co2Entry, vocEntry, tempEntry, humEntry, pm, timestmp);
                 list.add(dataEntry);
-            } while (cursor.moveToNext());
+            }
         }
+
         return list;
     }
 }

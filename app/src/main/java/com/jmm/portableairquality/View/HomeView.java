@@ -210,7 +210,6 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
                 return true;
             case R.id.menu_history:
                 Intent goToHistory = new Intent(this, HistoryView.class);
-                goToHistory.putExtra("db", db);
                 startActivity(goToHistory);
             default:
                 return false;
@@ -225,7 +224,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
     }
 
     private void initBtHandler() {
-        BluetoothHandler.getInstance(getApplicationContext(), db);
+        BluetoothHandler.getInstance(getApplicationContext());
     }
 
     private BluetoothManager getBluetoothManager() {
@@ -298,7 +297,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
     };
 
     private BluetoothPeripheral getPeripheral(String peripheralAddress) {
-        BluetoothCentralManager central = BluetoothHandler.getInstance(getApplicationContext(), db).btCentral;
+        BluetoothCentralManager central = BluetoothHandler.getInstance(getApplicationContext()).btCentral;
         return central.getPeripheral(peripheralAddress);
     }
 

@@ -1,17 +1,16 @@
 package com.jmm.portableairquality.Model;
 
-import java.io.Serializable;
-
 public class DataEntry implements Comparable<DataEntry> {
-    public float co2Entry, vocEntry, tempEntry, humEntry, pm;
-    public float timestamp; //should be in seconds
+    public int co2Entry, vocEntry;
+    public float tempEntry, humEntry, pm;
+    public long timestamp; //should be in seconds
 
-    public DataEntry(float co2Entry, float vocEntry, float tempEntry, float humEntry, float pm, float timestamp) {
+    public DataEntry(int co2Entry, int vocEntry, float tempEntry, float humEntry, float pm, long timestamp) {
         this.co2Entry = co2Entry;
         this.vocEntry = vocEntry;
         this.tempEntry = tempEntry;
         this.humEntry = humEntry;
-
+        this.pm = pm;
         this.timestamp = timestamp;
     }
     //method to sort data entries by generation time
