@@ -122,7 +122,7 @@ public class HistoryView extends AppCompatActivity {
         chart_air.setData(allData_air);
         chart_air.setNoDataText("oh no! no data :(");
         Description desc = chart_air.getDescription();
-        desc.setText("Graph of air quality parameters over the time!");
+        desc.setText("Graph of air quality parameters over time!");
         chart_air.invalidate();
 
         chart_temp.setData(allData_temp);
