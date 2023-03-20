@@ -31,7 +31,8 @@ import com.jmm.portableairquality.Model.SensorDataDatabaseHelper;
 
 public class HistoryView extends AppCompatActivity {
     BottomNavigationView navbot;
-    LineChart chart;
+    LineChart chart_air;
+    LineChart chart_temp;
     List<DataEntry> data;
     long period = 1000; //length of time that one wants to get data from in seconds
     SensorDataDatabaseHelper db;
@@ -39,7 +40,8 @@ public class HistoryView extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
-        chart = (LineChart) findViewById(R.id.chart);
+        chart_air = (LineChart) findViewById(R.id.chart_air);
+        chart_temp = (LineChart) findViewById(R.id.chart_temp);
         navbot=findViewById(R.id.bottom_nav);
         navbot.setOnNavigationItemSelectedListener(this::onNavigationItemSelected);
         navbot.setSelectedItemId(R.id.menu_history);
@@ -75,10 +77,14 @@ public class HistoryView extends AppCompatActivity {
         long present = historicalData.get(historicalData.size()-1).timestamp;
         List<Entry> co2 = new ArrayList<Entry>();
         List<Entry> voc = new ArrayList<Entry>();
+        List<Entry> temp = new ArrayList<Entry>();
+        List<Entry> hum = new ArrayList<Entry>();
         for (int i = 0; i < historicalData.size(); i++) { //represent the data in terms of seconds behind present
             historicalData.get(i).timestamp -= present;
             co2.add(new Entry(historicalData.get(i).timestamp/1000, historicalData.get(i).co2Entry));
             voc.add(new Entry(historicalData.get(i).timestamp/1000, historicalData.get(i).vocEntry));
+            temp.add(new Entry(historicalData.get(i).timestamp/1000, historicalData.get(i).tempEntry));
+            voc.add(new Entry(historicalData.get(i).timestamp/1000, historicalData.get(i).humEntry));
         }
 
         LineDataSet co2Data = new LineDataSet(co2, "eCO2");
@@ -92,15 +98,34 @@ public class HistoryView extends AppCompatActivity {
         vocData.setColor(0x787EF4, 200);
         vocData.setCircleColor(0x787EF4);
 
-        List<ILineDataSet> sets = new ArrayList<>();
-        sets.add(co2Data);
-        sets.add(vocData);
+        LineDataSet tempData = new LineDataSet(temp, "Temperature");
+        tempData.setAxisDependency(YAxis.AxisDependency.RIGHT);
+        tempData.setColor(0x787EF4, 200);
+        tempData.setCircleColor(0x787EF4);
 
-        LineData allData = new LineData(sets);
+        LineDataSet humData = new LineDataSet(hum, "Relative Humidity");
+        humData.setAxisDependency(YAxis.AxisDependency.RIGHT);
+        humData.setColor(0x787EF4, 200);
+        humData.setCircleColor(0x787EF4);
 
-        chart.setData(allData);
-        chart.setNoDataText("oh no! no data :(");
-        chart.invalidate();
+        List<ILineDataSet> sets_air = new ArrayList<>();
+        sets_air.add(co2Data);
+        sets_air.add(vocData);
+
+        List<ILineDataSet> sets_temp = new ArrayList<>();
+        sets_temp.add(tempData);
+        sets_temp.add(humData);
+
+        LineData allData_air = new LineData(sets_air);
+        LineData allData_temp = new LineData(sets_temp);
+
+        chart_air.setData(allData_air);
+        chart_air.setNoDataText("oh no! no data :(");
+        chart_air.invalidate();
+
+        chart_temp.setData(allData_temp);
+        chart_temp.setNoDataText("no data, something is amiss here");
+        chart_temp.invalidate();
     }
 
     private final BroadcastReceiver refresh = new BroadcastReceiver() {
