@@ -13,6 +13,7 @@
         android:layout_marginTop="68dp"
         android:text="Set Alarm Limits"
         android:textSize="20sp"
+        android:textColor="?attr/colorPrimary"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -26,6 +27,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/bottom_bar"
+
         tools:layout_editor_absoluteX="0dp" />
 
     <ImageView
@@ -34,6 +36,7 @@
         android:layout_height="30dp"
         android:layout_marginTop="68dp"
         android:clickable="true"
+
         app:layout_constraintStart_toEndOf="@+id/tvAlarmLimits"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/button" />
@@ -42,9 +45,12 @@
         android:id="@+id/switch1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="101dp"
+        android:layout_marginStart="88dp"
         android:layout_marginTop="44dp"
+        android:checked="false"
         android:text="Light/dark"
+        android:textColor="?attr/colorPrimary"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvAlarmLimits" />
 

@@ -21,10 +21,11 @@ public class SettingsView extends AppCompatActivity {
     BottomNavigationView navbot;
     ImageView alarm;
     Switch swiss;
+    Boolean isChecked;
     SensorSingleton Sensor;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        //TODO Smaller text size for alarmdialgoue
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         navbot=findViewById(R.id.bottom_nav);
@@ -32,27 +33,13 @@ public class SettingsView extends AppCompatActivity {
         navbot.setSelectedItemId(R.id.menu_settings);
         alarm=findViewById(R.id.IvAlarm);
         swiss=findViewById(R.id.switch1);
+        isChecked=false;
 
 
-        swiss.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(b){
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                    compoundButton.setText("NIGHT MODE");
-                }
-                else {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                    compoundButton.setText("DAY MODE");
-                }
-            }
-        });
+
         alarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showToast("Clicked");
-//                DialogueFragment dialog = new DialogueFragment();
-//                dialog.show(getSupportFragmentManager(), "Insert Course");
                 showEditDialog();
             }
         });
@@ -61,6 +48,24 @@ public class SettingsView extends AppCompatActivity {
     }
     protected void onResume() {
         super.onResume();
+        swiss.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if(isChecked){
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                    compoundButton.setChecked(true);
+//                    compoundButton.setText("NIGHT MODE");
+                    isChecked=false;}
+
+
+                else {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                    compoundButton.setChecked(false);
+//                    compoundButton.setText("DAY MODE");
+                    isChecked=true;
+                }
+            }
+        });
 //        showToast(Sensor.Instance.toString());
 
     }
