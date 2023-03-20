@@ -17,7 +17,7 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.jmm.portableairquality.Controller.DatabaseControl;
+
 import com.jmm.portableairquality.Model.BluetoothHandler;
 import com.jmm.portableairquality.Model.DataEntry;
 import com.jmm.portableairquality.R;

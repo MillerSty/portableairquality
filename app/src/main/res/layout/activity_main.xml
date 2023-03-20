@@ -9,27 +9,15 @@
 
 
     <TextView
-        android:id="@+id/vocDisplay"
-        android:layout_width="124dp"
-        android:layout_height="124dp"
-        android:layout_marginStart="124dp"
-        android:layout_marginTop="212dp"
-        android:background="@drawable/sensor_display_green"
-        android:gravity="center"
-        android:text="VOC"
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="@+id/co2Display"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
         android:id="@+id/pm1Display"
         android:layout_width="124dp"
         android:layout_height="124dp"
         android:layout_marginStart="15dp"
         android:layout_marginTop="88dp"
         android:background="@drawable/sensor_display_green"
+        android:elevation="5dp"
         android:gravity="center"
-        android:text="Hello World!"
+        android:text="Pm1"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -41,9 +29,9 @@
         android:layout_marginStart="104dp"
         android:layout_marginTop="88dp"
         android:background="@drawable/sensor_display_green"
-        android:elevation="5dp"
+        android:elevation="10dp"
         android:gravity="center"
-        android:text="Hello World!"
+        android:text="Pm2.5"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="@+id/pm1Display"
         app:layout_constraintTop_toTopOf="parent" />
@@ -55,20 +43,35 @@
         android:layout_marginStart="216dp"
         android:layout_marginTop="88dp"
         android:background="@drawable/sensor_display_green"
+        android:elevation="5dp"
         android:gravity="center"
-        android:text="Hello World!"
+        android:text="Pm10"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="@+id/pm1Display"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/vocDisplay"
+        android:layout_width="124dp"
+        android:layout_height="124dp"
+        android:layout_marginStart="124dp"
+        android:layout_marginTop="200dp"
+        android:background="@drawable/sensor_display_green"
+        android:elevation="15dp"
+        android:gravity="center"
+        android:text="VOC"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="@+id/co2Display"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/co2Display"
         android:layout_width="124dp"
         android:layout_height="124dp"
-        android:layout_marginStart="52dp"
-        android:layout_marginTop="212dp"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="200dp"
         android:background="@drawable/sensor_display_green"
-        android:elevation="1.0dp"
+        android:elevation="15dp"
         android:gravity="center"
         android:shadowColor="#2B2828"
         android:text="CO2"

@@ -12,7 +12,7 @@
         android:layout_marginStart="18dp"
         android:layout_marginTop="5dp"
         android:text="Set Co2 level"
-        android:textSize="20dp"
+        android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -23,6 +23,7 @@
         android:layout_marginStart="18dp"
         android:layout_marginTop="4dp"
         android:text="Good Co2 levels are between 0-2000 . Decent is 2000-6000. Terrible is 6000+"
+        android:textSize="12dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvCo2Alarm" />
 
@@ -32,6 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="18dp"
         android:layout_marginTop="4dp"
+        android:textSize="12sp"
         android:ems="10"
         android:inputType="number"
         app:layout_constraintStart_toStartOf="parent"
@@ -44,7 +46,7 @@
         android:layout_marginStart="18dp"
         android:layout_marginTop="5dp"
         android:text="Set VOC level"
-        android:textSize="20dp"
+        android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etCo2Alarm" />
 
@@ -55,6 +57,7 @@
         android:layout_marginStart="18dp"
         android:layout_marginTop="4dp"
         android:text="Good Voc levels are between 0-200 . Decent is 200-600. Terrible is 600+"
+        android:textSize="12sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvVocAlarm" />
 
@@ -64,6 +67,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="18dp"
         android:ems="10"
+        android:textSize="12sp"
         android:inputType="number"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView5" />
@@ -75,7 +79,7 @@
         android:layout_marginStart="18dp"
         android:layout_marginTop="5dp"
         android:text="Set Pm1 level"
-        android:textSize="20dp"
+        android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etVocAlarm" />
 
@@ -84,7 +88,7 @@
         android:layout_width="277dp"
         android:layout_height="41dp"
         android:layout_marginStart="18dp"
-
+        android:textSize="12sp"
         android:layout_marginTop="4dp"
         android:text="Good Pm levels are between 0-200 . Decent is 200-600. Terrible is 600+"
         app:layout_constraintStart_toStartOf="parent"
@@ -96,6 +100,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="18dp"
         android:ems="10"
+        android:textSize="12sp"
         android:inputType="number"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView6" />
@@ -106,6 +111,7 @@
         android:layout_height="41dp"
         android:layout_marginStart="18dp"
         android:layout_marginTop="4dp"
+        android:textSize="12sp"
         android:text="Good Pm levels are between 0-200 . Decent is 200-600. Terrible is 600+"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvPm2Alarm" />
@@ -117,7 +123,7 @@
         android:layout_marginStart="18dp"
         android:layout_marginTop="5dp"
         android:text="Set Pm2.5 level"
-        android:textSize="20dp"
+        android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etPm1Alarm" />
 
@@ -127,6 +133,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="18dp"
         android:ems="10"
+        android:textSize="12sp"
         android:inputType="number"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView8" />
@@ -138,7 +145,7 @@
         android:layout_marginStart="18dp"
         android:layout_marginTop="5dp"
         android:text="Set Pm10 level"
-        android:textSize="20dp"
+        android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etPm2Alarm" />
 
@@ -148,6 +155,7 @@
         android:layout_height="41dp"
         android:layout_marginStart="18dp"
         android:layout_marginTop="4dp"
+        android:textSize="12sp"
         android:text="Good Pm levels are between 0-200 . Decent is 200-600. Terrible is 600+"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvPm10Alarm" />
@@ -158,6 +166,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="18dp"
         android:ems="10"
+        android:textSize="14sp"
         android:inputType="number"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView9" />
