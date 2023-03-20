@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
@@ -121,10 +122,14 @@ public class HistoryView extends AppCompatActivity {
 
         chart_air.setData(allData_air);
         chart_air.setNoDataText("oh no! no data :(");
+        Description desc = chart_air.getDescription();
+        desc.setText("Graph of air quality parameters over the time!");
         chart_air.invalidate();
 
         chart_temp.setData(allData_temp);
         chart_temp.setNoDataText("no data, something is amiss here");
+        Description desc_temp = chart_air.getDescription();
+        desc_temp.setText("Graph of temperature and humidity!");
         chart_temp.invalidate();
     }
 
