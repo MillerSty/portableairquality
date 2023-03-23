@@ -10,12 +10,15 @@ import android.view.MenuItem;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -25,10 +28,13 @@ import com.jmm.portableairquality.R;
 
 import java.sql.Array;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import com.jmm.portableairquality.Model.SensorDataDatabaseHelper;
+
+import kotlin.ParameterName;
 
 public class HistoryView extends AppCompatActivity {
     BottomNavigationView navbot;
@@ -81,7 +87,7 @@ public class HistoryView extends AppCompatActivity {
         List<Entry> temp = new ArrayList<>();
         List<Entry> hum = new ArrayList<>();
         for (int i = 0; i < historicalData.size(); i++) { //represent the data in terms of seconds behind present
-            historicalData.get(i).timestamp -= present;
+            //historicalData.get(i).timestamp -= present;
             co2.add(new Entry(historicalData.get(i).timestamp/1000, historicalData.get(i).co2Entry));
             voc.add(new Entry(historicalData.get(i).timestamp/1000, historicalData.get(i).vocEntry));
             temp.add(new Entry(historicalData.get(i).timestamp/1000, historicalData.get(i).tempEntry));
@@ -120,12 +126,30 @@ public class HistoryView extends AppCompatActivity {
         LineData allData_temp = new LineData(sets_temp);
 
         chart_air.setData(allData_air);
+        XAxis xAxis_air = chart_air.getXAxis();
+        xAxis_air.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                Date d = new Date((long)value);
+                String time = d.getMinutes() + ":" + d.getSeconds(); //deprecated but Calendar is a pain
+                return time;
+            }
+        });
         chart_air.setNoDataText("oh no! no data :(");
         Description desc_air = chart_air.getDescription();
         desc_air.setText("Graph of air quality parameters over time!");
         chart_air.invalidate();
 
         chart_temp.setData(allData_temp);
+        XAxis xAxis_temp = chart_temp.getXAxis();
+        xAxis_temp.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                Date d = new Date((long)value);
+                String time = d.getMinutes() + ":" + d.getSeconds(); //deprecated but Calendar is a pain
+                return time;
+            }
+        });
         chart_temp.setNoDataText("no data, something is amiss here");
         Description desc_temp = chart_temp.getDescription();
         desc_temp.setText("Graph of temperature and humidity!");
