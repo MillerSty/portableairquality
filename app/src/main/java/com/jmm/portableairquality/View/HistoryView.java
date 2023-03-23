@@ -146,7 +146,7 @@ public class HistoryView extends AppCompatActivity {
             @Override
             public String getFormattedValue(float value) {
                 Date d = new Date((long)value);
-                String time = d.getMinutes() + ":" + d.getSeconds(); //deprecated but Calendar is a pain
+                String time = d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds(); //deprecated but Calendar is a pain
                 return time;
             }
         });
