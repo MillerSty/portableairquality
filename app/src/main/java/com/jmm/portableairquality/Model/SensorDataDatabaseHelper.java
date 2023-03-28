@@ -149,13 +149,12 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
         builder.setTables(TABLE_NAME);
         Cursor cursor = builder.query(db, columns, selection,
                 selectionArgs, null, null, null);
-
         return cursor;
     }
 
     public List<DataEntry> getEntriesAfterTimestamp(long timestamp) {
         Cursor cursor = getSensorDataAfterTimestamp(timestamp);
-        List<DataEntry> list = new ArrayList<DataEntry>();
+        List<DataEntry> list = new ArrayList<>();
         if (cursor.getCount() > 0) {
             for (cursor.moveToFirst(); !cursor.isLast(); cursor.moveToNext()) {
                 int co2Entry = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CO));

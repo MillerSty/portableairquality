@@ -6,6 +6,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -488,62 +489,62 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         switch (sensor) {
             case "co2":
                 if (readingInt >= 0 && readingInt <= 1000) {
-                    co2Display.setBackground(getResources().getDrawable(R.drawable.sensor_display_green));
+                    co2Display.setBackground(ContextCompat.getDrawable(this, R.drawable.sensor_display_green));
 //                flagGreen
                 } else if (readingInt > 1000 && readingInt <= 8000) {
-                    co2Display.setBackground(getResources().getDrawable(R.drawable.sensor_display_yellow));
+                    co2Display.setBackground(ContextCompat.getDrawable(this, R.drawable.sensor_display_yellow));
 //                flagYellow
                 } else {
-                    co2Display.setBackground(getResources().getDrawable(R.drawable.sensor_display_red));
+                    co2Display.setBackground(ContextCompat.getDrawable(this, R.drawable.sensor_display_red));
 //                flagRed
                 }
                 break; //0-1000 ppm is good(green), 1500-8000 unhealthy(yellow), 8000-30000 serious health risk(orange), 30000+ critical (red) [ppm]
             case "voc":
                 if (readingInt >= 0 && readingInt <= 220) {
-                    vocDisplay.setBackground(getResources().getDrawable(R.drawable.sensor_display_green));
+                    vocDisplay.setBackground(ContextCompat.getDrawable(this, R.drawable.sensor_display_green));
 //                flagGreen
                 } else if (readingInt > 220 && readingInt <= 660) {
-                    vocDisplay.setBackground(getResources().getDrawable(R.drawable.sensor_display_yellow));
+                    vocDisplay.setBackground(ContextCompat.getDrawable(this, R.drawable.sensor_display_yellow));
 //                flagYellow
                 } else {
-                    vocDisplay.setBackground(getResources().getDrawable(R.drawable.sensor_display_red));
+                    vocDisplay.setBackground(ContextCompat.getDrawable(this, R.drawable.sensor_display_red));
 //                flagRed
                 }
                 break;//0-220 is good (green), 220-660 ( yellow), 660-2000(orange), 2000+(red) [ppb]
             case "pm1":
                 //TODO Set default for PM values, these are copied from Co2
                 if (readingInt >= 0 && readingInt <= 1111) {
-                    co2Display.setBackground(getResources().getDrawable(R.drawable.sensor_display_green));
+                    co2Display.setBackground(ContextCompat.getDrawable(this, R.drawable.sensor_display_green));
 //                flagGreen
                 } else if (readingInt > 1000 && readingInt <= 8000) {
-                    co2Display.setBackground(getResources().getDrawable(R.drawable.sensor_display_yellow));
+                    co2Display.setBackground(ContextCompat.getDrawable(this, R.drawable.sensor_display_yellow));
 //                flagYellow
                 } else {
-                    co2Display.setBackground(getResources().getDrawable(R.drawable.sensor_display_red));
+                    co2Display.setBackground(ContextCompat.getDrawable(this, R.drawable.sensor_display_red));
 //                flagRed
                 }
                 break;
             case "pm2":
                 if (readingInt >= 0 && readingInt <= 1222) {
-                    co2Display.setBackground(getResources().getDrawable(R.drawable.sensor_display_green));
+                    co2Display.setBackground(ContextCompat.getDrawable(this, R.drawable.sensor_display_green));
 //                flagGreen
                 } else if (readingInt > 1000 && readingInt <= 8000) {
-                    co2Display.setBackground(getResources().getDrawable(R.drawable.sensor_display_yellow));
+                    co2Display.setBackground(ContextCompat.getDrawable(this, R.drawable.sensor_display_yellow));
 //                flagYellow
                 } else {
-                    co2Display.setBackground(getResources().getDrawable(R.drawable.sensor_display_red));
+                    co2Display.setBackground(ContextCompat.getDrawable(this, R.drawable.sensor_display_red));
 //                flagRed
                 }
                 break;
             case "pm10":
                 if (readingInt >= 0 && readingInt <= 1333) {
-                    co2Display.setBackground(getResources().getDrawable(R.drawable.sensor_display_green));
+                    co2Display.setBackground(ContextCompat.getDrawable(this, R.drawable.sensor_display_green));
 //                flagGreen
                 } else if (readingInt > 1000 && readingInt <= 8000) {
-                    co2Display.setBackground(getResources().getDrawable(R.drawable.sensor_display_yellow));
+                    co2Display.setBackground(ContextCompat.getDrawable(this, R.drawable.sensor_display_yellow));
 //                flagYellow
                 } else {
-                    co2Display.setBackground(getResources().getDrawable(R.drawable.sensor_display_red));
+                    co2Display.setBackground(ContextCompat.getDrawable(this, R.drawable.sensor_display_red));
 //                flagRed
                 }
                 break;
