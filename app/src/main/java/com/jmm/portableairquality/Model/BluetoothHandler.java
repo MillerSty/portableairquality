@@ -30,12 +30,8 @@ public class BluetoothHandler {
     public static final String MEASUREMENT_CCS_EXTRA = "paq.measurement.css.extra";
     public static final String MEASUREMENT_DHT = "paq.measurement.dht";
     public static final String MEASUREMENT_DHT_EXTRA = "paq.measurement.dht.extra";
-    public static final String MEASUREMENT_PM1 = "paq.measurement.pm1";
-    public static final String MEASUREMENT_PM1_EXTRA = "paq.measurement.pm1.extra";
-    public static final String MEASUREMENT_PM2 = "paq.measurement.pm2";
-    public static final String MEASUREMENT_PM2_EXTRA = "paq.measurement.pm2.extra";
-    public static final String MEASUREMENT_PM10 = "paq.measurement.pm10";
-    public static final String MEASUREMENT_PM10_EXTRA = "paq.measurement.pm10.extra";
+    public static final String MEASUREMENT_PM = "paq.measurement.pm1";
+    public static final String MEASUREMENT_PM_EXTRA = "paq.measurement.pm1.extra";
     public static final String MEASUREMENT_EXTRA_PERIPHERAL = "paq.measurement.peripheral";
 
     public static final String UPDATED = "paq.measurement.updated";
@@ -44,9 +40,7 @@ public class BluetoothHandler {
 
     private static final UUID CCS_CHAR_UUID = UUID.fromString("5f551915-bdc8-4bac-b9df-12256620e1cf");
     private static final UUID DHT_CHAR_UUID = UUID.fromString("f78ebbff-c8b7-4107-93de-889a6a06d408");
-    private static final UUID PM1_CHAR_UUID = UUID.fromString("ca73b3ba-39f6-4ab3-91ae-186dc9577d99");
-    private static final UUID PM2_CHAR_UUID = UUID.fromString("168c693b-b9c8-4053-9fde-be87f7d14b72");
-    private static final UUID PM10_CHAR_UUID = UUID.fromString("8e713220-d13a-484d-a251-36d1aa957ecb");
+    private static final UUID PM_CHAR_UUID = UUID.fromString("ca73b3ba-39f6-4ab3-91ae-186dc9577d99");
 
     public BluetoothCentralManager btCentral;
     private static BluetoothHandler btHandler = null;
@@ -56,7 +50,7 @@ public class BluetoothHandler {
     SensorDataDatabaseHelper db;
 
     long co2, voc;
-    float temp, hum, pm1, pm2, pm10;
+    float temp, hum, pm;
 
     private final BluetoothPeripheralCallback peripheralCallback = new BluetoothPeripheralCallback() {
         @Override
@@ -64,9 +58,7 @@ public class BluetoothHandler {
             // turn on notifications for the different characteristics
 
             peripheral.setNotify(PAQ_SERVICE_UUID, DHT_CHAR_UUID, true);
-            peripheral.setNotify(PAQ_SERVICE_UUID, PM1_CHAR_UUID, true);
-            peripheral.setNotify(PAQ_SERVICE_UUID, PM2_CHAR_UUID, true);
-            peripheral.setNotify(PAQ_SERVICE_UUID, PM10_CHAR_UUID, true);
+            peripheral.setNotify(PAQ_SERVICE_UUID, PM_CHAR_UUID, true);
             peripheral.setNotify(PAQ_SERVICE_UUID, CCS_CHAR_UUID, true);
         }
 
@@ -94,23 +86,11 @@ public class BluetoothHandler {
                 intent = new Intent(MEASUREMENT_DHT);
                 intent.putExtra(MEASUREMENT_DHT_EXTRA, measurement);
                 sendMeasurement(intent, peripheral);
-            } else if (characteristicUUID.equals(PM1_CHAR_UUID)) {
-                Pm1Measurement measurement = new Pm1Measurement(value);
-                pm1 = measurement.pm1;
-                intent = new Intent(MEASUREMENT_PM1);
-                intent.putExtra(MEASUREMENT_PM1_EXTRA, measurement);
-                sendMeasurement(intent, peripheral);
-            } else if (characteristicUUID.equals(PM2_CHAR_UUID)) {
-                Pm2Measurement measurement = new Pm2Measurement(value);
-                pm2 = measurement.pm2;
-                intent = new Intent(MEASUREMENT_PM2);
-                intent.putExtra(MEASUREMENT_PM2_EXTRA, measurement);
-                sendMeasurement(intent, peripheral);
-            } else if (characteristicUUID.equals(PM10_CHAR_UUID)) {
-                Pm10Measurement measurement = new Pm10Measurement(value);
-                pm10 = measurement.pm10;
-                intent = new Intent(MEASUREMENT_PM10);
-                intent.putExtra(MEASUREMENT_PM10_EXTRA, measurement);
+            } else if (characteristicUUID.equals(PM_CHAR_UUID)) {
+                PmMeasurement measurement = new PmMeasurement(value);
+                pm = measurement.pm;
+                intent = new Intent(MEASUREMENT_PM);
+                intent.putExtra(MEASUREMENT_PM_EXTRA, measurement);
                 sendMeasurement(intent, peripheral);
             }
         }
@@ -188,7 +168,7 @@ public class BluetoothHandler {
                     int latitude = 0;
                     int longitude = 0;
                     date = new Date();
-                    db.addSensorData(date, latitude, longitude, temp, hum, pm1, pm2, pm10, 0, co2, voc);
+                    db.addSensorData(date, latitude, longitude, temp, hum, pm, 0, co2, voc);
                     try {
                         sleep(2000);
                     } catch (InterruptedException e) {
