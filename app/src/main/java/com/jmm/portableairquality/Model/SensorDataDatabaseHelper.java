@@ -23,9 +23,7 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_LONGITUDE = "longitude";
     private static final String COLUMN_TEMPERATURE = "temperature";
     private static final String COLUMN_HUMIDITY = "humidity";
-    private static final String COLUMN_PM1 = "pm1";
-    private static final String COLUMN_PM2 = "pm2";
-    private static final String COLUMN_PM10 = "pm10";
+    private static final String COLUMN_PM = "pm";
     private static final String COLUMN_NOX = "nox";
     private static final String COLUMN_CO = "co";
     private static final String COLUMN_VOC = "voc";
@@ -36,9 +34,7 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
                     COLUMN_LONGITUDE + " REAL," +
                     COLUMN_TEMPERATURE + " REAL," +
                     COLUMN_HUMIDITY + " REAL," +
-                    COLUMN_PM1 + " REAL," +
-                    COLUMN_PM2 + " REAL," +
-                    COLUMN_PM10 + " REAL," +
+                    COLUMN_PM + " REAL," +
                     COLUMN_NOX + " REAL," +
                     COLUMN_CO + " INTEGER," +
                     COLUMN_VOC + " INTEGER)";
@@ -69,7 +65,7 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
 
     public void addSensorData(Date timestamp, double latitude, double longitude,
                               double temperature, double humidity,
-                              double PM1 , double PM2, double PM10, double NOX, double CO, double VOC) {
+                              double PM, double NOX, double CO, double VOC) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_TIMESTAMP, (timestamp.getTime())); //gives UNIX timestamp, doesn't need to be divided, already in ms
@@ -77,9 +73,7 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_LONGITUDE, longitude);
         values.put(COLUMN_TEMPERATURE, temperature);
         values.put(COLUMN_HUMIDITY, humidity);
-        values.put(COLUMN_PM1, PM1);
-        values.put(COLUMN_PM2, PM2);
-        values.put(COLUMN_PM10, PM10);
+        values.put(COLUMN_PM, PM);
         values.put(COLUMN_NOX, NOX);
         values.put(COLUMN_CO, CO);
         values.put(COLUMN_VOC, VOC);
@@ -95,9 +89,7 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
                 COLUMN_LONGITUDE,
                 COLUMN_TEMPERATURE,
                 COLUMN_HUMIDITY,
-                COLUMN_PM1,
-                COLUMN_PM2,
-                COLUMN_PM10,
+                COLUMN_PM,
                 COLUMN_NOX,
                 COLUMN_CO,
                 COLUMN_VOC
@@ -114,9 +106,7 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
                 COLUMN_LONGITUDE,
                 COLUMN_TEMPERATURE,
                 COLUMN_HUMIDITY,
-                COLUMN_PM1,
-                COLUMN_PM2,
-                COLUMN_PM10,
+                COLUMN_PM,
                 COLUMN_NOX,
                 COLUMN_CO,
                 COLUMN_VOC
@@ -135,9 +125,7 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
                 COLUMN_LONGITUDE,
                 COLUMN_TEMPERATURE,
                 COLUMN_HUMIDITY,
-                COLUMN_PM1,
-                COLUMN_PM2,
-                COLUMN_PM10,
+                COLUMN_PM,
                 COLUMN_NOX,
                 COLUMN_CO,
                 COLUMN_VOC
@@ -149,20 +137,19 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
         builder.setTables(TABLE_NAME);
         Cursor cursor = builder.query(db, columns, selection,
                 selectionArgs, null, null, null);
-
         return cursor;
     }
 
     public List<DataEntry> getEntriesAfterTimestamp(long timestamp) {
         Cursor cursor = getSensorDataAfterTimestamp(timestamp);
-        List<DataEntry> list = new ArrayList<DataEntry>();
+        List<DataEntry> list = new ArrayList<>();
         if (cursor.getCount() > 0) {
             for (cursor.moveToFirst(); !cursor.isLast(); cursor.moveToNext()) {
                 int co2Entry = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CO));
                 int vocEntry = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_VOC));
                 float tempEntry = cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_TEMPERATURE));
                 float humEntry = cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_HUMIDITY));
-                float pm = cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_PM10));
+                float pm = cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_PM));
                 long timestmp = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_TIMESTAMP));
 
                 DataEntry dataEntry = new DataEntry(co2Entry, vocEntry, tempEntry, humEntry, pm, timestmp);
