@@ -1,12 +1,19 @@
 package com.jmm.portableairquality.Model;
 
+import android.graphics.Color;
+
 public class SensorSingleton {
     int Co2Alarm,VocAlarm,Pm1Alarm,Pm2Alarm,Pm10Alarm;
     public static int  Co2Default=8500;
     public static int  VocDefault=2500;
-    public static int  Pm1Default=6000;
-    public static int  Pm2Default=6000;
-    public static int  Pm10Default=6000;
+    public static int  Pm1Default=40;
+    public static int  Pm2Default=40;
+    public static int  Pm10Default=250;
+
+    public static int  GlobalGreen=456;
+    public static int  GlobalYellow=1367;
+    public static int  GlobalRed=4532;
+
 public static SensorSingleton Instance=new SensorSingleton();
 
     public int getCo2Alarm() {

@@ -22,7 +22,7 @@
         android:layout_height="40dp"
         android:layout_marginStart="18dp"
         android:layout_marginTop="4dp"
-        android:text="Good Co2 levels are between 0-2000 . Decent is 2000-6000. Terrible is 6000+"
+        android:text="Good Co2 levels are between 0-2000 . Decent is 2000-6000. Hazardous is 6000+"
         android:textSize="12dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvCo2Alarm" />
@@ -56,7 +56,7 @@
         android:layout_height="40dp"
         android:layout_marginStart="18dp"
         android:layout_marginTop="4dp"
-        android:text="Good Voc levels are between 0-200 . Decent is 200-600. Terrible is 600+"
+        android:text="Good Voc levels are between 0-200 . Decent is 200-600. Hazardous is 600+"
         android:textSize="12sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvVocAlarm" />
@@ -90,7 +90,7 @@
         android:layout_marginStart="18dp"
         android:textSize="12sp"
         android:layout_marginTop="4dp"
-        android:text="Good Pm levels are between 0-200 . Decent is 200-600. Terrible is 600+"
+        android:text="Good Pm1 levels are between 0-12 . Decent is 12-35. Hazardous is 35+"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvPm1Alarm" />
 
@@ -112,7 +112,7 @@
         android:layout_marginStart="18dp"
         android:layout_marginTop="4dp"
         android:textSize="12sp"
-        android:text="Good Pm levels are between 0-200 . Decent is 200-600. Terrible is 600+"
+        android:text="Good Pm2 levels are between 0-12 . Decent is 12-35. Hazardous is 35+"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvPm2Alarm" />
 
@@ -156,7 +156,7 @@
         android:layout_marginStart="18dp"
         android:layout_marginTop="4dp"
         android:textSize="12sp"
-        android:text="Good Pm levels are between 0-200 . Decent is 200-600. Terrible is 600+"
+        android:text="Good Pm10 levels are between 0-54 . Decent is 54-154. Hazardous is 154+"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvPm10Alarm" />
 

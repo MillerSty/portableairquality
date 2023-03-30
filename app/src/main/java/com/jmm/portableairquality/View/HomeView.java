@@ -12,6 +12,7 @@ import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
@@ -19,8 +20,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.database.sqlite.SQLiteDatabase;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -33,8 +37,12 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+//import com.google.android.gms.location.LocationListener;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import com.jmm.portableairquality.Controller.LocationControl;
 import com.jmm.portableairquality.Model.BluetoothHandler;
 import com.jmm.portableairquality.Model.CcsMeasurement;
 import com.jmm.portableairquality.Model.DhtMeasurement;
@@ -59,7 +67,13 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
     BottomNavigationView navbot;
     TextView co2Display, vocDisplay, tempDisplay, humDisplay, pm1Display, pm2Display, pm10Display;
     public int co2, voc;
-
+    Location loc;
+    double lat, lon;
+    Button maps;
+    boolean isNetwork, isGPS;
+    private LocationManager locationManager;
+    private FusedLocationProviderClient fusedLocationClient;
+    LocationControl loca;
     public SensorDataDatabaseHelper db;
 
     @Override
@@ -67,35 +81,53 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         initView();
         initSensorAlarm();
+        //maps btn used for initial map testing
+        maps = findViewById(R.id.btnMaps);
+//        loca= new LocationControl();
+//        loca.Instance.handleLocation(this);
+        //in line 90 changing LocationManager.MODE_CHANGED_ACTION) to line 89
+//        String bestProvider=LocationManager.getBestProvider(new Criteria(),false);
         registerReceiver(locationReceiver, new IntentFilter(LocationManager.MODE_CHANGED_ACTION));
         registerReceiver(ccsReceiver, new IntentFilter(BluetoothHandler.MEASUREMENT_CCS));
         registerReceiver(dhtReceiver, new IntentFilter(BluetoothHandler.MEASUREMENT_DHT));
         registerReceiver(pm1Receiver, new IntentFilter(BluetoothHandler.MEASUREMENT_PM1));
         registerReceiver(pm2Receiver, new IntentFilter(BluetoothHandler.MEASUREMENT_PM2));
         registerReceiver(pm10Receiver, new IntentFilter(BluetoothHandler.MEASUREMENT_PM10));
+
+        LocationManager locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel("my note", "My notif", NotificationManager.IMPORTANCE_DEFAULT);
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel);
         }
         db = new SensorDataDatabaseHelper(getApplicationContext());
+        maps.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent gotoMaps = new Intent(view.getContext(), MapsView.class);
+                startActivity(gotoMaps);
+            }
+        });
+
     }
+
+
 
     protected void onStart() {
         super.onStart();
-
-
+        LocationControl.Instance.handleLocation(this);
+//text change listeners for push notifications
         co2Display.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 //            int co2=SensorDataDatabaseHelper.COLUMN_CO;
 
-                textViewHandler("co2",co2);
-            if( co2>SensorSingleton.Instance.getCo2Alarm()){
-            Notification("Co2");}
+                textViewHandler("co2", co2);
+                if (co2 > SensorSingleton.Instance.getCo2Alarm()) {
+                    Notification("Co2");
+                }
             }
 
             @Override
@@ -110,9 +142,10 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 //            int voc=SensorDataDatabaseHelper.COLUMN_VOC;
-                                textViewHandler("voc",voc);
-            if( voc>SensorSingleton.Instance.getVocAlarm()){
-                Notification("Voc");}
+                textViewHandler("voc", voc);
+                if (voc > SensorSingleton.Instance.getVocAlarm()) {
+                    Notification("Voc");
+                }
             }
 
             @Override
@@ -176,6 +209,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         });
     }
 
+
     @SuppressLint("MissingPermission")
     @Override
     protected void onResume() {
@@ -235,12 +269,15 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
     private final BroadcastReceiver locationReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            showToast("HELLO!");
             String action = intent.getAction();
             if (action != null && action.equals(LocationManager.MODE_CHANGED_ACTION)) {
                 boolean isEnabled = areLocationServicesEnabled();
                 Log.d("HomeActivity", String.format("Location service state changed to: %s", isEnabled ? "on" : "off"));
                 checkPermissions();
             }
+
+
         }
     };
 
@@ -249,10 +286,11 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         public void onReceive(Context context, Intent intent) {
             BluetoothPeripheral peripheral = getPeripheral(intent.getStringExtra(BluetoothHandler.MEASUREMENT_EXTRA_PERIPHERAL));
             CcsMeasurement measurement = (CcsMeasurement) intent.getSerializableExtra(BluetoothHandler.MEASUREMENT_CCS_EXTRA);
-            co2 = (int)measurement.co2;
+            co2 = (int) measurement.co2;
             co2Display.setText("Co2:\n" + Long.toString(measurement.co2));
-            voc = (int)measurement.voc;
+            voc = (int) measurement.voc;
             vocDisplay.setText("VOC:\n" + Long.toString(measurement.voc));
+
         }
     };
 
@@ -427,6 +465,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
 
     @SuppressLint("MissingPermission")
     public void Notification(String sensor_alert) {
+        //TODO ALL notifications in one alert
         Intent notifyIntent = new Intent(this, HomeView.class);
 // Set the Activity to start in a new, empty task
         notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
@@ -574,5 +613,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         sensorSingleton.Instance.setPm10Alarm(sensorSingleton.Pm10Default);
 
     }
+
+
 }
 
