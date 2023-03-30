@@ -53,7 +53,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
     private static final int ACCESS_LOCATION_REQUEST = 2;
     private SensorSingleton sensorSingleton;
     BottomNavigationView navbot;
-    TextView co2Display, vocDisplay, tempDisplay, humDisplay, pm2Display;
+    TextView co2Display, vocDisplay, tempDisplay, humDisplay, pmDisplay;
     public int co2, voc;
 
     public SensorDataDatabaseHelper db;
@@ -117,7 +117,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
             public void afterTextChanged(Editable editable) {
             }
         });
-        pm2Display.addTextChangedListener(new TextWatcher() {
+        pmDisplay.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 //            float pm2=SensorDataDatabaseHelper.COLUMN_PM2;
@@ -229,7 +229,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         public void onReceive(Context context, Intent intent) {
             BluetoothPeripheral peripheral = getPeripheral(intent.getStringExtra(BluetoothHandler.MEASUREMENT_EXTRA_PERIPHERAL));
             PmMeasurement measurement = (PmMeasurement) intent.getSerializableExtra(BluetoothHandler.MEASUREMENT_PM_EXTRA);
-            pm2Display.setText("PM2.5:\n" + Integer.toString(measurement.pm));
+            pmDisplay.setText("PM2.5:\n" + Integer.toString(measurement.pm));
 
         }
     };
@@ -451,13 +451,13 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
             case "pm":
                 //TODO Set default for PM values, these are copied from Co2
                 if (readingInt >= 0 && readingInt <= 1111) {
-                    pm2Display.setBackground(getResources().getDrawable(R.drawable.sensor_display_green));
+                    pmDisplay.setBackground(getResources().getDrawable(R.drawable.sensor_display_green));
 //                flagGreen
                 } else if (readingInt > 1000 && readingInt <= 8000) {
-                    pm2Display.setBackground(getResources().getDrawable(R.drawable.sensor_display_yellow));
+                    pmDisplay.setBackground(getResources().getDrawable(R.drawable.sensor_display_yellow));
 //                flagYellow
                 } else {
-                    pm2Display.setBackground(getResources().getDrawable(R.drawable.sensor_display_red));
+                    pmDisplay.setBackground(getResources().getDrawable(R.drawable.sensor_display_red));
 //                flagRed
                 }
                 break;
@@ -472,7 +472,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         vocDisplay = findViewById(R.id.vocDisplay);
         tempDisplay = findViewById(R.id.tempDisplay);
         humDisplay = findViewById(R.id.humDisplay);
-        pm2Display = findViewById(R.id.pmDisplay);
+        pmDisplay = findViewById(R.id.pmDisplay);
 
         navbot = findViewById(R.id.bottom_nav);
         navbot.setOnNavigationItemSelectedListener(this);
@@ -482,7 +482,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
     public void initSensorAlarm() {
         sensorSingleton.Instance.setCo2Alarm(sensorSingleton.Co2Default);
         sensorSingleton.Instance.setVocAlarm(sensorSingleton.VocDefault);
-        sensorSingleton.Instance.setPm2Alarm(sensorSingleton.PmDefault);
+        sensorSingleton.Instance.setPmAlarm(sensorSingleton.PmDefault);
     }
 }
 
