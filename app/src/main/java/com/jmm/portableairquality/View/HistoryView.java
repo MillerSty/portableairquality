@@ -90,6 +90,7 @@ public class HistoryView extends AppCompatActivity {
         List<Entry> voc = new ArrayList<>();
         List<Entry> temp = new ArrayList<>();
         List<Entry> hum = new ArrayList<>();
+        List<Entry> pm = new ArrayList<>();
         for (int i = 0; i < historicalData.size(); i++) { //represent the data in terms of seconds behind present
             long time = historicalData.get(i).timestamp - present;
             // if we have enough points, start taking the moving average of window size 4
@@ -98,47 +99,58 @@ public class HistoryView extends AppCompatActivity {
                 float vocSum = historicalData.get(i).vocEntry;
                 float tempSum = historicalData.get(i).tempEntry;
                 float humSum = historicalData.get(i).humEntry;
+                float pmSum = historicalData.get(i).pm;
                 for (int j = 0; j < 9; j++) {
                     co2Sum += co2.get(i - j - 1).getY();
                     vocSum += voc.get(i - j - 1).getY();
                     tempSum += temp.get(i - j - 1).getY();
                     humSum += hum.get(i - j - 1).getY();
+                    pmSum += pm.get(i - j - 1).getY();
                 }
                 co2.add(new Entry(time, co2Sum/10));
                 voc.add(new Entry(time, vocSum/10));
                 temp.add(new Entry(time, tempSum/10));
                 hum.add(new Entry(time, humSum/10));
+                pm.add(new Entry(time, pmSum/10));
             } else {
                 co2.add(new Entry(time, historicalData.get(i).co2Entry));
                 voc.add(new Entry(time, historicalData.get(i).vocEntry));
                 temp.add(new Entry(time, historicalData.get(i).tempEntry));
                 hum.add(new Entry(time, historicalData.get(i).humEntry));
+                pm.add(new Entry(time, historicalData.get(i).pm));
             }
         }
 
 
         // update co2 and voc chart
-        LineDataSet co2Data, vocData;
+        LineDataSet co2Data, vocData, pmData;
         if (chart_air.getData() != null && chart_air.getData().getDataSetCount() > 0) {
             co2Data = (LineDataSet) chart_air.getData().getDataSetByIndex(0);
             vocData = (LineDataSet) chart_air.getData().getDataSetByIndex(1);
+            pmData = (LineDataSet) chart_air.getData().getDataSetByIndex(2);
 
             co2Data.setValues(co2);
             vocData.setValues(voc);
+            pmData.setValues(pm);
 
             chart_air.getData().notifyDataChanged();
             chart_air.notifyDataSetChanged();
         } else {
             co2Data = new LineDataSet(co2, "CO2");
             co2Data.setAxisDependency(YAxis.AxisDependency.LEFT); //set it to the left AXIS
-            co2Data.setColor(0xFF4C7C, 200); // set line colour and opacity
+            co2Data.setColor(0xFF4C7C, 200); // set line colour (red) and opacity
             co2Data.setDrawCircles(false);
             vocData = new LineDataSet(co2, "VOC");
             vocData.setAxisDependency(YAxis.AxisDependency.RIGHT);
-            vocData.setColor(0x787EF4, 200);
+            vocData.setColor(0x787EF4, 200); //light blue
             vocData.setDrawCircles(false);
+            pmData = new LineDataSet(co2, "PM2.5");
+            pmData.setAxisDependency(YAxis.AxisDependency.RIGHT);
+            pmData.setColor(0x279119, 200); //dark green
+            pmData.setDrawCircles(false);
 
-            LineData air_data = new LineData(co2Data, vocData);
+
+            LineData air_data = new LineData(co2Data, vocData, pmData);
             chart_air.setData(air_data);
 
             XAxis xAxis_air = chart_air.getXAxis();
@@ -161,10 +173,10 @@ public class HistoryView extends AppCompatActivity {
         LineDataSet tempData, humData;
         if (chart_temp.getData() != null && chart_temp.getData().getDataSetCount() > 0) {
             tempData = (LineDataSet) chart_temp.getData().getDataSetByIndex(0);
-            tempData.setValues(co2);
+            tempData.setValues(temp);
 
             humData = (LineDataSet) chart_temp.getData().getDataSetByIndex(1);
-            humData.setValues(voc);
+            humData.setValues(hum);
 
             chart_temp.invalidate();
         } else {
