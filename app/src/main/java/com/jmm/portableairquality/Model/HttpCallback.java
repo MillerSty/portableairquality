@@ -6,9 +6,9 @@ import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.List;
-
+//45.52806,-73.57705
 public interface HttpCallback {
-    public void onSuccess(ArrayList<LatLng> array);
+    public void onSuccess(List<String> array);
 
 
 }

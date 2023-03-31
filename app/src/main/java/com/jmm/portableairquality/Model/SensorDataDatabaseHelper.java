@@ -15,7 +15,7 @@ import java.util.List;
 public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "sensor_data.db";
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 13;
 
     private static final String TABLE_NAME = "sensor_data";
     private static final String COLUMN_TIMESTAMP = "timestamp";

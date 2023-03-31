@@ -60,7 +60,7 @@ public class BluetoothHandler {
     private static final UUID PM1_CHAR_UUID = UUID.fromString("ca73b3ba-39f6-4ab3-91ae-186dc9577d99");
     private static final UUID PM2_CHAR_UUID = UUID.fromString("168c693b-b9c8-4053-9fde-be87f7d14b72");
     private static final UUID PM10_CHAR_UUID = UUID.fromString("8e713220-d13a-484d-a251-36d1aa957ecb");
-    private FusedLocationProviderClient fusedLocationClient;
+//    private FusedLocationProviderClient fusedLocationClient;
     public BluetoothCentralManager btCentral;
     private static BluetoothHandler btHandler = null;
     private final Context context;

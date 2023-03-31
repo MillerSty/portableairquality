@@ -3,9 +3,8 @@ package com.jmm.portableairquality.View;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Color;
+import android.location.Location;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +15,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -26,19 +24,17 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.PolyUtil;
 import com.jmm.portableairquality.Model.DataEntry;
 import com.jmm.portableairquality.Model.HttpCallback;
 import com.jmm.portableairquality.Model.SensorDataDatabaseHelper;
 import com.jmm.portableairquality.Model.SensorSingleton;
 import com.jmm.portableairquality.R;
 
-import org.json.JSONArray;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -48,7 +44,6 @@ import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONArray;
 
 
 public class MapsFrag extends Fragment {
@@ -59,20 +54,24 @@ public class MapsFrag extends Fragment {
     public ArrayList<String> JARJAR;
     public ArrayList<LatLng> parsedJon;
     ProgressDialog progressDialog;
-    public boolean isSimulated = true;
+    public boolean isSimulated = false;
     private int numRequests = 0;
     GoogleMap mMap;
     ArrayList<LatLng> ListLong;
+    ArrayList<LatLng> decodedList;
     ArrayList<Integer> color;
     String httpParam;
     List<String> httpParams;
+    List<String> encodedPoints;
     ArrayList<LatLng> list;
     public int mPosit = 2;
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         JARJAR = new ArrayList<String>();
         parsedJon = new ArrayList<LatLng>();
-        list= new ArrayList<LatLng>();
+        list = new ArrayList<LatLng>();
+        decodedList = new ArrayList<LatLng>();
+        encodedPoints = new ArrayList<>();
         requestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setMessage("Fetching The File....");
@@ -98,13 +97,13 @@ public class MapsFrag extends Fragment {
             color = new ArrayList<>();
             ListLong = reduceRepeats(data, color);
 
-            httpParam=makeHttpParams(ListLong);
+            httpParams = makeHttpParams(ListLong);
 //            httpParams = makeHttpParams(ListLong);
         } else {
             color = new ArrayList<>();
             ListLong = reduceRepeats(data, color);
 
-            httpParam=makeHttpParams(ListLong);
+            httpParams = makeHttpParams(ListLong);
 //            httpParams = makeHttpParams(ListLong);
 //            try {
 //                sendRequest(httpParams, new HttpCallback() {
@@ -125,32 +124,35 @@ public class MapsFrag extends Fragment {
         SupportMapFragment supportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.MY_MAP);
 
 
-
-            supportMapFragment.getMapAsync(new OnMapReadyCallback() {
-                @Override
-                public void onMapReady(@NonNull GoogleMap googleMap) {
-                    mMap = googleMap;
+        supportMapFragment.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(@NonNull GoogleMap googleMap) {
+                mMap = googleMap;
 //                    inflateMap(ListLong,mMap);
-                    try {
-                        sendRequest(httpParam, new HttpCallback() {
-                            @Override
-                            public void onSuccess(ArrayList<LatLng> array) {
-                                Log.d("ADDING", "ONSCOUSE");
-                                if(numRequests==0){
-                                inflateMap(array,mMap);}
-                            }
-                        });
-                    } catch (IOException e) {
-                        progressDialog.dismiss();
-                        throw new RuntimeException(e);
-                    }
+//                try {
+//                    sendRequest(httpParams, new HttpCallback() {
+//                        @Override
+//                        public void onSuccess(List<String> array) {
+//                            Log.d("ADDING", "ONSCOUSE");
+//                            if (numRequests == 0) {
+//                                int val = 10000;
+//
+//                                inflateMap(array, mMap);
+//
+//                            }
+//                        }
+//                    });
+//                } catch (IOException e) {
+//                    progressDialog.dismiss();
+//                    throw new RuntimeException(e);
+//                }
 
-//                        mMap = inflateMap(ListLong, mMap);
-                        Log.d("ADDING", "INFLATION ERROR");
+                        mMap = inflateMap(ListLong, mMap);
+                Log.d("ADDING", "INFLATION ERROR");
 
 
-                }
-            });
+            }
+        });
 
         return view;
 
@@ -166,17 +168,24 @@ public class MapsFrag extends Fragment {
             }
             return isSimulate;
         } else {
-            LatLng base = new LatLng(data.get(0).latitude, data.get(0).longitude);
+
+            List<DataEntry> data1=new ArrayList<>();
+            for(int k=0;k<data.size();k++){
+                if(!(data.get(k).latitude==0)||!(data.get(k).longitude==0)){
+                    data1.add(data.get(k));
+                }
+            }
+            LatLng base = new LatLng(data1.get(0).latitude, data1.get(0).longitude);
             dataArray.add(base);
-//            color.add(sortColor(data, 0));
-            for (int k = 1; k < data.size() - 1; k++) {
-                if (data.get(k).latitude != data.get(k - 1).latitude &&
-                        data.get(k).longitude != data.get(k - 1).longitude) {
+           color.add(sortColor(data1, 0));
+            for (int k = 1; k < data1.size() - 1; k++) {
+                if (data1.get(k).latitude != data1.get(k - 1).latitude &&
+                        data1.get(k).longitude != data1.get(k - 1).longitude) {
                     //Lat long data
-                    double latitude = data.get(k).latitude;
-                    double longitude = data.get(k).longitude;
+                    double latitude = data1.get(k).latitude;
+                    double longitude = data1.get(k).longitude;
                     dataArray.add(new LatLng(latitude, longitude));
-//                    color.add(sortColor(data, k));
+                    color.add(sortColor(data1, k));
                 }
             }
             return dataArray;
@@ -184,64 +193,118 @@ public class MapsFrag extends Fragment {
 
     }
 
+    //TODO note for directions api we pass a LIST<STRING> to inflate map
     public GoogleMap inflateMap(ArrayList<LatLng> arrayList, GoogleMap googleMap) {
+
+//            List<List<LatLng>> intermediate;
+//        for (int k = 0; k < arrayList.size(); k++) {
+//            List<LatLng> intermediate = PolyUtil.decode(arrayList.get(k));
+//            decodedList.addAll(intermediate);
+//            int val = 1000;
+//        }
+        ArrayList<LatLng> test=new ArrayList<>();
+//        int val=1000;
+        float[] results = new float[1];
+//        for (int k = 1; k < decodedList.size() - 1; k++) {
+//            Location.distanceBetween(decodedList.get(k - 1).latitude, decodedList.get(k - 1).longitude, decodedList.get(k).latitude, decodedList.get(k).longitude, results);
+//            if(results[0]<75&&results[0]>24){
+//                test.add(decodedList.get(k));
+//            }
+//
+//            int val = -1000;
+//        }
+//        PolyUtil.simplify(decodedList,1);
 
         float[] k = new float[3];
         MarkerOptions markerOptions = new MarkerOptions();
         googleMap.clear();
-        markerOptions.position(ListLong.get(0));
+        markerOptions.position(arrayList.get(0));
         HSVGetter(color.get(0), k);
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(k[0]));
-        int position = ListLong.size() - 1;
-        googleMap.addPolyline(new PolylineOptions().color(color.get(0)).add(ListLong.get(0))
+        int position = arrayList.size() - 1;
+        mMap.addPolyline(new PolylineOptions().color(color.get(0)).add(arrayList.get(0))
         );
         //zooms to newest position
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ListLong.get(position), 20F));
-//        Log.d("ADDING2",arrayList.toString());
-        PolylineOptions line=new PolylineOptions();
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(arrayList.get(position), 20F));
+        mMap.addMarker(markerOptions);
+        PolylineOptions line = new PolylineOptions();
+if(arrayList.size()>1) {
+    for (int i = 1; i < arrayList.size(); i++) {
+//            line.add(test.get(i));
+//            line.color(color.get(0));
+        //only need markers for original positions
+        markerOptions.position(arrayList.get(i));
+        mMap.addPolyline(new PolylineOptions().color(color.get(0))
+                .add(arrayList.get(i), arrayList.get(i - 1))
 
-        for (int i = 1; i < this.ListLong.size(); i++) {
-//            line.add(arrayList.get(i));
-//                    line.color(color.get(i));
-            //only need markers for original positions
-            markerOptions.position(ListLong.get(i));
-//            mMap.addPolyline(new PolylineOptions().color(color.get(i - 1))
-//                    .add(ListLong.get(i),ListLong.get(i-1))
-//                    .width(5)
-//            );
-//            HSVGetter(color.get(i), k);
+                .width(5)
+        );
+        HSVGetter(color.get(0), k);
 
-            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(k[0]));
-            googleMap.addMarker(markerOptions);
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(k[0]));
+        googleMap.addMarker(markerOptions);
 //            googleMap.addPolyline(line);
-        }
+    }
+}
 //        googleMap.addPolyline(line);
         mMap.addPolyline(new PolylineOptions().color(color.get(0))
                 .addAll(arrayList)
                 .width(5)
         );
+//        progressDialog.dismiss();
         return mMap;
 
     }
 
+    //"https://maps.googleapis.com/maps/api/directions/json?
+// origin=Boston%2C%20MA&
+// destination=Concord%2C%20MA&
+// waypoints=via%3ACharlestown%2CMA%7Cvia%3ALexington%2CMA
+// &mode=walking&key=AIzaSyBvWYYuaAHCR5Afge27E_IO7Axc2GrBqPs"
 
-    public String makeHttpParams(List<LatLng> ListLong) {
+    //waypoint form : 222,222|333,3333
+    public List<String> makeHttpParams(List<LatLng> ListLong) {
         List<String> httpParams = new ArrayList<String>();
 //        String httpParam= new String();
-httpParam="";
-        for (int k = 0; k < ListLong.size() ; k++) {
-            double curlat, curlong, prelat, prelong;
-            curlat = ListLong.get(k).latitude;
-            curlong = ListLong.get(k).longitude;
-            if(k!=ListLong.size()-1){
-            httpParam=httpParam+curlat+","+curlong+"|";}
-            else{ httpParam=httpParam+curlat+","+curlong;}
-//            prelat = ListLong.get(k - 1).latitude;
-//            prelong = ListLong.get(k - 1).longitude;
-//            httpParams.add(prelat + "," + prelong + "|"
-//                    + curlat + "," + curlong);
+        httpParam = "";
+        List<LatLng> encodedList = new ArrayList<>();
+        String waypoint = "";
+        //qn{tGjda`MoDuMn@eK~DoNrHoP
+//        String origin = ListLong.get(0).latitude+"%20"+ListLong.get(0).longitude;
+//        String destination = ListLong.get((ListLong.size() - 1)).latitude+"%20"+ListLong.get((ListLong.size() - 1)).longitude;
+
+        for (int k = 1; k < ListLong.size() - 1; k += 1) {
+            String origin = ListLong.get(k - 1).latitude + "," + ListLong.get(k - 1).longitude;
+            String destination = ListLong.get(k).latitude + "," + ListLong.get(k).longitude;
+            httpParam = "https://maps.googleapis.com/maps/api/directions/json?origin=" + origin
+                    + "&destination=" + destination
+
+                    + "&mode=walking&avoid=driving&key=AIzaSyBvWYYuaAHCR5Afge27E_IO7Axc2GrBqPs";
+//            k+=2;
+            httpParams.add(httpParam);
+
         }
-        return httpParam;
+//        encodedList.add(ListLong.get(k));
+//        String encoded_joob = PolyUtil.encode(encodedList);
+
+//        httpParam = "https://maps.googleapis.com/maps/api/directions/json?origin=" + origin
+//                + "&destination=" + destination + "&waypoints=" + encoded_joob
+//                + "&mode=walking&key=AIzaSyBvWYYuaAHCR5Afge27E_IO7Axc2GrBqPs";
+        //below works for single roads api request
+//        for (int k = 0; k < ListLong.size() ; k++) {
+//            double curlat, curlong, prelat, prelong;
+//            curlat = ListLong.get(k).latitude;
+//            curlong = ListLong.get(k).longitude;
+//            if(k!=ListLong.size()-1){
+//            httpParam=httpParam+curlat+","+curlong+"|";}
+//            else{ httpParam=httpParam+curlat+","+curlong;}
+////            prelat = ListLong.get(k - 1).latitude;
+////            prelong = ListLong.get(k - 1).longitude;
+////            httpParams.add(prelat + "," + prelong + "|"
+////                    + curlat + "," + curlong);
+//        }
+
+        return httpParams;
     }
 
     public ArrayList<LatLng> getSimulated() {
@@ -254,20 +317,20 @@ httpParam="";
 //        ListLong.add(new LatLng(45.53225, -73.58133));
 
 
-        ListLong.add(new LatLng(45.52806,-73.57705));
-        ListLong.add(new LatLng(45.52953,-73.57526));
-        ListLong.add(new LatLng(45.53041,-73.57291));
-        ListLong.add(new LatLng(45.53017,-73.57096));
-        ListLong.add(new LatLng(45.52921,-73.56848));
-        ListLong.add(new LatLng(45.52767,-73.56568));
-        ListLong.add(new LatLng(45.52657,-73.56439));
-        ListLong.add(new LatLng(45.52518,-73.56484));
-        ListLong.add(new LatLng(45.52378,-73.56526));
-        ListLong.add(new LatLng(45.52240,-73.56558));
-        ListLong.add(new LatLng(45.52251,-73.56768));
-        ListLong.add(new LatLng(45.52327,-73.56942));
-        ListLong.add(new LatLng(45.52406,-73.57112));
-        ListLong.add(new LatLng(45.52487,-73.57292));
+        ListLong.add(new LatLng(45.52806, -73.57705));
+        ListLong.add(new LatLng(45.52953, -73.57526));
+        ListLong.add(new LatLng(45.53041, -73.57291));
+        ListLong.add(new LatLng(45.53017, -73.57096));
+        ListLong.add(new LatLng(45.52921, -73.56848));
+        ListLong.add(new LatLng(45.52767, -73.56568));
+        ListLong.add(new LatLng(45.52657, -73.56439));
+//        ListLong.add(new LatLng(45.52518, -73.56484));
+//        ListLong.add(new LatLng(45.52378, -73.56526));
+//        ListLong.add(new LatLng(45.52240, -73.56558));
+//        ListLong.add(new LatLng(45.52251, -73.56768));
+//        ListLong.add(new LatLng(45.52327, -73.56942));
+//        ListLong.add(new LatLng(45.52406, -73.57112));
+//        ListLong.add(new LatLng(45.52487, -73.57292));
         return ListLong;
 
 
@@ -281,55 +344,19 @@ httpParam="";
                 url,
                 null,
                 (Response.Listener<JSONObject>) response -> {
+                    final String finaly = house;
                     try {
-//                        if(mPosit>=ListLong.size()){mPosit=ListLong.size()-2;}else if(mPosit==ListLong.size()-1){mPosit=ListLong.size()-3;}
-
-                        //let ListLong.size()=15
-//                        for (int j = mPosit-2; j < mPosit ; j++) {
-                            final String finaly=house;
-                            JSONArray jarray = response.getJSONArray("snappedPoints");
-
-
-
-                        color.add(sortColor(data, 0));
-                        color.add(sortColor(data, 0));
-                            for (int i = 0; i < jarray.length(); i++) {
-//                                list.add(ListLong.get(mPosit-2));
-                                JSONObject jorry = jarray.getJSONObject(i);
-                                float[] k = new float[3];
-                                color.add(sortColor(data, 0));
-
-                                double latitude = jorry.getJSONObject("location").getDouble("latitude");
-                                double longitude = jorry.getJSONObject("location").getDouble("longitude");
-                                LatLng newLatLng = new LatLng(latitude, longitude);
-                                list.add(newLatLng);
-//                                list.add(ListLong.get(mPosit));
-                                //add colour error with no
-
-                                Log.d("ADDING1", i + " " +list.get(i).toString());
-//                                if(mPosit<=ListLong.size()-3){
-//                                    mPosit+=2;
-//                                }
-                            }
-
-//                        }
-
-                        //add 2 to mPosit
-//                        if(mPosit>=ListLong.size()){mPosit=ListLong.size()-2;}else if(mPosit==ListLong.size()-1){mPosit=ListLong.size()-3;}
-
-//                        if(mPosit>=15){mPosit=13;}else if(mPosit==14){mPosit=12;}
-//                        mPosit=ListLong.indexOf(ListLong.get(mPosit));
-
+                        String jarray = response.getJSONArray("routes").getJSONObject(0).getJSONObject("overview_polyline").getString("points");
+                        encodedPoints.add(jarray);
+                        int val = 1000;
                     } catch (JSONException e) {
                         throw new RuntimeException(e);
                     }
-
-
                     numRequests--;
+                    if (numRequests == 0) {
+                        httpCallback.onSuccess(encodedPoints);
+                    }
 
-                        httpCallback.onSuccess(list);
-                    progressDialog.dismiss();
-                    Log.d("ADDING", "REQUEST TO TRUE?");
                 },
 
                 (Response.ErrorListener) error -> {
@@ -338,20 +365,22 @@ httpParam="";
                 }
         );
         Log.d("ADDING", "REQUEST TO QUEU");
-
+//        numRequests++;
         requestQueue.add(jsonObjectRequest);
         progressDialog.show();
-        numRequests++;
+
     }
 
 
-    public void sendRequest(String list, HttpCallback httpCallback) throws IOException {
+    public void sendRequest(List<String> list, HttpCallback httpCallback) throws IOException {
+        numRequests = list.size();
+        for (int k = 0; k < list.size(); k++) {
 
-            String PARAMS = list;
+//        String PARAMS = list;
             String house;
-            house = String.format("https://roads.googleapis.com/v1/snapToRoads?path=%s&interpolate=true&key=%s", PARAMS, MAPS_API_KEY);
-            loadDogImage(house, httpCallback);
-
+//    house = String.format("https://roads.googleapis.com/v1/snapToRoads?path=%s&interpolate=true&key=%s", PARAMS, MAPS_API_KEY);
+            loadDogImage(list.get(k), httpCallback);
+        }
 
     }
 
