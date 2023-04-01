@@ -83,6 +83,9 @@ public class SettingsView extends AppCompatActivity {
                 startActivity(goToSettings);
 
                 return true;
+            case R.id.menu_map:
+                Intent goToMap = new Intent(this, MapsView.class);
+                startActivity(goToMap);
             case R.id.menu_history:
                 Intent goToHistory=new Intent(SettingsView.this, HistoryView.class);
                 startActivity(goToHistory);

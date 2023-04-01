@@ -15,7 +15,7 @@ import java.util.List;
 public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "sensor_data.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 21;
 
     private static final String TABLE_NAME = "sensor_data";
     private static final String COLUMN_TIMESTAMP = "timestamp";
@@ -78,7 +78,7 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_CO, CO);
         values.put(COLUMN_VOC, VOC);
         db.insert(TABLE_NAME, null, values);
-        db.close();
+       //db.close();
     }
 
     public Cursor getAllSensorData() {
@@ -151,8 +151,10 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
                 float humEntry = cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_HUMIDITY));
                 float pm = cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_PM));
                 long timestmp = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_TIMESTAMP));
+                double latitude=cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_LATITUDE));
+                double longitude=cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_LONGITUDE));
 
-                DataEntry dataEntry = new DataEntry(co2Entry, vocEntry, tempEntry, humEntry, pm, timestmp);
+                DataEntry dataEntry = new DataEntry(co2Entry, vocEntry, tempEntry, humEntry, pm, timestmp,latitude,longitude);
                 list.add(dataEntry);
             }
         }
