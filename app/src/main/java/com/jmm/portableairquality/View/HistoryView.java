@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -56,10 +57,12 @@ public class HistoryView extends AppCompatActivity {
     SensorDataDatabaseHelper db;
     Calendar startTime;
     Calendar endTime;
-    Button startDateSelect;
-    Button startTimeSelect;
-    Button endDateSelect;
-    Button endTimeSelect;
+    EditText startDateSelect;
+    EditText startTimeSelect;
+    EditText endDateSelect;
+    EditText endTimeSelect;
+    Button resetButton;
+    Boolean live = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,22 +70,25 @@ public class HistoryView extends AppCompatActivity {
         setContentView(R.layout.activity_history);
         chart_air = (LineChart) findViewById(R.id.chart_air);
         chart_temp = (LineChart) findViewById(R.id.chart_temp);
-        startDateSelect = (Button) findViewById(R.id.start_button);
-        startTimeSelect = (Button) findViewById(R.id.start_button2);
-        endDateSelect = (Button) findViewById(R.id.end_button);
-        endTimeSelect = (Button) findViewById(R.id.end_button2);
+        startDateSelect = (EditText) findViewById(R.id.start_button);
+        startTimeSelect = (EditText) findViewById(R.id.start_button2);
+        endDateSelect = (EditText) findViewById(R.id.end_button);
+        endTimeSelect = (EditText) findViewById(R.id.end_button2);
+        resetButton = (Button) findViewById(R.id.reset_button);
 
         startDateSelect.setOnClickListener(view -> {
             Calendar now = Calendar.getInstance();
+            now.add(Calendar.HOUR, -24);
             DatePickerDialog datePickerDialog = new DatePickerDialog(HistoryView.this, (datePicker, i, i1, i2) -> {
                 startTime.set(i, i1, i2); //set date year, month, day
+                startDateSelect.setText(new SimpleDateFormat("MMM dd").format(startTime));
             }, now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DATE)); //default is same day
             datePickerDialog.show();
         });
 
         startTimeSelect.setOnClickListener(view -> {
             Calendar now = Calendar.getInstance();
-            now.add(Calendar.MINUTE, -10);
+            now.add(Calendar.HOUR, -24);
             TimePickerDialog timePickerDialog = new TimePickerDialog(HistoryView.this, (timePicker, i, i1) -> {
                 startTime.set(Calendar.HOUR, i);
                 startTime.set(Calendar.MINUTE, i1);
@@ -91,6 +97,7 @@ public class HistoryView extends AppCompatActivity {
                     startTime = Calendar.getInstance();
                     startTime.add(Calendar.MINUTE, -10);
                 }
+                startTimeSelect.setText(new SimpleDateFormat("HH:mm:ss").format(startTime));
             }, now.get(Calendar.HOUR), now.get(Calendar.MINUTE), true); //default is 10 minutes earlier
             timePickerDialog.show();
         });
@@ -99,8 +106,10 @@ public class HistoryView extends AppCompatActivity {
             Calendar now = Calendar.getInstance();
             DatePickerDialog datePickerDialog = new DatePickerDialog(HistoryView.this, (datePicker, i, i1, i2) -> {
                 endTime.set(i, i1, i2); //set date year, month, day
+                endDateSelect.setText(new SimpleDateFormat("MMM dd").format(endTime));
             }, now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DATE)); //default is same day
             datePickerDialog.show();
+            live = false;
         });
 
         endTimeSelect.setOnClickListener(view -> {
@@ -112,8 +121,17 @@ public class HistoryView extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "end time before start time! please reset end time! resetting end time to present", Toast.LENGTH_LONG).show();
                     endTime = Calendar.getInstance();
                 }
+                endTimeSelect.setText(new SimpleDateFormat("HH:mm:ss").format(endTime));
             }, now.get(Calendar.HOUR), now.get(Calendar.MINUTE), true); //default is current time
             timePickerDialog.show();
+            live = false;
+        });
+
+        resetButton.setOnClickListener(view -> {
+            startTime = Calendar.getInstance();
+            startTime.add(Calendar.HOUR, -24);
+            endTime = Calendar.getInstance();
+            live = true;
         });
 
         navbot=findViewById(R.id.bottom_nav);
@@ -121,11 +139,15 @@ public class HistoryView extends AppCompatActivity {
         navbot.setSelectedItemId(R.id.menu_history);
         db = SensorDataDatabaseHelper.getInstance(getApplicationContext());
         startTime = Calendar.getInstance();
-        startTime.add(Calendar.MINUTE, -10);
+        startTime.add(Calendar.HOUR, -24);
         endTime = Calendar.getInstance();
         data = db.getEntriesBetweenTimestamps(startTime.getTimeInMillis(), endTime.getTimeInMillis());
         updateChart(data);
         registerReceiver(refresh, new IntentFilter(BluetoothHandler.UPDATED)); //basic attempt at making automated refresh
+        startDateSelect.setText(new SimpleDateFormat("MMM dd").format(startTime));
+        startTimeSelect.setText(new SimpleDateFormat("HH:mm:ss").format(startTime));
+        endDateSelect.setText(new SimpleDateFormat("MMM dd").format(endTime));
+        endTimeSelect.setText(new SimpleDateFormat("HH:mm:ss").format(endTime));
     }
 
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -283,15 +305,19 @@ public class HistoryView extends AppCompatActivity {
     private final BroadcastReceiver refresh = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (endTime.after(startTime)) {
-                data = db.getEntriesBetweenTimestamps(startTime.getTimeInMillis(), endTime.getTimeInMillis());
-                updateChart(data);
-            } else {
-                Toast.makeText(getApplicationContext(), "end time before start time! please reset end time! resetting end time to present", Toast.LENGTH_LONG).show();
-                long present = new Date().getTime();
-                data = db.getEntriesBetweenTimestamps(present - 600000, present); // show last 10 minutes
-                updateChart(data);
+            if(live) {
+                endTime = Calendar.getInstance();
             }
+            if (endTime.before(startTime)) {
+                Toast.makeText(getApplicationContext(), "end time before start time! please reset end time! resetting end time to present", Toast.LENGTH_LONG).show();
+                endTime = Calendar.getInstance();
+                if (startTime.after(endTime)) {
+                    startTime = Calendar.getInstance();
+                    startTime.add(Calendar.HOUR, -24);
+                }
+            }
+            data = db.getEntriesBetweenTimestamps(startTime.getTimeInMillis(), endTime.getTimeInMillis());
+            updateChart(data);
         }
     };
 

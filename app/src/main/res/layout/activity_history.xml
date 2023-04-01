@@ -44,7 +44,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
-                    <Button
+                    <EditText
                         android:id="@+id/start_button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -52,7 +52,7 @@
                         android:layout_marginBottom="10dp"
                         android:text="start date" />
 
-                    <Button
+                    <EditText
                         android:id="@+id/start_button2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -64,7 +64,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
-                    <Button
+                    <EditText
                         android:id="@+id/end_button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -72,12 +72,17 @@
                         android:layout_marginBottom="10dp"
                         android:text="end date" />
 
-                    <Button
+                    <EditText
                         android:id="@+id/end_button2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-
                         android:text="end time" />
+
+                    <Button
+                        android:id="@+id/reset_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="reset to live data"/>
                 </TableRow>
             </TableLayout>
         </LinearLayout>
