@@ -76,7 +76,6 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel);
         }
-        db = new SensorDataDatabaseHelper(getApplicationContext());
     }
 
     protected void onStart() {

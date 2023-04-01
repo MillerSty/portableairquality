@@ -105,6 +105,7 @@ public class BluetoothHandler {
         @Override
         public void onConnectedPeripheral(@NotNull BluetoothPeripheral peripheral) {
             Log.d("BTModel", "Connected to device");
+            db = new SensorDataDatabaseHelper(context.getApplicationContext());
         }
 
         @Override
