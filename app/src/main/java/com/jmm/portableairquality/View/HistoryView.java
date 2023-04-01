@@ -72,18 +72,15 @@ public class HistoryView extends AppCompatActivity {
         endDateSelect = (Button) findViewById(R.id.end_button);
         endTimeSelect = (Button) findViewById(R.id.end_button2);
 
-        startDateSelect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Calendar now = Calendar.getInstance();
-                DatePickerDialog datePickerDialog = new DatePickerDialog(getApplicationContext(), new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
-                        startTime.set(i, i1, i2); //set date year, month, day
-                    }
-                }, now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DATE)); //default is same day
-                datePickerDialog.show();
-            }
+        startDateSelect.setOnClickListener(view -> {
+            Calendar now = Calendar.getInstance();
+            DatePickerDialog datePickerDialog = new DatePickerDialog(HistoryView.this, new DatePickerDialog.OnDateSetListener() {
+                @Override
+                public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
+                    startTime.set(i, i1, i2); //set date year, month, day
+                }
+            }, now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DATE)); //default is same day
+            datePickerDialog.show();
         });
 
         startTimeSelect.setOnClickListener(new View.OnClickListener() {
@@ -91,7 +88,7 @@ public class HistoryView extends AppCompatActivity {
             public void onClick(View view) {
                 Calendar now = Calendar.getInstance();
                 now.add(Calendar.MINUTE, -10);
-                TimePickerDialog timePickerDialog = new TimePickerDialog(getApplicationContext(), new TimePickerDialog.OnTimeSetListener() {
+                TimePickerDialog timePickerDialog = new TimePickerDialog(HistoryView.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int i, int i1) {
                         startTime.set(Calendar.HOUR, i);
@@ -111,7 +108,7 @@ public class HistoryView extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Calendar now = Calendar.getInstance();
-                DatePickerDialog datePickerDialog = new DatePickerDialog(getApplicationContext(), new DatePickerDialog.OnDateSetListener() {
+                DatePickerDialog datePickerDialog = new DatePickerDialog(HistoryView.this, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
                         endTime.set(i, i1, i2); //set date year, month, day
@@ -125,7 +122,7 @@ public class HistoryView extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Calendar now = Calendar.getInstance();
-                TimePickerDialog timePickerDialog = new TimePickerDialog(getApplicationContext(), new TimePickerDialog.OnTimeSetListener() {
+                TimePickerDialog timePickerDialog = new TimePickerDialog(HistoryView.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int i, int i1) {
                         endTime.set(Calendar.HOUR, i);
@@ -213,7 +210,6 @@ public class HistoryView extends AppCompatActivity {
             }
         }
 
-
         // update co2 and voc chart
         LineDataSet co2Data, vocData, pmData;
         if (chart_air.getData() != null && chart_air.getData().getDataSetCount() > 0) {
@@ -232,11 +228,13 @@ public class HistoryView extends AppCompatActivity {
             co2Data.setAxisDependency(YAxis.AxisDependency.LEFT); //set it to the left AXIS
             co2Data.setColor(0xFF4C7C, 200); // set line colour (red) and opacity
             co2Data.setDrawCircles(false);
+
             vocData = new LineDataSet(voc, "VOC");
             vocData.setAxisDependency(YAxis.AxisDependency.RIGHT);
             vocData.setColor(0x787EF4, 200); //light blue
             vocData.setDrawCircles(false);
-            pmData = new LineDataSet(co2, "PM2.5");
+
+            pmData = new LineDataSet(pm, "PM2.5");
             pmData.setAxisDependency(YAxis.AxisDependency.RIGHT);
             pmData.setColor(0x279119, 200); //dark green
             pmData.setDrawCircles(false);
@@ -249,7 +247,7 @@ public class HistoryView extends AppCompatActivity {
             xAxis_air.setValueFormatter(new ValueFormatter() {
                 @Override
                 public String getFormattedValue(float value) {
-                    SimpleDateFormat formatter = new SimpleDateFormat("MMM dd HH:MM:ss");
+                    SimpleDateFormat formatter = new SimpleDateFormat("HH:MM:ss");
                     return formatter.format(new Date((long)value + new Date().getTime()));
                 }
             });
@@ -265,9 +263,9 @@ public class HistoryView extends AppCompatActivity {
         LineDataSet tempData, humData;
         if (chart_temp.getData() != null && chart_temp.getData().getDataSetCount() > 0) {
             tempData = (LineDataSet) chart_temp.getData().getDataSetByIndex(0);
-            tempData.setValues(temp);
-
             humData = (LineDataSet) chart_temp.getData().getDataSetByIndex(1);
+
+            tempData.setValues(temp);
             humData.setValues(hum);
 
             chart_temp.invalidate();
@@ -289,7 +287,7 @@ public class HistoryView extends AppCompatActivity {
             xAxis_temp.setValueFormatter(new ValueFormatter() {
                 @Override
                 public String getFormattedValue(float value) {
-                    SimpleDateFormat formatter = new SimpleDateFormat("MMM dd HH:MM:ss");
+                    SimpleDateFormat formatter = new SimpleDateFormat("HH:MM:ss");
                     return formatter.format(new Date((long)value + new Date().getTime()));
                 }
             });

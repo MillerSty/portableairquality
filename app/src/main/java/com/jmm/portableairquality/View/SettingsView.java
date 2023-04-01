@@ -37,33 +37,23 @@ public class SettingsView extends AppCompatActivity {
 
 
 
-        alarm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showEditDialog();
-            }
-        });
+        alarm.setOnClickListener(view -> showEditDialog());
 
 
     }
     protected void onResume() {
         super.onResume();
-        swiss.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                if(isChecked){
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                    compoundButton.setChecked(true);
+        swiss.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            if(isChecked){
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                compoundButton.setChecked(true);
 //                    compoundButton.setText("NIGHT MODE");
-                    isChecked=false;}
-
-
-                else {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                    compoundButton.setChecked(false);
+                isChecked=false;
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                compoundButton.setChecked(false);
 //                    compoundButton.setText("DAY MODE");
-                    isChecked=true;
-                }
+                isChecked=true;
             }
         });
 //        showToast(Sensor.Instance.toString());
