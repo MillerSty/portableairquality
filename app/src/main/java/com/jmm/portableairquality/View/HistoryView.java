@@ -52,7 +52,7 @@ public class HistoryView extends AppCompatActivity {
     LineChart chart_air;
     LineChart chart_temp;
     List<DataEntry> data;
-    long period = 1000; //length of time that one wants to get data from in seconds
+    public final int DAY_IN_MILLIS = 3600000; //length of time that one wants to get data from in seconds
     SensorDataDatabaseHelper db;
     Calendar startTime;
     Calendar endTime;
@@ -160,15 +160,16 @@ public class HistoryView extends AppCompatActivity {
             case R.id.menu_settings:
                 Intent goToSettings=new Intent(HistoryView.this, SettingsView.class);
                 startActivity(goToSettings);
-//                showToast("CLICKED SETTINGS");
+                return true;
+            case R.id.menu_map:
+                Intent goToMap = new Intent(this, MapsView.class);
+                startActivity(goToMap);
                 return true;
             case R.id.menu_home:
                 Intent goToHome=new Intent(HistoryView.this, HomeView.class);
                 startActivity(goToHome);
-
                 return true;
             case R.id.menu_history:
-
                 return true;
             default:
                 return false;
@@ -231,7 +232,7 @@ public class HistoryView extends AppCompatActivity {
             co2Data.setAxisDependency(YAxis.AxisDependency.LEFT); //set it to the left AXIS
             co2Data.setColor(0xFF4C7C, 200); // set line colour (red) and opacity
             co2Data.setDrawCircles(false);
-            vocData = new LineDataSet(co2, "VOC");
+            vocData = new LineDataSet(voc, "VOC");
             vocData.setAxisDependency(YAxis.AxisDependency.RIGHT);
             vocData.setColor(0x787EF4, 200); //light blue
             vocData.setDrawCircles(false);
@@ -276,7 +277,7 @@ public class HistoryView extends AppCompatActivity {
             tempData.setColor(0x32c3e2, 200);
             tempData.setDrawCircles(false);
 
-            humData = new LineDataSet(co2, "Relative Humidity");
+            humData = new LineDataSet(hum, "Relative Humidity");
             humData.setAxisDependency(YAxis.AxisDependency.RIGHT);
             humData.setColor(0x807fe2, 200);
             humData.setDrawCircles(false);

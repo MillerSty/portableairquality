@@ -75,13 +75,14 @@ public class SettingsView extends AppCompatActivity {
 
         switch (id) {
             case R.id.menu_settings:
-
-//                showToast("CLICKED SETTINGS");
                 return true;
             case R.id.menu_home:
                 Intent goToSettings=new Intent(SettingsView.this, HomeView.class);
                 startActivity(goToSettings);
-
+                return true;
+            case R.id.menu_map:
+                Intent goToMap = new Intent(this, MapsView.class);
+                startActivity(goToMap);
                 return true;
             case R.id.menu_history:
                 Intent goToHistory=new Intent(SettingsView.this, HistoryView.class);

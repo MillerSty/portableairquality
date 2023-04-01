@@ -151,8 +151,10 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
                 float humEntry = cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_HUMIDITY));
                 float pm = cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_PM));
                 long timestmp = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_TIMESTAMP));
+                double latitude=cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_LATITUDE));
+                double longitude=cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_LONGITUDE));
 
-                DataEntry dataEntry = new DataEntry(co2Entry, vocEntry, tempEntry, humEntry, pm, timestmp);
+                DataEntry dataEntry = new DataEntry(co2Entry, vocEntry, tempEntry, humEntry, pm, timestmp,latitude,longitude);
                 list.add(dataEntry);
             }
         }

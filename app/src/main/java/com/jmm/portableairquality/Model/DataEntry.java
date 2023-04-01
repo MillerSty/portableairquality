@@ -2,16 +2,19 @@ package com.jmm.portableairquality.Model;
 
 public class DataEntry implements Comparable<DataEntry> {
     public int co2Entry, vocEntry;
+    public double latitude,longitude;
     public float tempEntry, humEntry, pm;
     public long timestamp; //should be in seconds
 
-    public DataEntry(int co2Entry, int vocEntry, float tempEntry, float humEntry, float pm, long timestamp) {
+    public DataEntry(int co2Entry, int vocEntry, float tempEntry, float humEntry, float pm, long timestamp,double latitude,double longitude) {
         this.co2Entry = co2Entry;
         this.vocEntry = vocEntry;
         this.tempEntry = tempEntry;
         this.humEntry = humEntry;
         this.pm = pm;
         this.timestamp = timestamp;
+        this.latitude=latitude;
+        this.longitude=longitude;
     }
     //method to sort data entries by generation time
     public static boolean soonerThan(DataEntry a, DataEntry b) {

@@ -9,11 +9,26 @@
 
 
     <TextView
+        android:id="@+id/co2Display"
+        android:layout_width="124dp"
+        android:layout_height="124dp"
+        android:layout_marginStart="108dp"
+        android:layout_marginTop="136dp"
+        android:background="@drawable/sensor_display_green"
+        android:elevation="15dp"
+        android:gravity="center"
+        android:shadowColor="#2B2828"
+        android:text="CO2"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="@+id/pmDisplay"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
         android:id="@+id/pmDisplay"
         android:layout_width="124dp"
         android:layout_height="124dp"
-        android:layout_marginStart="120dp"
-        android:layout_marginTop="76dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="136dp"
         android:background="@drawable/sensor_display_green"
         android:elevation="10dp"
         android:gravity="center"
@@ -22,34 +37,59 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageView
+        android:id="@+id/ivTemp"
+        android:layout_width="54dp"
+        android:layout_height="59dp"
+        android:layout_marginStart="56dp"
+        android:layout_marginTop="36dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/co2Display"
+        app:srcCompat="@drawable/thermo" />
+
+    <TextView
+        android:id="@+id/tempDisplay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="48dp"
+        android:text="Temp"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivTemp" />
+
     <TextView
         android:id="@+id/vocDisplay"
         android:layout_width="124dp"
         android:layout_height="124dp"
-        android:layout_marginStart="124dp"
-        android:layout_marginTop="200dp"
+        android:layout_marginStart="212dp"
+        android:layout_marginTop="136dp"
         android:background="@drawable/sensor_display_green"
-        android:elevation="15dp"
+        android:elevation="10dp"
         android:gravity="center"
         android:text="VOC"
         android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="@+id/co2Display"
+        app:layout_constraintStart_toStartOf="@+id/pmDisplay"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/co2Display"
-        android:layout_width="124dp"
-        android:layout_height="124dp"
-        android:layout_marginStart="56dp"
-        android:layout_marginTop="200dp"
-        android:background="@drawable/sensor_display_green"
-        android:elevation="15dp"
-        android:gravity="center"
-        android:shadowColor="#2B2828"
-        android:text="CO2"
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:id="@+id/humDisplay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="56dp"
+        android:text="Humidity"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivHumidity" />
+
+    <ImageView
+        android:id="@+id/ivHumidity"
+        android:layout_width="55dp"
+        android:layout_height="61dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="76dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/vocDisplay"
+        app:srcCompat="@drawable/humidity" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_nav"
@@ -60,60 +100,12 @@
         app:menu="@menu/bottom_bar"
         tools:layout_editor_absoluteX="0dp" />
 
-    <ImageView
-        android:id="@+id/ivHumidity"
-        android:layout_width="55dp"
-        android:layout_height="61dp"
-        android:layout_marginTop="28dp"
-        android:layout_marginEnd="88dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/vocDisplay"
-        app:srcCompat="@drawable/humidity" />
-
-    <TextView
-        android:id="@+id/tempDisplay"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="76dp"
-        android:text="Temp"
-        android:textSize="24sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ivTemp" />
-
-    <ImageView
-        android:id="@+id/ivTemp"
-        android:layout_width="54dp"
-        android:layout_height="59dp"
-        android:layout_marginStart="84dp"
-        android:layout_marginTop="28dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/co2Display"
-        app:srcCompat="@drawable/thermo" />
-
-    <TextView
-        android:id="@+id/humDisplay"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="68dp"
-        android:text="Humidity"
-        android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ivHumidity" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_end="213dp" />
-
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_end="41dp" />
+        app:layout_constraintGuide_begin="151dp" />
 
     <LinearLayout
         android:id="@+id/testable"
@@ -133,7 +125,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_begin="20dp" />
+        app:layout_constraintGuide_begin="44dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
