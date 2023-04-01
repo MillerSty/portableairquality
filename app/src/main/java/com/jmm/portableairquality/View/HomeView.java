@@ -6,13 +6,13 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
@@ -20,11 +20,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
-import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,23 +28,15 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-//import com.google.android.gms.location.LocationListener;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import com.jmm.portableairquality.Controller.LocationControl;
 import com.jmm.portableairquality.Model.BluetoothHandler;
 import com.jmm.portableairquality.Model.CcsMeasurement;
 import com.jmm.portableairquality.Model.DhtMeasurement;
-import com.jmm.portableairquality.Model.Pm10Measurement;
-import com.jmm.portableairquality.Model.Pm1Measurement;
-import com.jmm.portableairquality.Model.Pm2Measurement;
+import com.jmm.portableairquality.Model.PmMeasurement;
 import com.jmm.portableairquality.Model.SensorDataDatabaseHelper;
 import com.jmm.portableairquality.Model.SensorSingleton;
 import com.jmm.portableairquality.R;
@@ -65,15 +53,9 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
     private static final int ACCESS_LOCATION_REQUEST = 2;
     private SensorSingleton sensorSingleton;
     BottomNavigationView navbot;
-    TextView co2Display, vocDisplay, tempDisplay, humDisplay, pm1Display, pm2Display, pm10Display;
+    TextView co2Display, vocDisplay, tempDisplay, humDisplay, pmDisplay;
     public int co2, voc;
-    Location loc;
-    double lat, lon;
-    Button maps;
-    boolean isNetwork, isGPS;
-    private LocationManager locationManager;
-    private FusedLocationProviderClient fusedLocationClient;
-    LocationControl loca;
+
     public SensorDataDatabaseHelper db;
 
     @Override
@@ -81,53 +63,33 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         initView();
         initSensorAlarm();
-        //maps btn used for initial map testing
-        maps = findViewById(R.id.btnMaps);
-//        loca= new LocationControl();
-//        loca.Instance.handleLocation(this);
-        //in line 90 changing LocationManager.MODE_CHANGED_ACTION) to line 89
-//        String bestProvider=LocationManager.getBestProvider(new Criteria(),false);
         registerReceiver(locationReceiver, new IntentFilter(LocationManager.MODE_CHANGED_ACTION));
         registerReceiver(ccsReceiver, new IntentFilter(BluetoothHandler.MEASUREMENT_CCS));
         registerReceiver(dhtReceiver, new IntentFilter(BluetoothHandler.MEASUREMENT_DHT));
-        registerReceiver(pm1Receiver, new IntentFilter(BluetoothHandler.MEASUREMENT_PM1));
-        registerReceiver(pm2Receiver, new IntentFilter(BluetoothHandler.MEASUREMENT_PM2));
-        registerReceiver(pm10Receiver, new IntentFilter(BluetoothHandler.MEASUREMENT_PM10));
-
-        LocationManager locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
+        registerReceiver(pmReceiver, new IntentFilter(BluetoothHandler.MEASUREMENT_PM));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel("my note", "My notif", NotificationManager.IMPORTANCE_DEFAULT);
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel);
         }
         db = new SensorDataDatabaseHelper(getApplicationContext());
-        maps.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent gotoMaps = new Intent(view.getContext(), MapsView.class);
-                startActivity(gotoMaps);
-            }
-        });
-
     }
-
-
 
     protected void onStart() {
         super.onStart();
-        LocationControl.Instance.handleLocation(this);
-//text change listeners for push notifications
+
+
         co2Display.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 //            int co2=SensorDataDatabaseHelper.COLUMN_CO;
 
-                textViewHandler("co2", co2);
-                if (co2 > SensorSingleton.Instance.getCo2Alarm()) {
-                    Notification("Co2");
-                }
+                textViewHandler("co2",co2);
+            if( co2>SensorSingleton.Instance.getCo2Alarm()){
+            Notification("Co2");}
             }
 
             @Override
@@ -142,10 +104,9 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 //            int voc=SensorDataDatabaseHelper.COLUMN_VOC;
-                textViewHandler("voc", voc);
-                if (voc > SensorSingleton.Instance.getVocAlarm()) {
-                    Notification("Voc");
-                }
+                                textViewHandler("voc",voc);
+            if( voc>SensorSingleton.Instance.getVocAlarm()){
+                Notification("Voc");}
             }
 
             @Override
@@ -156,24 +117,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
             public void afterTextChanged(Editable editable) {
             }
         });
-        pm1Display.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//            float pm1=SensorDataDatabaseHelper.COLUMN_PM1;
-                //                textViewHandler("pm1",pm1);
-//            if( pm1>SensorSingleton.Instance.getPm1Alarm()){
-//                Notification("Pm1");}
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-            }
-        });
-        pm2Display.addTextChangedListener(new TextWatcher() {
+        pmDisplay.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 //            float pm2=SensorDataDatabaseHelper.COLUMN_PM2;
@@ -190,25 +134,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
             public void afterTextChanged(Editable editable) {
             }
         });
-        pm10Display.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//            float pm10=SensorDataDatabaseHelper.COLUMN_PM10;
-                //                textViewHandler("pm10",pm10);
-//            if( pm10>SensorSingleton.Instance.getPm10Alarm()){
-//                Notification("Pm10");}
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-            }
-        });
     }
-
 
     @SuppressLint("MissingPermission")
     @Override
@@ -228,9 +154,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         super.onDestroy();
         unregisterReceiver(ccsReceiver);
         unregisterReceiver(dhtReceiver);
-        unregisterReceiver(pm1Receiver);
-        unregisterReceiver(pm2Receiver);
-        unregisterReceiver(pm10Receiver);
+        unregisterReceiver(pmReceiver);
     }
 
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -269,15 +193,12 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
     private final BroadcastReceiver locationReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            showToast("HELLO!");
             String action = intent.getAction();
             if (action != null && action.equals(LocationManager.MODE_CHANGED_ACTION)) {
                 boolean isEnabled = areLocationServicesEnabled();
                 Log.d("HomeActivity", String.format("Location service state changed to: %s", isEnabled ? "on" : "off"));
                 checkPermissions();
             }
-
-
         }
     };
 
@@ -286,11 +207,10 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         public void onReceive(Context context, Intent intent) {
             BluetoothPeripheral peripheral = getPeripheral(intent.getStringExtra(BluetoothHandler.MEASUREMENT_EXTRA_PERIPHERAL));
             CcsMeasurement measurement = (CcsMeasurement) intent.getSerializableExtra(BluetoothHandler.MEASUREMENT_CCS_EXTRA);
-            co2 = (int) measurement.co2;
+            co2 = (int)measurement.co2;
             co2Display.setText("Co2:\n" + Long.toString(measurement.co2));
-            voc = (int) measurement.voc;
+            voc = (int)measurement.voc;
             vocDisplay.setText("VOC:\n" + Long.toString(measurement.voc));
-
         }
     };
 
@@ -304,32 +224,12 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         }
     };
 
-    private final BroadcastReceiver pm1Receiver = new BroadcastReceiver() {
+    private final BroadcastReceiver pmReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             BluetoothPeripheral peripheral = getPeripheral(intent.getStringExtra(BluetoothHandler.MEASUREMENT_EXTRA_PERIPHERAL));
-            Pm1Measurement measurement = (Pm1Measurement) intent.getSerializableExtra(BluetoothHandler.MEASUREMENT_PM1_EXTRA);
-            pm1Display.setText("PM1:\n" + Integer.toString(measurement.pm1));
-
-        }
-    };
-
-    private final BroadcastReceiver pm2Receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            BluetoothPeripheral peripheral = getPeripheral(intent.getStringExtra(BluetoothHandler.MEASUREMENT_EXTRA_PERIPHERAL));
-            Pm2Measurement measurement = (Pm2Measurement) intent.getSerializableExtra(BluetoothHandler.MEASUREMENT_PM2_EXTRA);
-            pm2Display.setText("PM2:\n" + Integer.toString(measurement.pm2));
-
-        }
-    };
-
-    private final BroadcastReceiver pm10Receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            BluetoothPeripheral peripheral = getPeripheral(intent.getStringExtra(BluetoothHandler.MEASUREMENT_EXTRA_PERIPHERAL));
-            Pm10Measurement measurement = (Pm10Measurement) intent.getSerializableExtra(BluetoothHandler.MEASUREMENT_PM10_EXTRA);
-            pm10Display.setText("PM10:\n" + Integer.toString(measurement.pm10));
+            PmMeasurement measurement = (PmMeasurement) intent.getSerializableExtra(BluetoothHandler.MEASUREMENT_PM_EXTRA);
+            pmDisplay.setText("PM2.5:\n" + Integer.toString(measurement.pm));
 
         }
     };
@@ -465,7 +365,6 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
 
     @SuppressLint("MissingPermission")
     public void Notification(String sensor_alert) {
-        //TODO ALL notifications in one alert
         Intent notifyIntent = new Intent(this, HomeView.class);
 // Set the Activity to start in a new, empty task
         notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
@@ -527,62 +426,38 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         switch (sensor) {
             case "co2":
                 if (readingInt >= 0 && readingInt <= 1000) {
-                    co2Display.setBackground(getResources().getDrawable(R.drawable.sensor_display_green));
+                    co2Display.setBackground(ContextCompat.getDrawable(this, R.drawable.sensor_display_green));
 //                flagGreen
                 } else if (readingInt > 1000 && readingInt <= 8000) {
-                    co2Display.setBackground(getResources().getDrawable(R.drawable.sensor_display_yellow));
+                    co2Display.setBackground(ContextCompat.getDrawable(this, R.drawable.sensor_display_yellow));
 //                flagYellow
                 } else {
-                    co2Display.setBackground(getResources().getDrawable(R.drawable.sensor_display_red));
+                    co2Display.setBackground(ContextCompat.getDrawable(this, R.drawable.sensor_display_red));
 //                flagRed
                 }
                 break; //0-1000 ppm is good(green), 1500-8000 unhealthy(yellow), 8000-30000 serious health risk(orange), 30000+ critical (red) [ppm]
             case "voc":
                 if (readingInt >= 0 && readingInt <= 220) {
-                    vocDisplay.setBackground(getResources().getDrawable(R.drawable.sensor_display_green));
+                    vocDisplay.setBackground(ContextCompat.getDrawable(this, R.drawable.sensor_display_green));
 //                flagGreen
                 } else if (readingInt > 220 && readingInt <= 660) {
-                    vocDisplay.setBackground(getResources().getDrawable(R.drawable.sensor_display_yellow));
+                    vocDisplay.setBackground(ContextCompat.getDrawable(this, R.drawable.sensor_display_yellow));
 //                flagYellow
                 } else {
-                    vocDisplay.setBackground(getResources().getDrawable(R.drawable.sensor_display_red));
+                    vocDisplay.setBackground(ContextCompat.getDrawable(this, R.drawable.sensor_display_red));
 //                flagRed
                 }
                 break;//0-220 is good (green), 220-660 ( yellow), 660-2000(orange), 2000+(red) [ppb]
-            case "pm1":
+            case "pm":
                 //TODO Set default for PM values, these are copied from Co2
                 if (readingInt >= 0 && readingInt <= 1111) {
-                    co2Display.setBackground(getResources().getDrawable(R.drawable.sensor_display_green));
+                    pmDisplay.setBackground(getResources().getDrawable(R.drawable.sensor_display_green));
 //                flagGreen
                 } else if (readingInt > 1000 && readingInt <= 8000) {
-                    co2Display.setBackground(getResources().getDrawable(R.drawable.sensor_display_yellow));
+                    pmDisplay.setBackground(getResources().getDrawable(R.drawable.sensor_display_yellow));
 //                flagYellow
                 } else {
-                    co2Display.setBackground(getResources().getDrawable(R.drawable.sensor_display_red));
-//                flagRed
-                }
-                break;
-            case "pm2":
-                if (readingInt >= 0 && readingInt <= 1222) {
-                    co2Display.setBackground(getResources().getDrawable(R.drawable.sensor_display_green));
-//                flagGreen
-                } else if (readingInt > 1000 && readingInt <= 8000) {
-                    co2Display.setBackground(getResources().getDrawable(R.drawable.sensor_display_yellow));
-//                flagYellow
-                } else {
-                    co2Display.setBackground(getResources().getDrawable(R.drawable.sensor_display_red));
-//                flagRed
-                }
-                break;
-            case "pm10":
-                if (readingInt >= 0 && readingInt <= 1333) {
-                    co2Display.setBackground(getResources().getDrawable(R.drawable.sensor_display_green));
-//                flagGreen
-                } else if (readingInt > 1000 && readingInt <= 8000) {
-                    co2Display.setBackground(getResources().getDrawable(R.drawable.sensor_display_yellow));
-//                flagYellow
-                } else {
-                    co2Display.setBackground(getResources().getDrawable(R.drawable.sensor_display_red));
+                    pmDisplay.setBackground(getResources().getDrawable(R.drawable.sensor_display_red));
 //                flagRed
                 }
                 break;
@@ -597,9 +472,8 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         vocDisplay = findViewById(R.id.vocDisplay);
         tempDisplay = findViewById(R.id.tempDisplay);
         humDisplay = findViewById(R.id.humDisplay);
-        pm1Display = findViewById(R.id.pm1Display);
-        pm2Display = findViewById(R.id.pm2Display);
-        pm10Display = findViewById(R.id.pm10Display);
+        pmDisplay = findViewById(R.id.pmDisplay);
+
         navbot = findViewById(R.id.bottom_nav);
         navbot.setOnNavigationItemSelectedListener(this);
         navbot.setSelectedItemId(R.id.menu_home);
@@ -608,12 +482,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
     public void initSensorAlarm() {
         sensorSingleton.Instance.setCo2Alarm(sensorSingleton.Co2Default);
         sensorSingleton.Instance.setVocAlarm(sensorSingleton.VocDefault);
-        sensorSingleton.Instance.setPm1Alarm(sensorSingleton.Pm1Default);
-        sensorSingleton.Instance.setPm2Alarm(sensorSingleton.Pm2Default);
-        sensorSingleton.Instance.setPm10Alarm(sensorSingleton.Pm10Default);
-
+        sensorSingleton.Instance.setPmAlarm(sensorSingleton.PmDefault);
     }
-
-
 }
 
