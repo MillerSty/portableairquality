@@ -8,8 +8,10 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 
+
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ActivityOptions;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -26,8 +28,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.transition.Explode;
+import android.transition.Fade;
+import android.transition.Slide;
+import android.transition.Transition;
 import android.util.Log;
 import android.view.MenuItem;
+
+import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,9 +69,13 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Transition trans=new Fade();
+        getWindow().setExitTransition(new Fade());
+//        getWindow().setAllowEnterTransitionOverlap(true);
 
         initView();
         initSensorAlarm();
@@ -164,17 +176,18 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         switch (id) {
             case R.id.menu_settings:
                 Intent goToSettings = new Intent(this, SettingsView.class);
-                startActivity(goToSettings);
+                startActivity(goToSettings , ActivityOptions.makeSceneTransitionAnimation(HomeView.this).toBundle());
+//
                 return true;
             case R.id.menu_map:
                 Intent goToMap = new Intent(this, MapsView.class);
-                startActivity(goToMap);
+                startActivity(goToMap, ActivityOptions.makeSceneTransitionAnimation(HomeView.this).toBundle());
                 return true;
             case R.id.menu_home:
                 return true;
             case R.id.menu_history:
                 Intent goToHistory = new Intent(this, HistoryView.class);
-                startActivity(goToHistory);
+                startActivity(goToHistory, ActivityOptions.makeSceneTransitionAnimation(HomeView.this).toBundle());
             default:
                 return false;
         }
@@ -207,7 +220,18 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
             }
         }
     };
-
+    //TODO MAPVIEW NAV NOT WORKING and DOESNT HIGHLIGHT MAP FRAG
+    //TODO NAV NOT SLIDE
+    // IF CHANGE NAV VIEWS A BUNCH IT WONT LOAD MAP
+    //MAP TOAST WHEN CLICKING SETTINGS
+    //ONPROVIDERDISABLED
+    //TODO Graph colour change
+    //NOTIFICATION FIX
+    //REPOPULATE SETTINGS WHEN OPENING DIALOGUE
+    //WEIGH AVERAGE OR JUST WHEN ONE IS YELLOW FOR LCOATION POLYLINES
+    //ADD IN REFERENCE
+    // RING BACKGROUND COLOUR TRANSPARENT
+    //APP CRASHES IF LOCATION OFF
     private final BroadcastReceiver ccsReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {

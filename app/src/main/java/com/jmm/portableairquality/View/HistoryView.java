@@ -1,11 +1,14 @@
 package com.jmm.portableairquality.View;
 
+import android.app.ActivityOptions;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.transition.Fade;
 import android.view.MenuItem;
+import android.view.Window;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -49,6 +52,8 @@ public class HistoryView extends AppCompatActivity {
     SensorDataDatabaseHelper db;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
+        getWindow().setExitTransition(new Fade());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
         chart_air = (LineChart) findViewById(R.id.chart_air);
@@ -68,15 +73,15 @@ public class HistoryView extends AppCompatActivity {
         switch (id) {
             case R.id.menu_settings:
                 Intent goToSettings=new Intent(HistoryView.this, SettingsView.class);
-                startActivity(goToSettings);
+                startActivity(goToSettings, ActivityOptions.makeSceneTransitionAnimation(HistoryView.this).toBundle());
                 return true;
             case R.id.menu_map:
                 Intent goToMap = new Intent(this, MapsView.class);
-                startActivity(goToMap);
+                startActivity(goToMap, ActivityOptions.makeSceneTransitionAnimation(HistoryView.this).toBundle());
                 return true;
             case R.id.menu_home:
                 Intent goToHome=new Intent(HistoryView.this, HomeView.class);
-                startActivity(goToHome);
+                startActivity(goToHome, ActivityOptions.makeSceneTransitionAnimation(HistoryView.this).toBundle());
                 return true;
             case R.id.menu_history:
                 return true;

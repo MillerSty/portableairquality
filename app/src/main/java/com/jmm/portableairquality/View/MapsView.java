@@ -1,11 +1,14 @@
 package com.jmm.portableairquality.View;
 
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.transition.Fade;
 import android.view.MenuItem;
+import android.view.Window;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -22,6 +25,8 @@ public class MapsView extends AppCompatActivity {
     BottomNavigationView navbot;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
+        getWindow().setExitTransition(new Fade());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.mapview2);
         navbot=findViewById(R.id.bottom_nav);
@@ -48,21 +53,20 @@ public class MapsView extends AppCompatActivity {
         int id = item.getItemId();
         switch (id) {
             case R.id.menu_settings:
-                getSupportFragmentManager().beginTransaction().remove(fragment).commitNow();
+
                Intent goToSettings = new Intent(this, SettingsView.class);
-                startActivity(goToSettings);
+//               goToSettings.
+                startActivity(goToSettings, ActivityOptions.makeSceneTransitionAnimation(MapsView.this).toBundle());
                 return true;
             case R.id.menu_map:
                 return true;
             case R.id.menu_home:
                 Intent goToHome = new Intent(this, HomeView.class);
-                startActivity(goToHome);
+                startActivity(goToHome, ActivityOptions.makeSceneTransitionAnimation(MapsView.this).toBundle());
                 return true;
             case R.id.menu_history:
-                getSupportFragmentManager().beginTransaction().remove(fragment).commitNow();
-
                 Intent goToHistory = new Intent(this, HistoryView.class);
-                startActivity(goToHistory);
+                startActivity(goToHistory, ActivityOptions.makeSceneTransitionAnimation(MapsView.this).toBundle());
                 return true;
             default:
                 return false;

@@ -1,9 +1,13 @@
 package com.jmm.portableairquality.View;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
+import android.transition.Fade;
+import android.transition.Slide;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Switch;
@@ -25,6 +29,8 @@ public class SettingsView extends AppCompatActivity {
     SensorSingleton Sensor;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
+        getWindow().setExitTransition(new Fade());
         //TODO Smaller text size for alarmdialgoue
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
@@ -78,15 +84,15 @@ public class SettingsView extends AppCompatActivity {
                 return true;
             case R.id.menu_home:
                 Intent goToSettings=new Intent(SettingsView.this, HomeView.class);
-                startActivity(goToSettings);
+                startActivity(goToSettings, ActivityOptions.makeSceneTransitionAnimation(SettingsView.this).toBundle());
                 return true;
             case R.id.menu_map:
                 Intent goToMap = new Intent(this, MapsView.class);
-                startActivity(goToMap);
+                startActivity(goToMap, ActivityOptions.makeSceneTransitionAnimation(SettingsView.this).toBundle());
                 return true;
             case R.id.menu_history:
                 Intent goToHistory=new Intent(SettingsView.this, HistoryView.class);
-                startActivity(goToHistory);
+                startActivity(goToHistory, ActivityOptions.makeSceneTransitionAnimation(SettingsView.this).toBundle());
                 return true;
             default:
                 return false;
