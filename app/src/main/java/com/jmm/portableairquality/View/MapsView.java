@@ -13,22 +13,27 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.jmm.portableairquality.R;
 
 public class MapsView extends AppCompatActivity {
     GoogleMap mMap;
-
+    Fragment fragment;
+    BottomNavigationView navbot;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.mapview2);
+        navbot=findViewById(R.id.bottom_nav);
+        navbot.setOnNavigationItemSelectedListener(this::onNavigationItemSelected);
+        navbot.setSelectedItemId(R.id.menu_map);
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager != null ? connectivityManager.getActiveNetworkInfo() : null;
 //        activeNetworkInfo != null ? activeNetworkInfo.isConnected();
 
     if(activeNetworkInfo!=null) {
-        Fragment fragment = new MapsFrag();
+        fragment = new MapsFrag();
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, fragment).commitNow();
     }
     else{
@@ -37,12 +42,14 @@ public class MapsView extends AppCompatActivity {
         startActivity(goToHome);
     }
     }
+
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         switch (id) {
             case R.id.menu_settings:
-                Intent goToSettings = new Intent(this, SettingsView.class);
+                getSupportFragmentManager().beginTransaction().remove(fragment).commitNow();
+               Intent goToSettings = new Intent(this, SettingsView.class);
                 startActivity(goToSettings);
                 return true;
             case R.id.menu_map:
@@ -52,6 +59,8 @@ public class MapsView extends AppCompatActivity {
                 startActivity(goToHome);
                 return true;
             case R.id.menu_history:
+                getSupportFragmentManager().beginTransaction().remove(fragment).commitNow();
+
                 Intent goToHistory = new Intent(this, HistoryView.class);
                 startActivity(goToHistory);
                 return true;
