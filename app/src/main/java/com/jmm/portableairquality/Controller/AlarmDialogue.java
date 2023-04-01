@@ -59,9 +59,7 @@ public class AlarmDialogue extends DialogFragment {
     private void init(View v) {
         co2AlarmLevel = v.findViewById(R.id.etCo2Alarm);
         vocAlarmLevel = v.findViewById(R.id.etVocAlarm);
-        pm1AlarmLevel = v.findViewById(R.id.etPm1Alarm);
         pm2AlarmLevel = v.findViewById(R.id.etPm2Alarm);
-        pm10AlarmLevel = v.findViewById(R.id.etPm10Alarm);
         save = v.findViewById(R.id.btnSave);
         cancel = v.findViewById(R.id.btnCancel);
         sensorSingleton = new SensorSingleton();
