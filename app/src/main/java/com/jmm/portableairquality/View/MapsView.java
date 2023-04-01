@@ -17,7 +17,7 @@ import com.jmm.portableairquality.R;
 
 public class MapsView extends AppCompatActivity {
     GoogleMap mMap;
-//TODO add navigation to mapsView
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

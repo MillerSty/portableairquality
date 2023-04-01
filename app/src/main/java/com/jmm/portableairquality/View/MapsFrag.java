@@ -69,10 +69,17 @@ public class MapsFrag extends Fragment {
         ArrayList<LatLng> dataArray = new ArrayList<>();
 
             List<DataEntry> data1 = new ArrayList<>();
+
             //add non zero lat/lngs
             for (int k = 0; k < data.size(); k++) {
                 if (!(data.get(k).latitude == 0) || !(data.get(k).longitude == 0)) {
                     data1.add(data.get(k));
+                }
+                else{
+                    data.get(k).latitude= 45.5019;
+                    data.get(k).longitude=73.5674;
+                    data1.add(data.get(k));
+
                 }
             }
             //add first non zero lat lng and add its color to color array
