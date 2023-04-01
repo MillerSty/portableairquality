@@ -25,7 +25,7 @@ import com.jmm.portableairquality.Model.SensorSingleton;
 public class LocationControl implements LocationListener {
     LocationManager locationManager;
     public static LocationControl Instance = new LocationControl();
-    Context contextt;
+    Context context;
     static float minDistance = 5f; //50-75 is good
     static int minTime = 2000; //1000000
     public LocationControl() {
@@ -33,7 +33,7 @@ public class LocationControl implements LocationListener {
 
     public void handleLocation(Context context) {
         if (context != null) {
-            contextt = context;
+            this.context = context;
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
@@ -60,7 +60,7 @@ public class LocationControl implements LocationListener {
 
     @Override
     public void onLocationChanged(@NonNull Location newLocation) {
-        SharedPreferences sp = contextt.getSharedPreferences("hey", Context.MODE_PRIVATE);
+        SharedPreferences sp = context.getSharedPreferences("hey", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         Location oldLocation = new Location("");
         oldLocation.setLatitude(Double.longBitsToDouble(sp.getLong("Lat", 0)));
@@ -91,6 +91,6 @@ public class LocationControl implements LocationListener {
 
     }
     private void showToast(String message) {
-        Toast.makeText(contextt.getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(context.getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }
 }

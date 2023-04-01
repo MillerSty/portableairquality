@@ -166,12 +166,11 @@ public class BluetoothHandler {
                 Date date;
                 while(true) {
                     SharedPreferences sharedPref = context.getSharedPreferences("hey",Context.MODE_PRIVATE);
-                   double latitude= Double.longBitsToDouble(sharedPref.getLong("Lat", 0));
+                    double latitude= Double.longBitsToDouble(sharedPref.getLong("Lat", 0));
                     double longitude=Double.longBitsToDouble(sharedPref.getLong("Long",0));
-//                    int latitude = 0;
-//                    int longitude = 0;
+                    int nox = 0;
                     date = new Date();
-                    db.addSensorData(date, latitude, longitude, temp, hum, pm, 0, co2, voc);
+                    db.addSensorData(date, latitude, longitude, temp, hum, pm, nox, co2, voc);
                     try {
                         sleep(2000);
                     } catch (InterruptedException e) {

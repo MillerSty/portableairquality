@@ -45,7 +45,7 @@ public class HistoryView extends AppCompatActivity {
     LineChart chart_air;
     LineChart chart_temp;
     List<DataEntry> data;
-    long period = 1000; //length of time that one wants to get data from in seconds
+    public final int DAY_IN_MILLIS = 3600000; //length of time that one wants to get data from in seconds
     SensorDataDatabaseHelper db;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,7 +136,7 @@ public class HistoryView extends AppCompatActivity {
             co2Data.setAxisDependency(YAxis.AxisDependency.LEFT); //set it to the left AXIS
             co2Data.setColor(0xFF4C7C, 200); // set line colour and opacity
             co2Data.setDrawCircles(false);
-            vocData = new LineDataSet(co2, "VOC");
+            vocData = new LineDataSet(voc, "VOC");
             vocData.setAxisDependency(YAxis.AxisDependency.RIGHT);
             vocData.setColor(0x787EF4, 200);
             vocData.setDrawCircles(false);
@@ -164,10 +164,10 @@ public class HistoryView extends AppCompatActivity {
         LineDataSet tempData, humData;
         if (chart_temp.getData() != null && chart_temp.getData().getDataSetCount() > 0) {
             tempData = (LineDataSet) chart_temp.getData().getDataSetByIndex(0);
-            tempData.setValues(co2);
+            tempData.setValues(temp);
 
             humData = (LineDataSet) chart_temp.getData().getDataSetByIndex(1);
-            humData.setValues(voc);
+            humData.setValues(hum);
 
             chart_temp.invalidate();
         } else {
@@ -176,7 +176,7 @@ public class HistoryView extends AppCompatActivity {
             tempData.setColor(0x32c3e2, 200);
             tempData.setDrawCircles(false);
 
-            humData = new LineDataSet(co2, "Relative Humidity");
+            humData = new LineDataSet(hum, "Relative Humidity");
             humData.setAxisDependency(YAxis.AxisDependency.RIGHT);
             humData.setColor(0x807fe2, 200);
             humData.setDrawCircles(false);
@@ -205,7 +205,7 @@ public class HistoryView extends AppCompatActivity {
     private final BroadcastReceiver refresh = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            data = db.getEntriesAfterTimestamp(new Date().getTime()-3600*1000);
+            data = db.getEntriesAfterTimestamp(new Date().getTime()-DAY_IN_MILLIS);
             if (data.size() > 0) {
                 updateChart(data);
             }

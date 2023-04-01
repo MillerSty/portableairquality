@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.List;
 
 
+
 public class MapsFrag extends Fragment {
      public int green, yellow, red;
     GoogleMap mMap;
@@ -34,6 +35,7 @@ public class MapsFrag extends Fragment {
     ArrayList<LatLng> ListLong;
     ArrayList<Integer> color;
     public boolean isSimulated = false;
+    final int DAY_IN_MILLIS = 3600000;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -41,14 +43,9 @@ public class MapsFrag extends Fragment {
 
         //getting midnight timestamp for database fetch
         SensorDataDatabaseHelper db = SensorDataDatabaseHelper.getInstance(getActivity());
-        Date todayMidnight = new Date();
-        todayMidnight.setHours(0);
-        todayMidnight.setMinutes(0);
-        todayMidnight.setSeconds(1);
-        Long midnightTimestamp = todayMidnight.getTime();
 
         //  get data from after timestamp and then reduce
-            data = db.getEntriesAfterTimestamp(midnightTimestamp);
+            data = db.getEntriesAfterTimestamp(new Date().getTime() - DAY_IN_MILLIS);
             color = new ArrayList<>();
             ListLong = reduceRepeats(data, color);
 
@@ -68,29 +65,29 @@ public class MapsFrag extends Fragment {
 
         ArrayList<LatLng> dataArray = new ArrayList<>();
 
-            List<DataEntry> data1 = new ArrayList<>();
-            //add non zero lat/lngs
-            for (int k = 0; k < data.size(); k++) {
-                if (!(data.get(k).latitude == 0) || !(data.get(k).longitude == 0)) {
-                    data1.add(data.get(k));
-                }
+        List<DataEntry> data1 = new ArrayList<>();
+        //add non zero lat/lngs
+        for (int k = 0; k < data.size(); k++) {
+            if (!(data.get(k).latitude == 0) || !(data.get(k).longitude == 0)) {
+                data1.add(data.get(k));
             }
-            //add first non zero lat lng and add its color to color array
-            LatLng base = new LatLng(data1.get(0).latitude, data1.get(0).longitude);
-            dataArray.add(base);
-            color.add(sortColor(data1, 0));
-            //if lat/lng does not equal last lat/lng add it to our path and calculate color
-            for (int k = 1; k < data1.size() - 1; k++) {
-                if (data1.get(k).latitude != data1.get(k - 1).latitude &&
-                        data1.get(k).longitude != data1.get(k - 1).longitude) {
-                    double latitude = data1.get(k).latitude;
-                    double longitude = data1.get(k).longitude;
-                    dataArray.add(new LatLng(latitude, longitude));
-                    color.add(sortColor(data1, k));
-                }
-            }
-            return dataArray;
         }
+        //add first non zero lat lng and add its color to color array
+        LatLng base = new LatLng(data1.get(0).latitude, data1.get(0).longitude);
+        dataArray.add(base);
+        color.add(sortColor(data1, 0));
+        //if lat/lng does not equal last lat/lng add it to our path and calculate color
+        for (int k = 1; k < data1.size() - 1; k++) {
+            if (data1.get(k).latitude != data1.get(k - 1).latitude &&
+                    data1.get(k).longitude != data1.get(k - 1).longitude) {
+                double latitude = data1.get(k).latitude;
+                double longitude = data1.get(k).longitude;
+                dataArray.add(new LatLng(latitude, longitude));
+                color.add(sortColor(data1, k));
+            }
+        }
+        return dataArray;
+    }
 
 
 

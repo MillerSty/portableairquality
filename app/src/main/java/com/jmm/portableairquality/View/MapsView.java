@@ -17,6 +17,5 @@ public class MapsView extends AppCompatActivity {
         setContentView(R.layout.mapview2);
         Fragment fragment = new MapsFrag();
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, fragment).commitNow();
-
     }
 }
