@@ -7,6 +7,9 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -16,6 +19,7 @@ import androidx.annotation.NonNull;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
+//import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
@@ -44,7 +48,12 @@ public class LocationControl implements LocationListener {
             }, 1000);
         }
     }
-
+//    private boolean isNetworkAvailable() {
+//        ConnectivityManager connectivityManager
+//                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+//        NetworkInfo activeNetworkInfo = connectivityManager != null ? connectivityManager.getActiveNetworkInfo() : null;
+//        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+//    }
     @SuppressLint("MissingPermission")
     public void requestLocation(Context context) {
         if (locationManager != null) {
@@ -57,7 +66,10 @@ public class LocationControl implements LocationListener {
             locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         }
     }
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
 
+    }
     @Override
     public void onLocationChanged(@NonNull Location newLocation) {
         SharedPreferences sp = context.getSharedPreferences("hey", Context.MODE_PRIVATE);
