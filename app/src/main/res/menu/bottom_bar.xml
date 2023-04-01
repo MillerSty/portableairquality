@@ -9,22 +9,29 @@
 
     <item
         android:id="@+id/menu_home"
-        android:contentDescription="me"
+        android:contentDescription="Home"
         android:icon="@drawable/ic_home"
         android:title="Home"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menu_map"
+        android:contentDescription="Map"
+        android:icon="@drawable/map_drawable_light"
+        android:title="Map"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/menu_history"
-        android:contentDescription="menu_history"
+        android:contentDescription="History"
         android:icon="@drawable/ic_history"
         android:title="History"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/menu_settings"
-        android:contentDescription="Toiler"
+        android:contentDescription="Settings"
         android:icon="@drawable/ic_settings"
         android:title="Settings"
-        app:showAsAction="ifRoom" />
+        android:visible="true"
+        app:showAsAction="always|withText" />
 </menu>

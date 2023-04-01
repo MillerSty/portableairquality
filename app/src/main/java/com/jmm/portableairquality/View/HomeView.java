@@ -165,6 +165,9 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
             case R.id.menu_settings:
                 Intent goToSettings = new Intent(this, SettingsView.class);
                 startActivity(goToSettings);
+            case R.id.menu_map:
+                Intent goToMap = new Intent(this, MapsView.class);
+                startActivity(goToMap);
             case R.id.menu_home:
                 return true;
             case R.id.menu_history:

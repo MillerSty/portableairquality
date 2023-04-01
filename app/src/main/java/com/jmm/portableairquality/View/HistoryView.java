@@ -71,6 +71,9 @@ public class HistoryView extends AppCompatActivity {
                 startActivity(goToSettings);
 //                showToast("CLICKED SETTINGS");
                 return true;
+            case R.id.menu_map:
+                Intent goToMap = new Intent(this, MapsView.class);
+                startActivity(goToMap);
             case R.id.menu_home:
                 Intent goToHome=new Intent(HistoryView.this, HomeView.class);
                 startActivity(goToHome);

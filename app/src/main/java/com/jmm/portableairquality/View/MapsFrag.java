@@ -99,7 +99,12 @@ public class MapsFrag extends Fragment {
         PolylineOptions line = new PolylineOptions();
         MarkerOptions markerOptions = new MarkerOptions();
         mMap.clear();
-        int position = arrayList.size() - 1;
+        int position;
+//        if(arrayList.size()>1){
+        position = arrayList.size() - 1;
+//          }
+//        else{position=0;}
+
         //zooms to newest position
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(arrayList.get(position), 20F));
         for (int i = 0; i < arrayList.size(); i++) {

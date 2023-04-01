@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.util.Log;
 import androidx.annotation.NonNull;
@@ -164,9 +165,11 @@ public class BluetoothHandler {
                 SensorDataDatabaseHelper db = SensorDataDatabaseHelper.getInstance(context);
                 Date date;
                 while(true) {
-                    //todo getlocation
-                    int latitude = 0;
-                    int longitude = 0;
+                    SharedPreferences sharedPref = context.getSharedPreferences("hey",Context.MODE_PRIVATE);
+                   double latitude= Double.longBitsToDouble(sharedPref.getLong("Lat", 0));
+                    double longitude=Double.longBitsToDouble(sharedPref.getLong("Long",0));
+//                    int latitude = 0;
+//                    int longitude = 0;
                     date = new Date();
                     db.addSensorData(date, latitude, longitude, temp, hum, pm, 0, co2, voc);
                     try {
