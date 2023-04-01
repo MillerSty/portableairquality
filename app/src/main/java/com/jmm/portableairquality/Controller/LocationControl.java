@@ -54,52 +54,38 @@ public class LocationControl implements LocationListener {
 
             locationManager.requestLocationUpdates(bestProvider, minTime, minDistance, this);
             Log.d("LAT LONG", "FALUJAH");
-//            showToast("falujah");
         } else {
             locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         }
-
     }
 
     @Override
     public void onLocationChanged(@NonNull Location newLocation) {
         SharedPreferences sp = contextt.getSharedPreferences("hey", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
-//        location.setAccuracy(ACCURACY_FINE);
-
         Location oldLocation = new Location("");
-        //what is these two doing?
         oldLocation.setLatitude(Double.longBitsToDouble(sp.getLong("Lat", 0)));
         oldLocation.setLongitude(Double.longBitsToDouble(sp.getLong("Long", 0)));
-        //
-//        Location oldLocation=new Location("");
+
 
         if(!(newLocation.getLatitude()==0||newLocation.getLongitude()==0))
-//                &&!(oldLocation.getLongitude()==0||oldLocation.getLatitude()==0))
         {
-            showToast(Float.toString(newLocation.getSpeed()));
-            Log.d("LAT LONG",Float.toString(newLocation.distanceTo(oldLocation)));
-            Log.d("LAT LONG",Float.toString(newLocation.getSpeed()));
             if (newLocation.hasSpeed()&&newLocation.getSpeed() > 1.0) {
                 double latitude = newLocation.getLatitude();
                 double longitude = newLocation.getLongitude();
                 editor.putLong("Lat", Double.doubleToRawLongBits(latitude));
                 editor.putLong("Long", Double.doubleToRawLongBits(longitude));
                 editor.apply();
-                Log.d("LAT LONG", "HERPY");
             } else {
                 if(newLocation.getLatitude()==0||newLocation.getLongitude()==0||oldLocation.getLongitude()==0||oldLocation.getLatitude()==0){
                 double latitude = newLocation.getLatitude();
                 double longitude = newLocation.getLongitude();
                 editor.putLong("Lat", Double.doubleToRawLongBits(latitude));
                 editor.putLong("Long", Double.doubleToRawLongBits(longitude));
-                Log.d("LAT LONG", "SIMPLEX");
                     editor.apply();
                 }
-                //maybe a position count to see if we are staying in the same spot
             }
-            //then check
-//        locationManager.removeUpdates(this);
+
         }
     }
     private void showToast(String message) {
