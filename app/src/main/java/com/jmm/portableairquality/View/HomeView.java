@@ -165,9 +165,11 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
             case R.id.menu_settings:
                 Intent goToSettings = new Intent(this, SettingsView.class);
                 startActivity(goToSettings);
+                return true;
             case R.id.menu_map:
                 Intent goToMap = new Intent(this, MapsView.class);
                 startActivity(goToMap);
+                return true;
             case R.id.menu_home:
                 return true;
             case R.id.menu_history:
@@ -454,10 +456,10 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
                 break;//0-220 is good (green), 220-660 ( yellow), 660-2000(orange), 2000+(red) [ppb]
             case "pm":
                 //TODO Set default for PM values, these are copied from Co2
-                if (readingInt >= 0 && readingInt <= 1111) {
+                if (readingInt >= 0 && readingInt <= 12) {
                     pmDisplay.setBackground(getResources().getDrawable(R.drawable.sensor_display_green));
 //                flagGreen
-                } else if (readingInt > 1000 && readingInt <= 8000) {
+                } else if (readingInt > 12 && readingInt <= 35) {
                     pmDisplay.setBackground(getResources().getDrawable(R.drawable.sensor_display_yellow));
 //                flagYellow
                 } else {

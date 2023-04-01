@@ -33,6 +33,7 @@ public class LocationControl implements LocationListener {
     static float minDistance = 5f; //50-75 is good
     static int minTime = 2000; //1000000
     public LocationControl() {
+
     }
 
     public void handleLocation(Context context) {
@@ -78,17 +79,17 @@ public class LocationControl implements LocationListener {
         oldLocation.setLatitude(Double.longBitsToDouble(sp.getLong("Lat", 0)));
         oldLocation.setLongitude(Double.longBitsToDouble(sp.getLong("Long", 0)));
 
-        Log.d("LAT/LONG","Entering Location checker");
+//        Log.d("LAT/LONG","Entering Location checker");
         if(!(newLocation.getLatitude()==0||newLocation.getLongitude()==0))
         {
-            Log.d("LAT/LONG","NEW LCOATION: " +newLocation.getLatitude()+","+newLocation.getLongitude());
+//            Log.d("LAT/LONG","NEW LCOATION: " +newLocation.getLatitude()+","+newLocation.getLongitude());
             if (newLocation.hasSpeed()&&newLocation.getSpeed() > 1.0) {
                 double latitude = newLocation.getLatitude();
                 double longitude = newLocation.getLongitude();
                 editor.putLong("Lat", Double.doubleToRawLongBits(latitude));
                 editor.putLong("Long", Double.doubleToRawLongBits(longitude));
                 editor.apply();
-                Log.d("LAT/LONG","Updating location");
+//                Log.d("LAT/LONG","Updating location");
             } else {
                 if(newLocation.getLatitude()==0||newLocation.getLongitude()==0||oldLocation.getLongitude()==0||oldLocation.getLatitude()==0){
                 double latitude = newLocation.getLatitude();
@@ -96,7 +97,7 @@ public class LocationControl implements LocationListener {
                 editor.putLong("Lat", Double.doubleToRawLongBits(latitude));
                 editor.putLong("Long", Double.doubleToRawLongBits(longitude));
                     editor.apply();
-                    Log.d("LAT/LONG","Not Updating location");
+//                    Log.d("LAT/LONG","Not Updating location");
                 }
             }
         }

@@ -44,14 +44,17 @@ public class MapsView extends AppCompatActivity {
             case R.id.menu_settings:
                 Intent goToSettings = new Intent(this, SettingsView.class);
                 startActivity(goToSettings);
+                return true;
             case R.id.menu_map:
                 return true;
             case R.id.menu_home:
                 Intent goToHome = new Intent(this, HomeView.class);
                 startActivity(goToHome);
+                return true;
             case R.id.menu_history:
                 Intent goToHistory = new Intent(this, HistoryView.class);
                 startActivity(goToHistory);
+                return true;
             default:
                 return false;
         }

@@ -64,7 +64,7 @@ public class MapsFrag extends Fragment {
     public ArrayList<LatLng> reduceRepeats(List<DataEntry> data, ArrayList<Integer> color) {
 
         ArrayList<LatLng> dataArray = new ArrayList<>();
-        
+
         List<DataEntry> data1 = new ArrayList<>();
         //add non zero lat/lngs
         for (int k = 0; k < data.size(); k++) {

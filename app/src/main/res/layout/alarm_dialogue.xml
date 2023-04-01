@@ -70,7 +70,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tvVocAlarm" />
 
     <EditText
-        android:id="@+id/etPm2Alarm"
+        android:id="@+id/etPmAlarm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="18dp"
@@ -109,7 +109,7 @@
         android:backgroundTint="#717070"
         android:text="Cancel"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etPm2Alarm" />
+        app:layout_constraintTop_toBottomOf="@+id/etPmAlarm" />
 
     <Button
         android:id="@+id/btnSave"
@@ -120,6 +120,6 @@
         android:backgroundTint="#717070"
         android:text="Save"
         app:layout_constraintStart_toEndOf="@+id/btnCancel"
-        app:layout_constraintTop_toBottomOf="@+id/etPm2Alarm" />
+        app:layout_constraintTop_toBottomOf="@+id/etPmAlarm" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
