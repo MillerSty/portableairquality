@@ -153,14 +153,14 @@ public class HistoryView extends AppCompatActivity {
     }
 
     private void updateChart(List<DataEntry> historicalData) { //send this function sorted historical data of arbitrary length
-        long present = new Date().getTime();
         List<Entry> co2 = new ArrayList<>();
         List<Entry> voc = new ArrayList<>();
         List<Entry> temp = new ArrayList<>();
         List<Entry> hum = new ArrayList<>();
         List<Entry> pm = new ArrayList<>();
+        long latest = historicalData.get(0).timestamp;
         for (int i = 0; i < historicalData.size(); i++) { //represent the data in terms of seconds behind present
-            long time = historicalData.get(i).timestamp - present;
+            long time = historicalData.get(i).timestamp - latest;
             // if we have enough points, start taking the moving average of window size 4
             if (i > 8) {
                 float co2Sum = historicalData.get(i).co2Entry;
@@ -227,7 +227,7 @@ public class HistoryView extends AppCompatActivity {
                 @Override
                 public String getFormattedValue(float value) {
                     SimpleDateFormat formatter = new SimpleDateFormat("HH:MM:ss");
-                    return formatter.format(new Date((long)value + present));
+                    return formatter.format(new Date((long)value + latest));
                 }
             });
             chart_air.setNoDataText("oh no! no data in this range, please select different dates");
@@ -267,7 +267,7 @@ public class HistoryView extends AppCompatActivity {
                 @Override
                 public String getFormattedValue(float value) {
                     SimpleDateFormat formatter = new SimpleDateFormat("HH:MM:ss");
-                    return formatter.format(new Date((long)value + present));
+                    return formatter.format(new Date((long)value + latest));
                 }
             });
 

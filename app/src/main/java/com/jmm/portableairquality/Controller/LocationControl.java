@@ -58,9 +58,9 @@ public class LocationControl implements LocationListener {
     @SuppressLint("MissingPermission")
     public void requestLocation(Context context) {
         if (locationManager != null) {
-            Criteria critera=new Criteria();
-            critera.setAccuracy(Criteria.ACCURACY_FINE);
-            String bestProvider = locationManager.getBestProvider(critera, false);
+            Criteria criteria=new Criteria();
+            criteria.setAccuracy(Criteria.ACCURACY_FINE);
+            String bestProvider = locationManager.getBestProvider(criteria, false);
 
             locationManager.requestLocationUpdates(bestProvider, minTime, minDistance, this);
         } else {
