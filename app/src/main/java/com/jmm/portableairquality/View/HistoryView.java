@@ -1,11 +1,18 @@
 package com.jmm.portableairquality.View;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.TimePicker;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -47,20 +54,104 @@ public class HistoryView extends AppCompatActivity {
     List<DataEntry> data;
     long period = 1000; //length of time that one wants to get data from in seconds
     SensorDataDatabaseHelper db;
+    Calendar startTime;
+    Calendar endTime;
+    Button startDateSelect;
+    Button startTimeSelect;
+    Button endDateSelect;
+    Button endTimeSelect;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
         chart_air = (LineChart) findViewById(R.id.chart_air);
         chart_temp = (LineChart) findViewById(R.id.chart_temp);
+        startDateSelect = (Button) findViewById(R.id.start_button);
+        startTimeSelect = (Button) findViewById(R.id.start_button2);
+        endDateSelect = (Button) findViewById(R.id.end_button);
+        endTimeSelect = (Button) findViewById(R.id.end_button2);
+
+        startDateSelect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Calendar now = Calendar.getInstance();
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getApplicationContext(), new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
+                        startTime.set(i, i1, i2); //set date year, month, day
+                    }
+                }, now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DATE)); //default is same day
+                datePickerDialog.show();
+            }
+        });
+
+        startTimeSelect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Calendar now = Calendar.getInstance();
+                now.add(Calendar.MINUTE, -10);
+                TimePickerDialog timePickerDialog = new TimePickerDialog(getApplicationContext(), new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int i, int i1) {
+                        startTime.set(Calendar.HOUR, i);
+                        startTime.set(Calendar.MINUTE, i1);
+                        if (startTime.after(Calendar.getInstance())) {
+                            Toast.makeText(getApplicationContext(), "start time after current time! please change start time! resetting start time to default", Toast.LENGTH_LONG).show();
+                            startTime = Calendar.getInstance();
+                            startTime.add(Calendar.MINUTE, -10);
+                        }
+                    }
+                }, now.get(Calendar.HOUR), now.get(Calendar.MINUTE), true); //default is 10 minutes earlier
+                timePickerDialog.show();
+            }
+        });
+
+        endDateSelect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Calendar now = Calendar.getInstance();
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getApplicationContext(), new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
+                        endTime.set(i, i1, i2); //set date year, month, day
+                    }
+                }, now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DATE)); //default is same day
+                datePickerDialog.show();
+            }
+        });
+
+        endTimeSelect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Calendar now = Calendar.getInstance();
+                TimePickerDialog timePickerDialog = new TimePickerDialog(getApplicationContext(), new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int i, int i1) {
+                        endTime.set(Calendar.HOUR, i);
+                        endTime.set(Calendar.MINUTE, i1);
+                        if (endTime.before(startTime)) {
+                            Toast.makeText(getApplicationContext(), "end time before start time! please reset end time! resetting end time to present", Toast.LENGTH_LONG).show();
+                            endTime = Calendar.getInstance();
+                        }
+                    }
+                }, now.get(Calendar.HOUR), now.get(Calendar.MINUTE), true); //default is current time
+                timePickerDialog.show();
+            }
+        });
+
         navbot=findViewById(R.id.bottom_nav);
         navbot.setOnNavigationItemSelectedListener(this::onNavigationItemSelected);
         navbot.setSelectedItemId(R.id.menu_history);
         db = SensorDataDatabaseHelper.getInstance(getApplicationContext());
-        data = db.getEntriesAfterTimestamp(new Date().getTime() - 3600*1000);
-        updateChart(data);
+        startTime = Calendar.getInstance();
+        startTime.add(Calendar.MINUTE, -10);
+        endTime = Calendar.getInstance();
+        data = db.getEntriesAfterTimestamp(startTime.getTimeInMillis());
+        updateChart(data, endTime.getTimeInMillis());
         registerReceiver(refresh, new IntentFilter(BluetoothHandler.UPDATED)); //basic attempt at making automated refresh
     }
+
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
@@ -84,8 +175,8 @@ public class HistoryView extends AppCompatActivity {
         }
     }
 
-    private void updateChart(List<DataEntry> historicalData) { //send this function sorted historical data of arbitrary length
-        long present = historicalData.get(historicalData.size()-1).timestamp;
+    private void updateChart(List<DataEntry> historicalData, long endTime) { //send this function sorted historical data of arbitrary length
+        long present = new Date().getTime();
         List<Entry> co2 = new ArrayList<>();
         List<Entry> voc = new ArrayList<>();
         List<Entry> temp = new ArrayList<>();
@@ -157,11 +248,11 @@ public class HistoryView extends AppCompatActivity {
             xAxis_air.setValueFormatter(new ValueFormatter() {
                 @Override
                 public String getFormattedValue(float value) {
-                    SimpleDateFormat formatter = new SimpleDateFormat("HH:MM:ss");
+                    SimpleDateFormat formatter = new SimpleDateFormat("MMM dd HH:MM:ss");
                     return formatter.format(new Date((long)value + new Date().getTime()));
                 }
             });
-            chart_air.setNoDataText("oh no! no data :(");
+            chart_air.setNoDataText("oh no! no data in this range, please select different dates");
 
             Description desc_air = chart_air.getDescription();
             desc_air.setText("Graph of air quality parameters over time!");
@@ -197,12 +288,12 @@ public class HistoryView extends AppCompatActivity {
             xAxis_temp.setValueFormatter(new ValueFormatter() {
                 @Override
                 public String getFormattedValue(float value) {
-                    SimpleDateFormat formatter = new SimpleDateFormat("HH:MM:ss");
+                    SimpleDateFormat formatter = new SimpleDateFormat("MMM dd HH:MM:ss");
                     return formatter.format(new Date((long)value + new Date().getTime()));
                 }
             });
 
-            chart_temp.setNoDataText("no data, something is amiss here");
+            chart_temp.setNoDataText("no data selected in time range, please select a different time!");
 
             Description desc_temp = chart_temp.getDescription();
             desc_temp.setText("Graph of temperature and humidity!");
@@ -214,9 +305,13 @@ public class HistoryView extends AppCompatActivity {
     private final BroadcastReceiver refresh = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            data = db.getEntriesAfterTimestamp(new Date().getTime()-3600*1000);
-            if (data.size() > 0) {
-                updateChart(data);
+            data = db.getEntriesAfterTimestamp(startTime.getTimeInMillis());
+            if (data.size() > 0 && endTime.after(startTime)) {
+                updateChart(data, endTime.getTimeInMillis());
+            } else if (endTime.before(startTime)) {
+                Toast.makeText(getApplicationContext(), "end time before start time! please reset end time! resetting end time to present", Toast.LENGTH_LONG).show();
+                endTime = Calendar.getInstance();
+                updateChart(data, endTime.getTimeInMillis());
             }
         }
     };
