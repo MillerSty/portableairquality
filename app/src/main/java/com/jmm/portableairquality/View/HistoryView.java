@@ -76,14 +76,23 @@ public class HistoryView extends AppCompatActivity {
         endTimeSelect = (EditText) findViewById(R.id.end_button2);
         resetButton = (Button) findViewById(R.id.reset_button);
 
+        // this is necessary so that the keyboard doesn't appear
+        startDateSelect.setFocusable(false);
+        startTimeSelect.setFocusable(false);
+        endDateSelect.setFocusable(false);
+        endTimeSelect.setFocusable(false);
+
         startDateSelect.setOnClickListener(view -> {
             Calendar now = Calendar.getInstance();
             now.add(Calendar.HOUR, -24);
             DatePickerDialog datePickerDialog = new DatePickerDialog(HistoryView.this, (datePicker, i, i1, i2) -> {
                 startTime.set(i, i1, i2); //set date year, month, day
-                startDateSelect.setText(new SimpleDateFormat("MMM dd").format(startTime));
+                startDateSelect.setText(new SimpleDateFormat("MMM dd").format(startTime.getTimeInMillis()));
             }, now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DATE)); //default is same day
             datePickerDialog.show();
+
+            chart_air.fitScreen();
+            chart_temp.fitScreen();
         });
 
         startTimeSelect.setOnClickListener(view -> {
@@ -97,18 +106,25 @@ public class HistoryView extends AppCompatActivity {
                     startTime = Calendar.getInstance();
                     startTime.add(Calendar.MINUTE, -10);
                 }
-                startTimeSelect.setText(new SimpleDateFormat("HH:mm:ss").format(startTime));
+                startTimeSelect.setText(new SimpleDateFormat("HH:mm").format(startTime.getTimeInMillis()));
             }, now.get(Calendar.HOUR), now.get(Calendar.MINUTE), true); //default is 10 minutes earlier
             timePickerDialog.show();
+
+            chart_air.fitScreen();
+            chart_temp.fitScreen();
         });
 
         endDateSelect.setOnClickListener(view -> {
             Calendar now = Calendar.getInstance();
             DatePickerDialog datePickerDialog = new DatePickerDialog(HistoryView.this, (datePicker, i, i1, i2) -> {
                 endTime.set(i, i1, i2); //set date year, month, day
-                endDateSelect.setText(new SimpleDateFormat("MMM dd").format(endTime));
+                endDateSelect.setText(new SimpleDateFormat("MMM dd").format(endTime.getTimeInMillis()));
             }, now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DATE)); //default is same day
             datePickerDialog.show();
+
+            chart_air.fitScreen();
+            chart_temp.fitScreen();
+
             live = false;
         });
 
@@ -121,9 +137,13 @@ public class HistoryView extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "end time before start time! please reset end time! resetting end time to present", Toast.LENGTH_LONG).show();
                     endTime = Calendar.getInstance();
                 }
-                endTimeSelect.setText(new SimpleDateFormat("HH:mm:ss").format(endTime));
+                endTimeSelect.setText(new SimpleDateFormat("HH:mm").format(endTime.getTimeInMillis()));
             }, now.get(Calendar.HOUR), now.get(Calendar.MINUTE), true); //default is current time
             timePickerDialog.show();
+
+            chart_air.fitScreen();
+            chart_temp.fitScreen();
+
             live = false;
         });
 
@@ -131,6 +151,16 @@ public class HistoryView extends AppCompatActivity {
             startTime = Calendar.getInstance();
             startTime.add(Calendar.HOUR, -24);
             endTime = Calendar.getInstance();
+
+            // reset the text in the boxes to match
+            startDateSelect.setText(new SimpleDateFormat("MMM dd").format(startTime.getTimeInMillis()));
+            startTimeSelect.setText(new SimpleDateFormat("HH:mm").format(startTime.getTimeInMillis()));
+            endDateSelect.setText("Now");
+            endTimeSelect.setText(" ");
+
+            chart_air.fitScreen();
+            chart_temp.fitScreen();
+
             live = true;
         });
 
@@ -144,10 +174,10 @@ public class HistoryView extends AppCompatActivity {
         data = db.getEntriesBetweenTimestamps(startTime.getTimeInMillis(), endTime.getTimeInMillis());
         updateChart(data);
         registerReceiver(refresh, new IntentFilter(BluetoothHandler.UPDATED)); //basic attempt at making automated refresh
-        startDateSelect.setText(new SimpleDateFormat("MMM dd").format(startTime));
-        startTimeSelect.setText(new SimpleDateFormat("HH:mm:ss").format(startTime));
-        endDateSelect.setText(new SimpleDateFormat("MMM dd").format(endTime));
-        endTimeSelect.setText(new SimpleDateFormat("HH:mm:ss").format(endTime));
+        startDateSelect.setText(new SimpleDateFormat("MMM dd").format(startTime.getTimeInMillis()));
+        startTimeSelect.setText(new SimpleDateFormat("HH:mm").format(startTime.getTimeInMillis()));
+        endDateSelect.setText(new SimpleDateFormat("MMM dd").format(endTime.getTimeInMillis()));
+        endTimeSelect.setText(new SimpleDateFormat("HH:mm").format(endTime.getTimeInMillis()));
     }
 
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -180,125 +210,130 @@ public class HistoryView extends AppCompatActivity {
         List<Entry> temp = new ArrayList<>();
         List<Entry> hum = new ArrayList<>();
         List<Entry> pm = new ArrayList<>();
-        long latest = historicalData.get(0).timestamp;
-        for (int i = 0; i < historicalData.size(); i++) { //represent the data in terms of seconds behind present
-            long time = historicalData.get(i).timestamp - latest;
-            // if we have enough points, start taking the moving average of window size 4
-            if (i > 8) {
-                float co2Sum = historicalData.get(i).co2Entry;
-                float vocSum = historicalData.get(i).vocEntry;
-                float tempSum = historicalData.get(i).tempEntry;
-                float humSum = historicalData.get(i).humEntry;
-                float pmSum = historicalData.get(i).pm;
-                for (int j = 0; j < 9; j++) {
-                    co2Sum += co2.get(i - j - 1).getY();
-                    vocSum += voc.get(i - j - 1).getY();
-                    tempSum += temp.get(i - j - 1).getY();
-                    humSum += hum.get(i - j - 1).getY();
-                    pmSum += pm.get(i - j - 1).getY();
+        if (historicalData.size() > 0) {
+            long latest = historicalData.get(historicalData.size() - 1).timestamp;
+            for (int i = 0; i < historicalData.size(); i++) { //represent the data in terms of seconds behind present
+                long time = historicalData.get(i).timestamp - latest;
+                // if we have enough points, start taking the moving average of window size 4
+                if (i > 8) {
+                    float co2Sum = historicalData.get(i).co2Entry;
+                    float vocSum = historicalData.get(i).vocEntry;
+                    float tempSum = historicalData.get(i).tempEntry;
+                    float humSum = historicalData.get(i).humEntry;
+                    float pmSum = historicalData.get(i).pm;
+                    for (int j = 0; j < 9; j++) {
+                        co2Sum += co2.get(i - j - 1).getY();
+                        vocSum += voc.get(i - j - 1).getY();
+                        tempSum += temp.get(i - j - 1).getY();
+                        humSum += hum.get(i - j - 1).getY();
+                        pmSum += pm.get(i - j - 1).getY();
+                    }
+                    co2.add(new Entry(time, co2Sum / 10));
+                    voc.add(new Entry(time, vocSum / 10));
+                    temp.add(new Entry(time, tempSum / 10));
+                    hum.add(new Entry(time, humSum / 10));
+                    pm.add(new Entry(time, pmSum / 10));
+                } else {
+                    co2.add(new Entry(time, historicalData.get(i).co2Entry));
+                    voc.add(new Entry(time, historicalData.get(i).vocEntry));
+                    temp.add(new Entry(time, historicalData.get(i).tempEntry));
+                    hum.add(new Entry(time, historicalData.get(i).humEntry));
+                    pm.add(new Entry(time, historicalData.get(i).pm));
                 }
-                co2.add(new Entry(time, co2Sum/10));
-                voc.add(new Entry(time, vocSum/10));
-                temp.add(new Entry(time, tempSum/10));
-                hum.add(new Entry(time, humSum/10));
-                pm.add(new Entry(time, pmSum/10));
-            } else {
-                co2.add(new Entry(time, historicalData.get(i).co2Entry));
-                voc.add(new Entry(time, historicalData.get(i).vocEntry));
-                temp.add(new Entry(time, historicalData.get(i).tempEntry));
-                hum.add(new Entry(time, historicalData.get(i).humEntry));
-                pm.add(new Entry(time, historicalData.get(i).pm));
             }
-        }
 
-        // update co2 and voc chart
-        LineDataSet co2Data, vocData, pmData;
-        if (chart_air.getData() != null && chart_air.getData().getDataSetCount() > 0) {
-            co2Data = (LineDataSet) chart_air.getData().getDataSetByIndex(0);
-            vocData = (LineDataSet) chart_air.getData().getDataSetByIndex(1);
-            pmData = (LineDataSet) chart_air.getData().getDataSetByIndex(2);
 
-            co2Data.setValues(co2);
-            vocData.setValues(voc);
-            pmData.setValues(pm);
+            // update co2 and voc chart
+            LineDataSet co2Data, vocData, pmData;
+            if (chart_air.getData() != null && chart_air.getData().getDataSetCount() > 0) {
+                co2Data = (LineDataSet) chart_air.getData().getDataSetByIndex(0);
+                vocData = (LineDataSet) chart_air.getData().getDataSetByIndex(1);
+                pmData = (LineDataSet) chart_air.getData().getDataSetByIndex(2);
 
-            chart_air.getData().notifyDataChanged();
-            chart_air.notifyDataSetChanged();
+                co2Data.setValues(co2);
+                vocData.setValues(voc);
+                pmData.setValues(pm);
+
+                chart_air.invalidate();
+            } else {
+                co2Data = new LineDataSet(co2, "CO2");
+                co2Data.setAxisDependency(YAxis.AxisDependency.LEFT); //set it to the left AXIS
+                co2Data.setColor(0xFF4C7C, 200); // set line colour (red) and opacity
+                co2Data.setDrawCircles(false);
+
+                vocData = new LineDataSet(voc, "VOC");
+                vocData.setAxisDependency(YAxis.AxisDependency.RIGHT);
+                vocData.setColor(0x787EF4, 200); //light blue
+                vocData.setDrawCircles(false);
+
+                pmData = new LineDataSet(pm, "PM2.5");
+                pmData.setAxisDependency(YAxis.AxisDependency.RIGHT);
+                pmData.setColor(0x279119, 200); //dark green
+                pmData.setDrawCircles(false);
+
+
+                LineData air_data = new LineData(co2Data, vocData, pmData);
+                chart_air.setData(air_data);
+
+                XAxis xAxis_air = chart_air.getXAxis();
+                xAxis_air.setValueFormatter(new ValueFormatter() {
+                    @Override
+                    public String getFormattedValue(float value) {
+                        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+                        long millis = (long) value + latest;
+                        return formatter.format(new Date(millis));
+                    }
+                });
+                chart_air.setNoDataText("oh no! no data in this range, please select different dates");
+
+                Description desc_air = chart_air.getDescription();
+                desc_air.setText("Graph of air quality parameters over time!");
+
+                chart_air.invalidate();
+            }
+
+            // update temp and humidity chart
+            LineDataSet tempData, humData;
+            if (chart_temp.getData() != null && chart_temp.getData().getDataSetCount() > 0) {
+                tempData = (LineDataSet) chart_temp.getData().getDataSetByIndex(0);
+                humData = (LineDataSet) chart_temp.getData().getDataSetByIndex(1);
+
+                tempData.setValues(temp);
+                humData.setValues(hum);
+
+                chart_temp.invalidate();
+            } else {
+                tempData = new LineDataSet(temp, "Temperature");
+                tempData.setAxisDependency(YAxis.AxisDependency.RIGHT);
+                tempData.setColor(0x32c3e2, 200);
+                tempData.setDrawCircles(false);
+
+                humData = new LineDataSet(hum, "Relative Humidity");
+                humData.setAxisDependency(YAxis.AxisDependency.RIGHT);
+                humData.setColor(0x807fe2, 200);
+                humData.setDrawCircles(false);
+
+                LineData air_data = new LineData(tempData, humData);
+                chart_temp.setData(air_data);
+
+                XAxis xAxis_temp = chart_temp.getXAxis();
+                xAxis_temp.setValueFormatter(new ValueFormatter() {
+                    @Override
+                    public String getFormattedValue(float value) {
+                        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+                        return formatter.format(new Date((long) value + latest));
+                    }
+                });
+
+                chart_temp.setNoDataText("no data selected in time range, please select a different time!");
+
+                Description desc_temp = chart_temp.getDescription();
+                desc_temp.setText("Graph of temperature and humidity!");
+
+                chart_temp.invalidate();
+            }
         } else {
-            co2Data = new LineDataSet(co2, "CO2");
-            co2Data.setAxisDependency(YAxis.AxisDependency.LEFT); //set it to the left AXIS
-            co2Data.setColor(0xFF4C7C, 200); // set line colour (red) and opacity
-            co2Data.setDrawCircles(false);
 
-            vocData = new LineDataSet(voc, "VOC");
-            vocData.setAxisDependency(YAxis.AxisDependency.RIGHT);
-            vocData.setColor(0x787EF4, 200); //light blue
-            vocData.setDrawCircles(false);
-
-            pmData = new LineDataSet(pm, "PM2.5");
-            pmData.setAxisDependency(YAxis.AxisDependency.RIGHT);
-            pmData.setColor(0x279119, 200); //dark green
-            pmData.setDrawCircles(false);
-
-
-            LineData air_data = new LineData(co2Data, vocData, pmData);
-            chart_air.setData(air_data);
-
-            XAxis xAxis_air = chart_air.getXAxis();
-            xAxis_air.setValueFormatter(new ValueFormatter() {
-                @Override
-                public String getFormattedValue(float value) {
-                    SimpleDateFormat formatter = new SimpleDateFormat("HH:MM:ss");
-                    return formatter.format(new Date((long)value + latest));
-                }
-            });
-            chart_air.setNoDataText("oh no! no data in this range, please select different dates");
-
-            Description desc_air = chart_air.getDescription();
-            desc_air.setText("Graph of air quality parameters over time!");
-
-            chart_air.invalidate();
-        }
-
-        // update temp and humidity chart
-        LineDataSet tempData, humData;
-        if (chart_temp.getData() != null && chart_temp.getData().getDataSetCount() > 0) {
-            tempData = (LineDataSet) chart_temp.getData().getDataSetByIndex(0);
-            humData = (LineDataSet) chart_temp.getData().getDataSetByIndex(1);
-
-            tempData.setValues(temp);
-            humData.setValues(hum);
-
-            chart_temp.invalidate();
-        } else {
-            tempData = new LineDataSet(temp, "Temperature");
-            tempData.setAxisDependency(YAxis.AxisDependency.RIGHT);
-            tempData.setColor(0x32c3e2, 200);
-            tempData.setDrawCircles(false);
-
-            humData = new LineDataSet(hum, "Relative Humidity");
-            humData.setAxisDependency(YAxis.AxisDependency.RIGHT);
-            humData.setColor(0x807fe2, 200);
-            humData.setDrawCircles(false);
-
-            LineData air_data = new LineData(tempData, humData);
-            chart_temp.setData(air_data);
-
-            XAxis xAxis_temp = chart_temp.getXAxis();
-            xAxis_temp.setValueFormatter(new ValueFormatter() {
-                @Override
-                public String getFormattedValue(float value) {
-                    SimpleDateFormat formatter = new SimpleDateFormat("HH:MM:ss");
-                    return formatter.format(new Date((long)value + latest));
-                }
-            });
-
-            chart_temp.setNoDataText("no data selected in time range, please select a different time!");
-
-            Description desc_temp = chart_temp.getDescription();
-            desc_temp.setText("Graph of temperature and humidity!");
-
-            chart_temp.invalidate();
         }
     }
 
@@ -317,7 +352,9 @@ public class HistoryView extends AppCompatActivity {
                 }
             }
             data = db.getEntriesBetweenTimestamps(startTime.getTimeInMillis(), endTime.getTimeInMillis());
-            updateChart(data);
+            if (data.size() > 0) {
+                updateChart(data);
+            }
         }
     };
 
