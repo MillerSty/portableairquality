@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        tools:context=".MainActivity"
+        tools:ignore="HardcodedText">
+
+        <!--Give all widgets, the proper id to
+            handle them in MainActivity.java-->
+
+        <!--Pick color Button-->
+        <top.defaults.colorpicker.ColorPickerView
+            android:id="@+id/colorPicker"
+            enableAlpha="true"
+            enableBrightness="true"
+            android:layout_width="210dp"
+            android:layout_height="255dp"
+            android:layout_marginStart="35dp"
+            android:layout_marginEnd="32dp"
+            tools:ignore="MissingConstraints" />
+
+        <!--sample view to preview selected color by user-->
+        <!--by default this has been set to darker gery-->
+        <!--this can be overridden after user choose the
+            color from color picker-->
+        <!--which has been handled in the MainActivity.java-->
+
+
+        <!--set color button to overwrite the
+            color for GeeksforGeeks text-->
+
+        <Button
+            android:id="@+id/set_color_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="32dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:text="Set Color" />
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

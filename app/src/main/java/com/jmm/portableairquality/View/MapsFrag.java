@@ -1,7 +1,9 @@
 package com.jmm.portableairquality.View;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -17,6 +19,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.jmm.portableairquality.Model.DataEntry;
 import com.jmm.portableairquality.Model.SensorDataDatabaseHelper;
 import com.jmm.portableairquality.Model.SensorSingleton;
@@ -36,7 +39,7 @@ public class MapsFrag extends Fragment {
     ArrayList<Integer> color;
     public boolean isSimulated = false;
     final int DAY_IN_MILLIS = 3600000;
-
+    BottomNavigationView navbot;
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.mapfrag, container, false);
@@ -48,7 +51,7 @@ public class MapsFrag extends Fragment {
             data = db.getEntriesAfterTimestamp(new Date().getTime() - DAY_IN_MILLIS);
             color = new ArrayList<>();
             ListLong = reduceRepeats(data, color);
-
+        navbot=getActivity().findViewById(R.id.bottom_nav);
 
         SupportMapFragment supportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.MY_MAP);
         supportMapFragment.getMapAsync(new OnMapReadyCallback() {
@@ -134,6 +137,9 @@ public class MapsFrag extends Fragment {
                 red = val;
                 return val;//2131034753
             }
+    }
+    private void showToast(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
     void deadWorkingSamples() {

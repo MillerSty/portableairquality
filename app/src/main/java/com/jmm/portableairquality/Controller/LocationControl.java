@@ -61,8 +61,13 @@ public class LocationControl implements LocationListener {
             Criteria critera=new Criteria();
             critera.setAccuracy(Criteria.ACCURACY_FINE);
             String bestProvider = locationManager.getBestProvider(critera, false);
-
+            if(!(bestProvider==null)){
             locationManager.requestLocationUpdates(bestProvider, minTime, minDistance, this);
+            }
+            else{
+                //request permissions and turn on location
+
+            }
         } else {
             locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         }

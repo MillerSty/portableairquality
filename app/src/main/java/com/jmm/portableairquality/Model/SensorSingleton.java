@@ -1,10 +1,11 @@
 package com.jmm.portableairquality.Model;
 
 public class SensorSingleton {
-    int Co2Alarm,VocAlarm,PmAlarm;
+    int Co2Alarm,VocAlarm;
+    float PmAlarm;
     public static int  Co2Default=8500;
     public static int  VocDefault=2500;
-    public static int  PmDefault=6000;
+    public static float  PmDefault=35;
 
     public static int  GlobalGreen=456;
     public static int  GlobalYellow=1367;
@@ -27,11 +28,11 @@ public static SensorSingleton Instance=new SensorSingleton();
         VocAlarm = vocAlarm;
     }
 
-    public int getPmAlarm() {
+    public float getPmAlarm() {
         return PmAlarm;
     }
 
-    public void setPmAlarm(int pmAlarm) {
+    public void setPmAlarm(float pmAlarm) {
         PmAlarm = pmAlarm;
     }
 

@@ -1,20 +1,26 @@
 package com.jmm.portableairquality.View;
 
+import android.annotation.SuppressLint;
 import android.app.ActivityOptions;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.transition.Fade;
+import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.Window;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
@@ -42,7 +48,7 @@ import java.util.List;
 import com.jmm.portableairquality.Model.SensorDataDatabaseHelper;
 
 import kotlin.ParameterName;
-
+//charts by https://github.com/PhilJay/MPAndroidChart
 public class HistoryView extends AppCompatActivity {
     BottomNavigationView navbot;
     LineChart chart_air;
@@ -50,12 +56,15 @@ public class HistoryView extends AppCompatActivity {
     List<DataEntry> data;
     public final int DAY_IN_MILLIS = 3600000; //length of time that one wants to get data from in seconds
     SensorDataDatabaseHelper db;
+    public SharedPreferences sharedPref;
+    int textColor;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         getWindow().setExitTransition(new Fade());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
+        sharedPref = this.getSharedPreferences("graphColour", Context.MODE_PRIVATE);
         chart_air = (LineChart) findViewById(R.id.chart_air);
         chart_temp = (LineChart) findViewById(R.id.chart_temp);
         navbot=findViewById(R.id.bottom_nav);
@@ -63,6 +72,11 @@ public class HistoryView extends AppCompatActivity {
         navbot.setSelectedItemId(R.id.menu_history);
         db = SensorDataDatabaseHelper.getInstance(getApplicationContext());
         data = db.getEntriesAfterTimestamp(new Date().getTime() - 3600*1000);
+
+        TypedValue type=new TypedValue();
+        getTheme().resolveAttribute(androidx.appcompat.R.attr.colorPrimary,type,true);
+        textColor= ContextCompat.getColor(this,type.resourceId);
+
         updateChart(data);
         registerReceiver(refresh, new IntentFilter(BluetoothHandler.UPDATED)); //basic attempt at making automated refresh
     }
@@ -90,6 +104,7 @@ public class HistoryView extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("ResourceType")
     private void updateChart(List<DataEntry> historicalData) { //send this function sorted historical data of arbitrary length
         long present = historicalData.get(historicalData.size()-1).timestamp;
         List<Entry> co2 = new ArrayList<>();
@@ -135,19 +150,23 @@ public class HistoryView extends AppCompatActivity {
             chart_air.getData().notifyDataChanged();
             chart_air.notifyDataSetChanged();
         } else {
+
+
             co2Data = new LineDataSet(co2, "CO2");
+
             co2Data.setAxisDependency(YAxis.AxisDependency.LEFT); //set it to the left AXIS
-            co2Data.setColor(0xFF4C7C, 200); // set line colour and opacity
+            co2Data.setColor(sharedPref.getInt("Co2_Color",0), 200); // set line colour and opacity
             co2Data.setDrawCircles(false);
             vocData = new LineDataSet(voc, "VOC");
             vocData.setAxisDependency(YAxis.AxisDependency.RIGHT);
-            vocData.setColor(0x787EF4, 200);
+            vocData.setColor(sharedPref.getInt("VoC_Color",0), 200);
             vocData.setDrawCircles(false);
 
             LineData air_data = new LineData(co2Data, vocData);
             chart_air.setData(air_data);
 
             XAxis xAxis_air = chart_air.getXAxis();
+
             xAxis_air.setValueFormatter(new ValueFormatter() {
                 @Override
                 public String getFormattedValue(float value) {
@@ -156,6 +175,11 @@ public class HistoryView extends AppCompatActivity {
                 }
             });
             chart_air.setNoDataText("oh no! no data :(");
+
+            chart_air.getLegend().setTextColor(textColor);
+            chart_air.getXAxis().setTextColor(textColor);
+            chart_air.getAxisLeft().setTextColor(textColor);
+            chart_air.getAxisRight().setTextColor(textColor);
 
             Description desc_air = chart_air.getDescription();
             desc_air.setText("Graph of air quality parameters over time!");
@@ -176,12 +200,12 @@ public class HistoryView extends AppCompatActivity {
         } else {
             tempData = new LineDataSet(temp, "Temperature");
             tempData.setAxisDependency(YAxis.AxisDependency.RIGHT);
-            tempData.setColor(0x32c3e2, 200);
+            tempData.setColor(sharedPref.getInt("Temp_Color",0), 200);
             tempData.setDrawCircles(false);
 
             humData = new LineDataSet(hum, "Relative Humidity");
             humData.setAxisDependency(YAxis.AxisDependency.RIGHT);
-            humData.setColor(0x807fe2, 200);
+            humData.setColor(sharedPref.getInt("Hum_Color",0), 200);
             humData.setDrawCircles(false);
 
             LineData air_data = new LineData(tempData, humData);
@@ -198,6 +222,10 @@ public class HistoryView extends AppCompatActivity {
 
             chart_temp.setNoDataText("no data, something is amiss here");
 
+            chart_temp.getLegend().setTextColor(textColor);
+            chart_temp.getXAxis().setTextColor(textColor);
+            chart_temp.getAxisLeft().setTextColor(textColor);
+            chart_temp.getAxisRight().setTextColor(textColor);
             Description desc_temp = chart_temp.getDescription();
             desc_temp.setText("Graph of temperature and humidity!");
 

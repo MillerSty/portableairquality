@@ -12,4 +12,9 @@
     <color name="orange_200">#D95518</color>
     <color name="green_200">#72E685</color>
     <color name="coconut_cream">#fefefa</color>
+    <color name="co2Colour"> #FF4C7C</color>
+    <color name="vocColour"> #787EF4</color>
+    <color name="pmColour"> #FF4C7C</color>
+    <color name="tempColour"> #32c3e2</color>
+    <color name="humColour"> #807fe2</color>
 </resources>

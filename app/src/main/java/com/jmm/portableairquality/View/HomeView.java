@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Build;
@@ -64,7 +65,8 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
     BottomNavigationView navbot;
     TextView co2Display, vocDisplay, tempDisplay, humDisplay, pmDisplay;
     public int co2, voc;
-
+    public float pm;
+    boolean FN_co2=false,FN_voc=false,FN_pm=false;
     public SensorDataDatabaseHelper db;
 
     @Override
@@ -89,6 +91,21 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
             manager.createNotificationChannel(channel);
         }
         db = new SensorDataDatabaseHelper(getApplicationContext());
+
+
+
+        SharedPreferences sharedPref = this.getSharedPreferences("graphColour", Context.MODE_PRIVATE);
+        if(sharedPref.getInt("Temp_Color",0)==0||sharedPref.getInt("Co2_Color",0)==0){
+//            sharedPref.
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putInt("Temp_Color",getResources().getColor(R.color.tempColour));
+            editor.putInt("Hum_Color",getResources().getColor(R.color.humColour));
+            editor.putInt("Co2_Color",getResources().getColor(R.color.co2Colour));
+            editor.putInt("VoC_Color",getResources().getColor(R.color.vocColour));
+            editor.putInt("Pm_Color",getResources().getColor(R.color.pmColour));
+            editor.apply();
+        }
+
     }
 
     protected void onStart() {
@@ -100,8 +117,9 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 //            int co2=SensorDataDatabaseHelper.COLUMN_CO;
 
-                textViewHandler("co2",co2);
+                textViewHandler("co2",co2,0);
             if( co2>SensorSingleton.Instance.getCo2Alarm()){
+                FN_co2=true;
             Notification("Co2");}
             }
 
@@ -117,8 +135,9 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 //            int voc=SensorDataDatabaseHelper.COLUMN_VOC;
-                                textViewHandler("voc",voc);
+                                textViewHandler("voc",voc,0);
             if( voc>SensorSingleton.Instance.getVocAlarm()){
+                FN_voc=true;
                 Notification("Voc");}
             }
 
@@ -133,10 +152,11 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         pmDisplay.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//            float pm2=SensorDataDatabaseHelper.COLUMN_PM2;
-                //                textViewHandler("pm2",pm2);
-//            if( pm2>SensorSingleton.Instance.getPm2Alarm()){
-//                Notification("Pm2");}
+//            float pm2=SensorDataDatabaseHelper.COLUMN_PM;
+                                textViewHandler("pm2",0,pm);
+            if( pm>SensorSingleton.Instance.getPmAlarm()){
+                FN_pm=true;
+                Notification("Pm");}
             }
 
             @Override
@@ -396,13 +416,14 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
     @SuppressLint("MissingPermission")
     public void Notification(String sensor_alert) {
         Intent notifyIntent = new Intent(this, HomeView.class);
+        String sensorString="";
 // Set the Activity to start in a new, empty task
         notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                 | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 // Create the PendingIntent
         PendingIntent notifyPendingIntent = PendingIntent.getActivity(
                 this, 0, notifyIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+                PendingIntent.FLAG_CANCEL_CURRENT
         );
         NotificationCompat.Builder builder;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -415,11 +436,13 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
             builder = new NotificationCompat.Builder(HomeView.this, "my notif");
         }
 
+
         builder.setContentTitle(sensor_alert + " beyond threshold")
                 .setContentText(sensor_alert + " has gone beyond the limit set.")
                 .setSmallIcon(R.drawable.humidity)
                 .setAutoCancel(true)
                 .setContentIntent(notifyPendingIntent);
+
         //can also set intent to go to when clicked
         NotificationManagerCompat managerCompat = NotificationManagerCompat.from(HomeView.this);
 
@@ -451,7 +474,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
     }
 
     //TODO add proper bounds of Pm readings
-    public void textViewHandler(String sensor, int readingInt) {
+    public void textViewHandler(String sensor, int readingInt,float readingPm) {
         boolean flagRed = false, flagYellow = false, flagGreen = false;
         switch (sensor) {
             case "co2":
@@ -480,10 +503,10 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
                 break;//0-220 is good (green), 220-660 ( yellow), 660-2000(orange), 2000+(red) [ppb]
             case "pm":
                 //TODO Set default for PM values, these are copied from Co2
-                if (readingInt >= 0 && readingInt <= 12) {
+                if (readingPm >= 0f && readingPm <= 12f) {
                     pmDisplay.setBackground(getResources().getDrawable(R.drawable.sensor_display_green));
 //                flagGreen
-                } else if (readingInt > 12 && readingInt <= 35) {
+                } else if (readingPm > 12f && readingPm <= 35f) {
                     pmDisplay.setBackground(getResources().getDrawable(R.drawable.sensor_display_yellow));
 //                flagYellow
                 } else {
@@ -507,6 +530,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         navbot = findViewById(R.id.bottom_nav);
         navbot.setOnNavigationItemSelectedListener(this);
         navbot.setSelectedItemId(R.id.menu_home);
+
     }
 
     public void initSensorAlarm() {
