@@ -11,71 +11,78 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.jmm.portableairquality.Controller.AlarmDialogue;
-import com.jmm.portableairquality.Model.SensorSingleton;
 import com.jmm.portableairquality.R;
 
 public class SettingsView extends AppCompatActivity {
     BottomNavigationView navbot;
     ImageView alarm;
-    Switch swiss;
-    Boolean isChecked;
-    SensorSingleton Sensor;
+    Switch swiss, switch_vibration;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //TODO Smaller text size for alarmdialgoue
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        navbot=findViewById(R.id.bottom_nav);
+        navbot = findViewById(R.id.bottom_nav);
         navbot.setOnNavigationItemSelectedListener(this::onNavigationItemSelected);
         navbot.setSelectedItemId(R.id.menu_settings);
-        alarm=findViewById(R.id.IvAlarm);
-        swiss=findViewById(R.id.switch1);
-        isChecked=false;
+        alarm = findViewById(R.id.IvAlarm);
+        swiss = findViewById(R.id.switch1);
+        switch_vibration = findViewById(R.id.switch_vibration);
 
-
-
-        alarm.setOnClickListener(view -> showEditDialog());
-
-
-    }
-    protected void onResume() {
-        super.onResume();
-        swiss.setOnCheckedChangeListener((compoundButton, isChecked) -> {
-            if(isChecked){
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                compoundButton.setChecked(true);
-//                    compoundButton.setText("NIGHT MODE");
-                isChecked=false;
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                compoundButton.setChecked(false);
-//                    compoundButton.setText("DAY MODE");
-                isChecked=true;
+        swiss.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                    compoundButton.setText("NIGHT MODE");
+                } else {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                    compoundButton.setText("DAY MODE");
+                }
             }
         });
-//        showToast(Sensor.Instance.toString());
 
+        switch_vibration.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    // Enable vibration
+                } else {
+                    // Disable vibration
+                }
+            }
+        });
+
+        alarm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showToast("Clicked");
+                showEditDialog();
+            }
+        });
     }
+
+    protected void onResume() {
+        super.onResume();
+    }
+
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
 
         switch (id) {
             case R.id.menu_settings:
                 return true;
             case R.id.menu_home:
-                Intent goToSettings=new Intent(SettingsView.this, HomeView.class);
+                Intent goToSettings = new Intent(SettingsView.this, HomeView.class);
                 startActivity(goToSettings);
                 return true;
-            case R.id.menu_map:
-                Intent goToMap = new Intent(this, MapsView.class);
-                startActivity(goToMap);
-                return true;
             case R.id.menu_history:
-                Intent goToHistory=new Intent(SettingsView.this, HistoryView.class);
+                Intent goToHistory = new Intent(SettingsView.this, HistoryView.class);
                 startActivity(goToHistory);
                 return true;
             default:
@@ -84,13 +91,10 @@ public class SettingsView extends AppCompatActivity {
     }
 
     private void showEditDialog() {
-//        FragmentManager fm = getSupportFragmentManager();
-//       AlarmDialogue editNameDialogFragment = AlarmDialogue.newInstance("Some Title");
-//        editNameDialogFragment.show(fm, "fragment_edit_name");
-        AlarmDialogue dm=new AlarmDialogue();
-        dm.show(getSupportFragmentManager(),"TAG");
-
+        AlarmDialogue dm = new AlarmDialogue();
+        dm.show(getSupportFragmentManager(), "TAG");
     }
+
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
