@@ -364,19 +364,14 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
             new AlertDialog.Builder(HomeView.this)
                     .setTitle("Location services are not enabled")
                     .setMessage("Scanning for Bluetooth peripherals requires locations services to be enabled.") // Want to enable?
-                    .setPositiveButton("Enable", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.cancel();
-                            startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                        }
+                    .setPositiveButton("Enable", (dialogInterface, i) -> {
+                        dialogInterface.cancel();
+                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                     })
-                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // if this button is clicked, just close
-                            // the dialog box and do nothing
-                            dialog.cancel();
-                        }
+                    .setNegativeButton("Cancel", (dialog, which) -> {
+                        // if this button is clicked, just close
+                        // the dialog box and do nothing
+                        dialog.cancel();
                     })
                     .create()
                     .show();
@@ -405,11 +400,9 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
             new AlertDialog.Builder(HomeView.this)
                     .setTitle("Permission is required for scanning Bluetooth peripherals")
                     .setMessage("Please grant permissions")
-                    .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.cancel();
-                            checkPermissions();
-                        }
+                    .setPositiveButton("Retry", (dialogInterface, i) -> {
+                        dialogInterface.cancel();
+                        checkPermissions();
                     })
                     .create()
                     .show();
