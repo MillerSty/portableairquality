@@ -1,5 +1,7 @@
 package com.jmm.portableairquality.View;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,12 +10,14 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -32,13 +36,13 @@ public class MapsFrag extends Fragment {
     List<DataEntry> data;
     ArrayList<LatLng> ListLong;
     ArrayList<Integer> color;
-    public boolean isSimulated = false;
+    SharedPreferences swissPref;
     final int DAY_IN_MILLIS = 3600000;
     BottomNavigationView navbot;
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.mapfrag, container, false);
-
+        swissPref= getContext().getSharedPreferences("switch", Context.MODE_PRIVATE);
         //getting midnight timestamp for database fetch
         SensorDataDatabaseHelper db = SensorDataDatabaseHelper.getInstance(getActivity());
 
@@ -102,7 +106,14 @@ public class MapsFrag extends Fragment {
             line.color(color.get(i)).add(arrayList.get(i)).width(10);
             mMap.addPolyline(line);
         }
+        MapStyleOptions viewmode;
+        if(!swissPref.getBoolean("swiss",false)){
+                    viewmode=MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.retro);
+        }
+        else{                    viewmode=MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.darkmode);
 
+        }
+        mMap.setMapStyle(viewmode);
         return mMap;
     }
 
