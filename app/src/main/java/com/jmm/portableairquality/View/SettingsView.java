@@ -14,14 +14,11 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.fragment.app.FragmentResultListener;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.jmm.portableairquality.Controller.ColorDialogue;
@@ -30,13 +27,11 @@ import com.jmm.portableairquality.R;
 
 public class SettingsView extends AppCompatActivity {
     BottomNavigationView navbot;
-    ImageView alarm;
     Switch swiss;
     Boolean isChecked;
     protected EditText co2AlarmLevel, vocAlarmLevel, pmAlarmLevel;
-    protected Button save, cancel;
+    protected Button save;
     SensorSingleton sensorSingleton;
-    private Button mSetColorButton, mPickColorButton;
     private View Co2Preview, VoCPreview, PmPreview, TempPreview, HumPreview;
     private Drawable co2Draw, vocDraw, pmDraw, tempDraw, humDraw;
     private int mDefaultColor;
@@ -90,8 +85,6 @@ public class SettingsView extends AppCompatActivity {
             Co2Preview.setBackground(co2Draw);
             editor.putInt("Co2_Color", mDefaultColor);
             editor.apply();
-
-            int val = 1000;
         });
         getSupportFragmentManager().setFragmentResultListener("VoC_Color", this, (requestKey, result) -> {
             mDefaultColor = result.getInt("VoC_Color");
@@ -100,7 +93,6 @@ public class SettingsView extends AppCompatActivity {
             VoCPreview.setBackground(vocDraw);
             editor.putInt("VoC_Color", mDefaultColor);
             editor.apply();
-            int val = 1000;
         });
         getSupportFragmentManager().setFragmentResultListener("Pm_Color", this, (requestKey, result) -> {
             mDefaultColor = result.getInt("Pm_Color");
@@ -109,7 +101,6 @@ public class SettingsView extends AppCompatActivity {
             PmPreview.setBackground(pmDraw);
             editor.putInt("Pm_Color", mDefaultColor);
             editor.apply();
-            int val = 1000;
         });
         getSupportFragmentManager().setFragmentResultListener("Temp_Color", this, (requestKey, result) -> {
             mDefaultColor = result.getInt("Temp_Color");
@@ -118,7 +109,6 @@ public class SettingsView extends AppCompatActivity {
             TempPreview.setBackground(tempDraw);
             editor.putInt("Temp_Color", mDefaultColor);
             editor.apply();
-            int val = 1000;
         });
         getSupportFragmentManager().setFragmentResultListener("Hum_Color", this, (requestKey, result) -> {
             mDefaultColor = result.getInt("Hum_Color");
@@ -127,33 +117,26 @@ public class SettingsView extends AppCompatActivity {
             HumPreview.setBackground(humDraw);
             editor.putInt("Hum_Color", mDefaultColor);
             editor.apply();
-            int val = 1000;
         });
-
-        //alarm.setOnClickListener(view -> showEditDialog());
     }
     protected void onPause() {
         super.onPause();
-//        isChecked = swiss.isChecked();
-
     }
+
     protected void onResume() {
         super.onResume();
     }
 
     protected void onStart() {
         super.onStart();
-        String s = co2AlarmLevel.getText().toString();
 
         swiss.setOnClickListener(view -> {
             if (swiss.isChecked()) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-//                    swiss.setChecked(true);
                 swissEdit.putBoolean("swiss", swiss.isChecked());
                 swissEdit.apply();
                 swiss.setText("Set to Light Mode");
             } else {
-
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                 swiss.setChecked(false);
                 swissEdit.putBoolean("swiss", swiss.isChecked());
@@ -165,18 +148,15 @@ public class SettingsView extends AppCompatActivity {
                 if (isChecked) {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                     compoundButton.setChecked(true);
-//                    compoundButton.setText("NIGHT MODE");
                     isChecked = false;
                 } else {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                     compoundButton.setChecked(false);
-//                    compoundButton.setText("DAY MODE");
                     isChecked = true;
                 }
             });
             save.setOnClickListener(view1 -> {
                 SharedPreferences.Editor alarmEdit = alarmPref.edit();
-                //save data
                 try {
                     if (!co2AlarmLevel.getText().toString().isEmpty()) {
                         sensorSingleton.Instance.setCo2Alarm(Integer.parseInt(co2AlarmLevel.getText().toString()));
@@ -187,8 +167,6 @@ public class SettingsView extends AppCompatActivity {
                         alarmEdit.putInt("vocAlarm", Integer.parseInt(vocAlarmLevel.getText().toString()));
                     }
                     if (!pmAlarmLevel.getText().toString().isEmpty()) {
-                        float fuck = Float.parseFloat(pmAlarmLevel.getText().toString());
-
                         sensorSingleton.Instance.setPmAlarm(Float.parseFloat(pmAlarmLevel.getText().toString()));
                         alarmEdit.putFloat("pmAlarm", Float.parseFloat(pmAlarmLevel.getText().toString()));
                     }
@@ -209,34 +187,36 @@ public class SettingsView extends AppCompatActivity {
         switch (id) {
             case R.id.menu_settings:
                 return true;
+
             case R.id.menu_home:
                 Intent goToSettings = new Intent(SettingsView.this, HomeView.class);
                 startActivity(goToSettings, ActivityOptions.makeSceneTransitionAnimation(SettingsView.this).toBundle());
                 return true;
+
             case R.id.menu_map:
                 Intent goToMap = new Intent(this, MapsView.class);
                 startActivity(goToMap, ActivityOptions.makeSceneTransitionAnimation(SettingsView.this).toBundle());
                 return true;
+
             case R.id.menu_history:
                 Intent goToHistory = new Intent(SettingsView.this, HistoryView.class);
                 startActivity(goToHistory, ActivityOptions.makeSceneTransitionAnimation(SettingsView.this).toBundle());
                 return true;
+
             default:
                 return false;
         }
-    }
-
-    private void showEditDialog() {
-
-
     }
 
     public void initView() {
         navbot = findViewById(R.id.bottom_nav);
         navbot.setOnNavigationItemSelectedListener(this::onNavigationItemSelected);
         navbot.setSelectedItemId(R.id.menu_settings);
+        sensorSingleton = new SensorSingleton();
+
+        save = findViewById(R.id.btnSave);
+
         swiss = (Switch) findViewById(R.id.switch1);
-        boolean house = swissPref.getBoolean("swiss", false);
         if (!swissPref.getBoolean("swiss", false)) {
             swiss.setChecked(false);
             swiss.setText("Set to Dark Mode");
@@ -246,21 +226,23 @@ public class SettingsView extends AppCompatActivity {
             swiss.setText("Set to Light Mode");
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         }
+
         co2AlarmLevel = findViewById(R.id.etCo2Alarm);
         vocAlarmLevel = findViewById(R.id.etVocAlarm);
         pmAlarmLevel = findViewById(R.id.etPmAlarm);
-        save = findViewById(R.id.btnSave);
-        sensorSingleton = new SensorSingleton();
+
         Co2Preview = findViewById(R.id.preview_Co2);
         VoCPreview = findViewById(R.id.preview_VoC);
         PmPreview = findViewById(R.id.preview_Pm);
         TempPreview = findViewById(R.id.preview_Temp);
         HumPreview = findViewById(R.id.preview_Hum);
+
         co2Draw = getDrawable(R.drawable.color_select);
         vocDraw = getDrawable(R.drawable.color_select);
         pmDraw = getDrawable(R.drawable.color_select);
         tempDraw = getDrawable(R.drawable.color_select);
         humDraw = getDrawable(R.drawable.color_select);
+
         if (alarmPref.getInt("co2Alarm", 0) == 0 || alarmPref.getInt("vocAlarm", 0) == 0) {
             co2AlarmLevel.setText(Integer.toString(SensorSingleton.Co2Default));
             vocAlarmLevel.setText(Integer.toString(SensorSingleton.VocDefault));

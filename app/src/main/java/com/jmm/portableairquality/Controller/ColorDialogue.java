@@ -40,7 +40,6 @@ public class ColorDialogue extends DialogFragment implements ColorObserver {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         SharedPreferences sp = getContext().getSharedPreferences("hey", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sp.edit();
         View view = inflater.inflate(R.layout.color_dialogue, container);
         TAG =this.getTag();
 
@@ -49,48 +48,38 @@ public class ColorDialogue extends DialogFragment implements ColorObserver {
 
         mDefaultColor = 0;
         cpv.setInitialColor(0x7F313C93);
-//        co.
         cpv.subscribe((color, fromUser,shouldPropgate)-> {
             // use the color
-            color=cpv.getColor();
-            String pause1=Integer.toString(cpv.getColor());
-            int val =1000;
         });
-        mSetColorButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Bundle bundle=new Bundle();
-               switch(TAG) {
-                   case "Co2":
-                       bundle.putInt("Co2_Color",cpv.getColor());
-                       getActivity().getSupportFragmentManager().setFragmentResult("Co2_Color",bundle);
-                       break;
-                   case "VoC":
-                       bundle.putInt("VoC_Color",cpv.getColor());
-                       getActivity().getSupportFragmentManager().setFragmentResult("VoC_Color",bundle);
-                       break;
-                   case "Temp":
-                       bundle.putInt("Temp_Color",cpv.getColor());
-                       getActivity().getSupportFragmentManager().setFragmentResult("Temp_Color",bundle);
-                       break;
-                   case "Hum":
-                       bundle.putInt("Hum_Color",cpv.getColor());
-                       getActivity().getSupportFragmentManager().setFragmentResult("Hum_Color",bundle);
-                       break;
-                   case "Pm":
-                       bundle.putInt("Pm_Color",cpv.getColor());
-                       getActivity().getSupportFragmentManager().setFragmentResult("Pm_Color",bundle);
-                       break;
-               }
-                dismiss();
+        mSetColorButton.setOnClickListener(v -> {
+            Bundle bundle=new Bundle();
+            switch(TAG) {
+                case "Co2":
+                    bundle.putInt("Co2_Color",cpv.getColor());
+                    getActivity().getSupportFragmentManager().setFragmentResult("Co2_Color",bundle);
+                    break;
+                case "VoC":
+                    bundle.putInt("VoC_Color",cpv.getColor());
+                    getActivity().getSupportFragmentManager().setFragmentResult("VoC_Color",bundle);
+                    break;
+                case "Temp":
+                    bundle.putInt("Temp_Color",cpv.getColor());
+                    getActivity().getSupportFragmentManager().setFragmentResult("Temp_Color",bundle);
+                    break;
+                case "Hum":
+                    bundle.putInt("Hum_Color",cpv.getColor());
+                    getActivity().getSupportFragmentManager().setFragmentResult("Hum_Color",bundle);
+                    break;
+                case "Pm":
+                    bundle.putInt("Pm_Color",cpv.getColor());
+                    getActivity().getSupportFragmentManager().setFragmentResult("Pm_Color",bundle);
+                    break;
             }
+            dismiss();
         });
-
         return view;
     }
 
     @Override
-    public void onColor(int color, boolean fromUser, boolean shouldPropagate) {
-
-    }
+    public void onColor(int color, boolean fromUser, boolean shouldPropagate) {}
 }

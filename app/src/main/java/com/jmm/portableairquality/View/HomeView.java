@@ -20,7 +20,6 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -30,10 +29,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.transition.Explode;
 import android.transition.Fade;
-import android.transition.Slide;
-import android.transition.Transition;
 import android.util.Log;
 import android.view.MenuItem;
 
@@ -69,7 +65,6 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
     public int co2, voc;
     public float pm;
     boolean FN_co2=false,FN_voc=false,FN_pm=false;
-    public SensorDataDatabaseHelper db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,10 +72,8 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Transition trans=new Fade();
         getWindow().setExitTransition(new Fade());
         swissPref=getSharedPreferences("switch",Context.MODE_PRIVATE);
-//        getWindow().setAllowEnterTransitionOverlap(true);
 
         initView();
         initSensorAlarm();
@@ -96,7 +89,6 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
 
         SharedPreferences sharedPref = this.getSharedPreferences("graphColour", Context.MODE_PRIVATE);
         if(sharedPref.getInt("Temp_Color",0)==0||sharedPref.getInt("Co2_Color",0)==0){
-//            sharedPref.
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.putInt("Temp_Color",getResources().getColor(R.color.tempColour));
             editor.putInt("Hum_Color",getResources().getColor(R.color.humColour));
@@ -114,12 +106,11 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         co2Display.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//            int co2=SensorDataDatabaseHelper.COLUMN_CO;
-
                 textViewHandler("co2",co2,0);
-            if( co2>SensorSingleton.Instance.getCo2Alarm()){
-                FN_co2=true;
-            Notification("Co2");}
+                if( co2>SensorSingleton.Instance.getCo2Alarm()){
+                    FN_co2=true;
+                    Notification("Co2");
+                }
             }
 
             @Override
@@ -133,11 +124,11 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         vocDisplay.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//            int voc=SensorDataDatabaseHelper.COLUMN_VOC;
-                                textViewHandler("voc",voc,0);
-            if( voc>SensorSingleton.Instance.getVocAlarm()){
-                FN_voc=true;
-                Notification("Voc");}
+                textViewHandler("voc",voc,0);
+                if( voc>SensorSingleton.Instance.getVocAlarm()){
+                    FN_voc=true;
+                    Notification("Voc");
+                }
             }
 
             @Override
@@ -148,14 +139,15 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
             public void afterTextChanged(Editable editable) {
             }
         });
+
         pmDisplay.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//            float pm2=SensorDataDatabaseHelper.COLUMN_PM;
-                                textViewHandler("pm2",0,pm);
-            if( pm>SensorSingleton.Instance.getPmAlarm()){
-                FN_pm=true;
-                Notification("Pm");}
+                textViewHandler("pm2",0,pm);
+                if( pm>SensorSingleton.Instance.getPmAlarm()){
+                    FN_pm=true;
+                    Notification("Pm");
+                }
             }
 
             @Override
@@ -196,17 +188,21 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
             case R.id.menu_settings:
                 Intent goToSettings = new Intent(this, SettingsView.class);
                 startActivity(goToSettings , ActivityOptions.makeSceneTransitionAnimation(HomeView.this).toBundle());
-//
                 return true;
+
             case R.id.menu_map:
                 Intent goToMap = new Intent(this, MapsView.class);
                 startActivity(goToMap, ActivityOptions.makeSceneTransitionAnimation(HomeView.this).toBundle());
                 return true;
+
             case R.id.menu_home:
                 return true;
+
             case R.id.menu_history:
                 Intent goToHistory = new Intent(this, HistoryView.class);
                 startActivity(goToHistory, ActivityOptions.makeSceneTransitionAnimation(HomeView.this).toBundle());
+                return true;
+
             default:
                 return false;
         }
@@ -227,7 +223,6 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         return Objects.requireNonNull((BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE), "Cannot get BluetoothManager");
     }
 
-
     private final BroadcastReceiver locationReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -239,6 +234,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
             }
         }
     };
+
     //TODO MAPVIEW NAV NOT WORKING and DOESNT HIGHLIGHT MAP FRAG
     //TODO NAV NOT SLIDE
     // IF CHANGE NAV VIEWS A BUNCH IT WONT LOAD MAP
@@ -250,11 +246,10 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
     //WEIGH AVERAGE OR JUST WHEN ONE IS YELLOW FOR LCOATION POLYLINES
     //ADD IN REFERENCE
     // RING BACKGROUND COLOUR TRANSPARENT
-    //APP CRASHES IF LOCATION OFF
+
     private final BroadcastReceiver ccsReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            BluetoothPeripheral peripheral = getPeripheral(intent.getStringExtra(BluetoothHandler.MEASUREMENT_EXTRA_PERIPHERAL));
             CcsMeasurement measurement = (CcsMeasurement) intent.getSerializableExtra(BluetoothHandler.MEASUREMENT_CCS_EXTRA);
             co2 = (int)measurement.co2;
             co2Display.setText("Co2:\n" + Long.toString(measurement.co2));
@@ -266,7 +261,6 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
     private final BroadcastReceiver dhtReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            BluetoothPeripheral peripheral = getPeripheral(intent.getStringExtra(BluetoothHandler.MEASUREMENT_EXTRA_PERIPHERAL));
             DhtMeasurement measurement = (DhtMeasurement) intent.getSerializableExtra(BluetoothHandler.MEASUREMENT_DHT_EXTRA);
             tempDisplay.setText(Float.toString(measurement.temp) + "\u00B0");
             humDisplay.setText(Float.toString(measurement.hum) + "%");
@@ -276,10 +270,8 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
     private final BroadcastReceiver pmReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            BluetoothPeripheral peripheral = getPeripheral(intent.getStringExtra(BluetoothHandler.MEASUREMENT_EXTRA_PERIPHERAL));
             PmMeasurement measurement = (PmMeasurement) intent.getSerializableExtra(BluetoothHandler.MEASUREMENT_PM_EXTRA);
             pmDisplay.setText("PM2.5:\n" + Integer.toString(measurement.pm));
-
         }
     };
 
@@ -408,16 +400,18 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
     @SuppressLint("MissingPermission")
     public void Notification(String sensor_alert) {
         Intent notifyIntent = new Intent(this, HomeView.class);
-        String sensorString="";
-// Set the Activity to start in a new, empty task
-        notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-// Create the PendingIntent
+
+        // Set the Activity to start in a new, empty task
+        notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+        // Create the PendingIntent
         PendingIntent notifyPendingIntent = PendingIntent.getActivity(
                 this, 0, notifyIntent,
                 PendingIntent.FLAG_CANCEL_CURRENT
         );
+
         NotificationCompat.Builder builder;
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel("my note", "My big note", NotificationManager.IMPORTANCE_DEFAULT);
             NotificationManager manager = getSystemService(NotificationManager.class);
@@ -427,7 +421,6 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         } else {
             builder = new NotificationCompat.Builder(HomeView.this, "my notif");
         }
-
 
         builder.setContentTitle(sensor_alert + " beyond threshold")
                 .setContentText(sensor_alert + " has gone beyond the limit set.")
@@ -460,7 +453,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
 
         } else if (sensor.equals("voc")) {
             return sensorReading = sensorReading * 1_000_000;
-        } else if (sensor.equals("pm")) { //ug per cumib meter, ug/m3
+        } else if (sensor.equals("pm")) { //ug per cubic meter, ug/m3
             return -1;
         } else return -1;
     }

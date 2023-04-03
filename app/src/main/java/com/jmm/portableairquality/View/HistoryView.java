@@ -9,45 +9,33 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.transition.Fade;
 import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.Window;
-import android.view.View;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
-import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import com.jmm.portableairquality.Model.BluetoothHandler;
 import com.jmm.portableairquality.Model.DataEntry;
 import com.jmm.portableairquality.R;
 
-import java.sql.Array;
 import java.text.SimpleDateFormat;
-import java.time.DateTimeException;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -55,14 +43,12 @@ import java.util.List;
 
 import com.jmm.portableairquality.Model.SensorDataDatabaseHelper;
 
-import kotlin.ParameterName;
 //charts by https://github.com/PhilJay/MPAndroidChart
 public class HistoryView extends AppCompatActivity {
     BottomNavigationView navbot;
     LineChart chart_air;
     LineChart chart_temp;
     List<DataEntry> data;
-    public final int DAY_IN_MILLIS = 3600000; //length of time that one wants to get data from in seconds
     SensorDataDatabaseHelper db;
     public SharedPreferences sharedPref;
     int textColor;
@@ -79,16 +65,19 @@ public class HistoryView extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         getWindow().setExitTransition(new Fade());
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
+
         sharedPref = this.getSharedPreferences("graphColour", Context.MODE_PRIVATE);
+
         chart_air = (LineChart) findViewById(R.id.chart_air);
         chart_temp = (LineChart) findViewById(R.id.chart_temp);
+
         startDateSelect = (EditText) findViewById(R.id.start_button);
         startTimeSelect = (EditText) findViewById(R.id.start_button2);
         endDateSelect = (EditText) findViewById(R.id.end_button);
         endTimeSelect = (EditText) findViewById(R.id.end_button2);
-        resetButton = (Button) findViewById(R.id.reset_button);
 
         // this is necessary so that the keyboard doesn't appear
         startDateSelect.setFocusable(false);
@@ -96,9 +85,12 @@ public class HistoryView extends AppCompatActivity {
         endDateSelect.setFocusable(false);
         endTimeSelect.setFocusable(false);
 
+        resetButton = (Button) findViewById(R.id.reset_button);
+
         startDateSelect.setOnClickListener(view -> {
             Calendar now = Calendar.getInstance();
             now.add(Calendar.HOUR, -24);
+
             DatePickerDialog datePickerDialog = new DatePickerDialog(HistoryView.this, (datePicker, i, i1, i2) -> {
                 startTime.set(i, i1, i2); //set date year, month, day
                 startDateSelect.setText(new SimpleDateFormat("MMM dd").format(startTime.getTimeInMillis()));
@@ -112,6 +104,7 @@ public class HistoryView extends AppCompatActivity {
         startTimeSelect.setOnClickListener(view -> {
             Calendar now = Calendar.getInstance();
             now.add(Calendar.HOUR, -24);
+
             TimePickerDialog timePickerDialog = new TimePickerDialog(HistoryView.this, (timePicker, i, i1) -> {
                 startTime.set(Calendar.HOUR, i);
                 startTime.set(Calendar.MINUTE, i1);
@@ -122,6 +115,7 @@ public class HistoryView extends AppCompatActivity {
                 }
                 startTimeSelect.setText(new SimpleDateFormat("HH:mm").format(startTime.getTimeInMillis()));
             }, now.get(Calendar.HOUR), now.get(Calendar.MINUTE), true); //default is 10 minutes earlier
+
             timePickerDialog.show();
 
             chart_air.fitScreen();
@@ -130,10 +124,12 @@ public class HistoryView extends AppCompatActivity {
 
         endDateSelect.setOnClickListener(view -> {
             Calendar now = Calendar.getInstance();
+
             DatePickerDialog datePickerDialog = new DatePickerDialog(HistoryView.this, (datePicker, i, i1, i2) -> {
                 endTime.set(i, i1, i2); //set date year, month, day
                 endDateSelect.setText(new SimpleDateFormat("MMM dd").format(endTime.getTimeInMillis()));
             }, now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DATE)); //default is same day
+
             datePickerDialog.show();
 
             chart_air.fitScreen();
@@ -144,6 +140,7 @@ public class HistoryView extends AppCompatActivity {
 
         endTimeSelect.setOnClickListener(view -> {
             Calendar now = Calendar.getInstance();
+
             TimePickerDialog timePickerDialog = new TimePickerDialog(HistoryView.this, (timePicker, i, i1) -> {
                 endTime.set(Calendar.HOUR, i);
                 endTime.set(Calendar.MINUTE, i1);
@@ -153,6 +150,7 @@ public class HistoryView extends AppCompatActivity {
                 }
                 endTimeSelect.setText(new SimpleDateFormat("HH:mm").format(endTime.getTimeInMillis()));
             }, now.get(Calendar.HOUR), now.get(Calendar.MINUTE), true); //default is current time
+
             timePickerDialog.show();
 
             chart_air.fitScreen();
@@ -232,8 +230,10 @@ public class HistoryView extends AppCompatActivity {
         List<Entry> temp = new ArrayList<>();
         List<Entry> hum = new ArrayList<>();
         List<Entry> pm = new ArrayList<>();
+
         if (historicalData.size() > 0) {
             long latest = historicalData.get(historicalData.size() - 1).timestamp;
+
             for (int i = 0; i < historicalData.size(); i++) { //represent the data in terms of seconds behind present
                 long time = historicalData.get(i).timestamp - latest;
                 // if we have enough points, start taking the moving average of window size 4
@@ -243,6 +243,7 @@ public class HistoryView extends AppCompatActivity {
                     float tempSum = historicalData.get(i).tempEntry;
                     float humSum = historicalData.get(i).humEntry;
                     float pmSum = historicalData.get(i).pm;
+
                     for (int j = 0; j < 9; j++) {
                         co2Sum += co2.get(i - j - 1).getY();
                         vocSum += voc.get(i - j - 1).getY();
@@ -250,6 +251,7 @@ public class HistoryView extends AppCompatActivity {
                         humSum += hum.get(i - j - 1).getY();
                         pmSum += pm.get(i - j - 1).getY();
                     }
+
                     co2.add(new Entry(time, co2Sum / 10));
                     voc.add(new Entry(time, vocSum / 10));
                     temp.add(new Entry(time, tempSum / 10));
@@ -263,7 +265,6 @@ public class HistoryView extends AppCompatActivity {
                     pm.add(new Entry(time, historicalData.get(i).pm));
                 }
             }
-
 
             // update co2 and voc chart
             LineDataSet co2Data, vocData, pmData;
@@ -363,6 +364,7 @@ public class HistoryView extends AppCompatActivity {
             if(live) {
                 endTime = Calendar.getInstance();
             }
+
             if (endTime.before(startTime)) {
                 Toast.makeText(getApplicationContext(), "end time before start time! please reset end time! resetting end time to present", Toast.LENGTH_LONG).show();
                 endTime = Calendar.getInstance();
@@ -371,7 +373,9 @@ public class HistoryView extends AppCompatActivity {
                     startTime.add(Calendar.HOUR, -24);
                 }
             }
+
             data = db.getEntriesBetweenTimestamps(startTime.getTimeInMillis(), endTime.getTimeInMillis());
+
             if (data.size() > 0) {
                 updateChart(data);
             }

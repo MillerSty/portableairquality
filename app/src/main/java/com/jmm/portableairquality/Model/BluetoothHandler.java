@@ -1,6 +1,5 @@
 // code adapted from https://github.com/weliem/blessed-android/blob/master/app/src/main/java/com/welie/blessedexample/BluetoothHandler.java
 package com.jmm.portableairquality.Model;
-import com.jmm.portableairquality.Model.SensorDataDatabaseHelper;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothGattCharacteristic;
@@ -74,21 +73,27 @@ public class BluetoothHandler {
 
             if (characteristicUUID.equals(CCS_CHAR_UUID)) {
                 CcsMeasurement measurement = new CcsMeasurement(value);
+
                 co2 = measurement.co2;
                 voc = measurement.voc;
+
                 intent = new Intent(MEASUREMENT_CCS);
                 intent.putExtra(MEASUREMENT_CCS_EXTRA, measurement);
                 sendMeasurement(intent, peripheral);
             } else if (characteristicUUID.equals(DHT_CHAR_UUID)) {
                 DhtMeasurement measurement = new DhtMeasurement(value);
+
                 temp = measurement.temp;
                 hum = measurement.hum;
+
                 intent = new Intent(MEASUREMENT_DHT);
                 intent.putExtra(MEASUREMENT_DHT_EXTRA, measurement);
                 sendMeasurement(intent, peripheral);
             } else if (characteristicUUID.equals(PM_CHAR_UUID)) {
                 PmMeasurement measurement = new PmMeasurement(value);
+
                 pm = measurement.pm;
+
                 intent = new Intent(MEASUREMENT_PM);
                 intent.putExtra(MEASUREMENT_PM_EXTRA, measurement);
                 sendMeasurement(intent, peripheral);
@@ -113,17 +118,11 @@ public class BluetoothHandler {
             Log.d("BTModel", "Disconnected from device");
 
             // Reconnect to this device when it becomes available again
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    btCentral.autoConnectPeripheral(peripheral, peripheralCallback);
-                }
-            }, 5000);
+            handler.postDelayed(() -> btCentral.autoConnectPeripheral(peripheral, peripheralCallback), 2000);
         }
 
         @Override
         public void onDiscoveredPeripheral(@NotNull BluetoothPeripheral peripheral, @NotNull ScanResult scanResult) {
-
             if (peripheral.getAddress() == MAC_ADD && peripheral.getBondState() == BondState.NONE) {
                 btCentral.stopScan();
                 // Create a bond immediately to avoid double pairing popups
@@ -163,6 +162,7 @@ public class BluetoothHandler {
             public void run() {
                 SensorDataDatabaseHelper db = SensorDataDatabaseHelper.getInstance(context);
                 Date date;
+
                 while(true) {
                     SharedPreferences sharedPref = context.getSharedPreferences("hey",Context.MODE_PRIVATE);
                     double latitude= Double.longBitsToDouble(sharedPref.getLong("Lat", 0));
@@ -182,12 +182,7 @@ public class BluetoothHandler {
     }
 
     private void startScan() {
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                btCentral.scanForPeripheralsWithServices(new UUID[] {PAQ_SERVICE_UUID});
-            }
-        }, 1000);
+        handler.postDelayed(() -> btCentral.scanForPeripheralsWithServices(new UUID[] {PAQ_SERVICE_UUID}), 1000);
     }
 }
 

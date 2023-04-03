@@ -10,7 +10,7 @@ public class SensorSingleton {
     public static int  GlobalGreen=456;
     public static int  GlobalYellow=1367;
     public static int  GlobalRed=4532;
-public static SensorSingleton Instance=new SensorSingleton();
+    public static SensorSingleton Instance=new SensorSingleton();
 
     public int getCo2Alarm() {
         return Co2Alarm;

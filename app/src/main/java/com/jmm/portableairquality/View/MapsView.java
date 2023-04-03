@@ -15,12 +15,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.jmm.portableairquality.R;
 
 public class MapsView extends AppCompatActivity {
-    GoogleMap mMap;
     Fragment fragment;
     BottomNavigationView navbot;
     @Override
@@ -32,10 +30,8 @@ public class MapsView extends AppCompatActivity {
         navbot=findViewById(R.id.bottom_nav);
         navbot.setOnNavigationItemSelectedListener(this::onNavigationItemSelected);
         navbot.setSelectedItemId(R.id.menu_map);
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager != null ? connectivityManager.getActiveNetworkInfo() : null;
-//        activeNetworkInfo != null ? activeNetworkInfo.isConnected();
 
     if(activeNetworkInfo!=null) {
         fragment = new MapsFrag();
@@ -53,27 +49,29 @@ public class MapsView extends AppCompatActivity {
         int id = item.getItemId();
         switch (id) {
             case R.id.menu_settings:
-
-               Intent goToSettings = new Intent(this, SettingsView.class);
-//               goToSettings.
+                Intent goToSettings = new Intent(this, SettingsView.class);
                 startActivity(goToSettings, ActivityOptions.makeSceneTransitionAnimation(MapsView.this).toBundle());
                 return true;
+
             case R.id.menu_map:
                 return true;
+
             case R.id.menu_home:
                 Intent goToHome = new Intent(this, HomeView.class);
                 startActivity(goToHome, ActivityOptions.makeSceneTransitionAnimation(MapsView.this).toBundle());
                 return true;
+
             case R.id.menu_history:
                 Intent goToHistory = new Intent(this, HistoryView.class);
                 startActivity(goToHistory, ActivityOptions.makeSceneTransitionAnimation(MapsView.this).toBundle());
                 return true;
+
             default:
                 return false;
         }
     }
+
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
-
 }
