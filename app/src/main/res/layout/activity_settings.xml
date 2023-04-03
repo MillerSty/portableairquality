@@ -230,7 +230,8 @@
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/textView4"
-                app:layout_constraintTop_toBottomOf="@+id/tvCo2Alarm" />
+                app:layout_constraintTop_toBottomOf="@+id/tvCo2Alarm"
+                android:focusableInTouchMode="true"/>
 
             <TextView
                 android:id="@+id/tvVocAlarm"
@@ -241,7 +242,8 @@
                 android:text="Set VOC level"
                 android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView4" />
+                app:layout_constraintTop_toBottomOf="@+id/textView4"
+                android:focusableInTouchMode="true"/>
 
             <TextView
                 android:id="@+id/textView5"
@@ -251,7 +253,8 @@
                 android:text="Good Voc levels are between 0-200ppb . Decent is 200-600ppb. Hazardous is 600+ppb"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvVocAlarm" />
+                app:layout_constraintTop_toBottomOf="@+id/tvVocAlarm"
+                android:focusableInTouchMode="true"/>
 
             <EditText
                 android:id="@+id/etVocAlarm"
@@ -265,7 +268,8 @@
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/textView5"
-                app:layout_constraintTop_toBottomOf="@+id/tvVocAlarm" />
+                app:layout_constraintTop_toBottomOf="@+id/tvVocAlarm"
+                android:focusableInTouchMode="true"/>
 
             <TextView
                 android:id="@+id/tvPm2Alarm"
@@ -291,7 +295,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toEndOf="@+id/textView8"
-                app:layout_constraintTop_toBottomOf="@+id/tvPm2Alarm" />
+                app:layout_constraintTop_toBottomOf="@+id/tvPm2Alarm"
+                android:focusableInTouchMode="true"/>
 
             <TextView
                 android:id="@+id/textView8"
