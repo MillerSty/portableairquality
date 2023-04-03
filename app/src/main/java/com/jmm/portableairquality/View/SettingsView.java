@@ -143,41 +143,30 @@ public class SettingsView extends AppCompatActivity {
                 swissEdit.apply();
                 swiss.setText("Set to Dark Mode");
             }
+        });
 
-            swiss.setOnCheckedChangeListener((compoundButton, isChecked) -> {
-                if (isChecked) {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                    compoundButton.setChecked(true);
-                    isChecked = false;
-                } else {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                    compoundButton.setChecked(false);
-                    isChecked = true;
-                }
-            });
-            save.setOnClickListener(view1 -> {
+            save.setOnClickListener((View view1) -> {
                 SharedPreferences.Editor alarmEdit = alarmPref.edit();
-                try {
-                    if (!co2AlarmLevel.getText().toString().isEmpty()) {
+                try{
+                    if(!co2AlarmLevel.getText().toString().isEmpty()){
                         sensorSingleton.Instance.setCo2Alarm(Integer.parseInt(co2AlarmLevel.getText().toString()));
-                        alarmEdit.putInt("co2Alarm", Integer.parseInt(co2AlarmLevel.getText().toString()));
+                        alarmEdit.putInt("co2Alarm",Integer.parseInt(co2AlarmLevel.getText().toString()));
                     }
-                    if (!vocAlarmLevel.getText().toString().isEmpty()) {
+                    if(!vocAlarmLevel.getText().toString().isEmpty()){
                         sensorSingleton.Instance.setVocAlarm(Integer.parseInt(vocAlarmLevel.getText().toString()));
-                        alarmEdit.putInt("vocAlarm", Integer.parseInt(vocAlarmLevel.getText().toString()));
-                    }
-                    if (!pmAlarmLevel.getText().toString().isEmpty()) {
+                        alarmEdit.putInt("vocAlarm",Integer.parseInt(vocAlarmLevel.getText().toString()));}
+                    if(!pmAlarmLevel.getText().toString().isEmpty()){
                         sensorSingleton.Instance.setPmAlarm(Float.parseFloat(pmAlarmLevel.getText().toString()));
-                        alarmEdit.putFloat("pmAlarm", Float.parseFloat(pmAlarmLevel.getText().toString()));
+                        alarmEdit.putFloat("pmAlarm",Float.parseFloat(pmAlarmLevel.getText().toString()));
                     }
 
                     alarmEdit.apply();
                     showToast("Settings Saved");
-                } catch (Exception e) {
+                }
+                catch(Exception e){
                     showToast("Enter Valid alarm levels please");
                 }
             });
-        });
     }
 
     public boolean onNavigationItemSelected(MenuItem item) {
