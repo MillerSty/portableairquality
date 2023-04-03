@@ -160,7 +160,7 @@ public class SettingsView extends AppCompatActivity {
             }
         });
 
-        alarm.setOnClickListener(view -> showEditDialog());
+        //alarm.setOnClickListener(view -> showEditDialog());
     }
     protected void onPause() {
         super.onPause();
