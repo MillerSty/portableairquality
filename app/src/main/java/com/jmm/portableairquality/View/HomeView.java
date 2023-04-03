@@ -93,9 +93,6 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel);
         }
-        db = new SensorDataDatabaseHelper(getApplicationContext());
-
-
 
         SharedPreferences sharedPref = this.getSharedPreferences("graphColour", Context.MODE_PRIVATE);
         if(sharedPref.getInt("Temp_Color",0)==0||sharedPref.getInt("Co2_Color",0)==0){
@@ -108,7 +105,6 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
             editor.putInt("Pm_Color",getResources().getColor(R.color.pmColour));
             editor.apply();
         }
-
     }
 
     protected void onStart() {

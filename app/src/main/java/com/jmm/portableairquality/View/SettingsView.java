@@ -62,8 +62,6 @@ public class SettingsView extends AppCompatActivity {
         swissEdit = swissPref.edit();
         initView();
 
-
-
         Co2Preview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -162,6 +160,7 @@ public class SettingsView extends AppCompatActivity {
             }
         });
 
+        alarm.setOnClickListener(view -> showEditDialog());
     }
     protected void onPause() {
         super.onPause();
@@ -174,77 +173,64 @@ public class SettingsView extends AppCompatActivity {
 
     protected void onStart() {
         super.onStart();
-        String s=co2AlarmLevel.getText().toString();
+        String s = co2AlarmLevel.getText().toString();
 
-        swiss.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(swiss.isChecked()){
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        swiss.setOnClickListener(view -> {
+            if (swiss.isChecked()) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 //                    swiss.setChecked(true);
-                    swissEdit.putBoolean("swiss",swiss.isChecked());
-                    swissEdit.apply();
-                    swiss.setText("Set to Light Mode");
-                }
-                else{
+                swissEdit.putBoolean("swiss", swiss.isChecked());
+                swissEdit.apply();
+                swiss.setText("Set to Light Mode");
+            } else {
 
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                    swiss.setChecked(false);
-                    swissEdit.putBoolean("swiss",swiss.isChecked());
-                    swissEdit.apply();
-                    swiss.setText("Set to Dark Mode");
-                }
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                swiss.setChecked(false);
+                swissEdit.putBoolean("swiss", swiss.isChecked());
+                swissEdit.apply();
+                swiss.setText("Set to Dark Mode");
             }
-        });
-        save.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SharedPreferences.Editor alarmEdit=alarmPref.edit();
+
+            swiss.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+                if (isChecked) {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                    compoundButton.setChecked(true);
+//                    compoundButton.setText("NIGHT MODE");
+                    isChecked = false;
+                } else {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                    compoundButton.setChecked(false);
+//                    compoundButton.setText("DAY MODE");
+                    isChecked = true;
+                }
+            });
+            save.setOnClickListener(view1 -> {
+                SharedPreferences.Editor alarmEdit = alarmPref.edit();
                 //save data
-                try{
-                if(!co2AlarmLevel.getText().toString().isEmpty()){
-                    sensorSingleton.Instance.setCo2Alarm(Integer.parseInt(co2AlarmLevel.getText().toString()));
-                alarmEdit.putInt("co2Alarm",Integer.parseInt(co2AlarmLevel.getText().toString()));
-                }
-                if(!vocAlarmLevel.getText().toString().isEmpty()){
-                    sensorSingleton.Instance.setVocAlarm(Integer.parseInt(vocAlarmLevel.getText().toString()));
-                    alarmEdit.putInt("vocAlarm",Integer.parseInt(vocAlarmLevel.getText().toString()));}
-                if(!pmAlarmLevel.getText().toString().isEmpty()){
-                    float fuck=Float.parseFloat(pmAlarmLevel.getText().toString());
+                try {
+                    if (!co2AlarmLevel.getText().toString().isEmpty()) {
+                        sensorSingleton.Instance.setCo2Alarm(Integer.parseInt(co2AlarmLevel.getText().toString()));
+                        alarmEdit.putInt("co2Alarm", Integer.parseInt(co2AlarmLevel.getText().toString()));
+                    }
+                    if (!vocAlarmLevel.getText().toString().isEmpty()) {
+                        sensorSingleton.Instance.setVocAlarm(Integer.parseInt(vocAlarmLevel.getText().toString()));
+                        alarmEdit.putInt("vocAlarm", Integer.parseInt(vocAlarmLevel.getText().toString()));
+                    }
+                    if (!pmAlarmLevel.getText().toString().isEmpty()) {
+                        float fuck = Float.parseFloat(pmAlarmLevel.getText().toString());
 
-                    sensorSingleton.Instance.setPmAlarm(Float.parseFloat(pmAlarmLevel.getText().toString()));
-                    alarmEdit.putFloat("pmAlarm",Float.parseFloat(pmAlarmLevel.getText().toString()));
-                }
+                        sensorSingleton.Instance.setPmAlarm(Float.parseFloat(pmAlarmLevel.getText().toString()));
+                        alarmEdit.putFloat("pmAlarm", Float.parseFloat(pmAlarmLevel.getText().toString()));
+                    }
 
-                alarmEdit.apply();
-                showToast("Settings Saved");
-                }
-                catch(Exception e){
+                    alarmEdit.apply();
+                    showToast("Settings Saved");
+                } catch (Exception e) {
                     showToast("Enter Valid alarm levels please");
                 }
-            }
-
+            });
         });
-//        swiss.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-//                if (isChecked) {
-//                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-//
-//                    compoundButton.setChecked(true);
-//                    swiss.setText("Switch to Light Mode");
-//                    swiss.setChecked(true);
-//                    compoundButton.setText("Switch to Light Mode");
-//                } else {
-//                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-//                    swiss.setChecked(false);
-//                    compoundButton.setChecked(false);
-//                }
-//            }
-//        });
     }
-
-
 
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
@@ -275,20 +261,21 @@ public class SettingsView extends AppCompatActivity {
 
     }
 
-    public void initView(){
+    public void initView() {
         navbot = findViewById(R.id.bottom_nav);
         navbot.setOnNavigationItemSelectedListener(this::onNavigationItemSelected);
         navbot.setSelectedItemId(R.id.menu_settings);
-        swiss = (Switch)findViewById(R.id.switch1);
-        boolean house=swissPref.getBoolean("swiss",false);
-        if(!swissPref.getBoolean("swiss",false)){
-        swiss.setChecked(false);
+        swiss = (Switch) findViewById(R.id.switch1);
+        boolean house = swissPref.getBoolean("swiss", false);
+        if (!swissPref.getBoolean("swiss", false)) {
+            swiss.setChecked(false);
             swiss.setText("Set to Dark Mode");
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        }
-        else{swiss.setChecked(true);
+        } else {
+            swiss.setChecked(true);
             swiss.setText("Set to Light Mode");
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);}
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
         co2AlarmLevel = findViewById(R.id.etCo2Alarm);
         vocAlarmLevel = findViewById(R.id.etVocAlarm);
         pmAlarmLevel = findViewById(R.id.etPmAlarm);
@@ -304,15 +291,14 @@ public class SettingsView extends AppCompatActivity {
         pmDraw = getDrawable(R.drawable.color_select);
         tempDraw = getDrawable(R.drawable.color_select);
         humDraw = getDrawable(R.drawable.color_select);
-        if(alarmPref.getInt("co2Alarm",0)==0||alarmPref.getInt("vocAlarm",0)==0){
+        if (alarmPref.getInt("co2Alarm", 0) == 0 || alarmPref.getInt("vocAlarm", 0) == 0) {
             co2AlarmLevel.setText(Integer.toString(SensorSingleton.Co2Default));
             vocAlarmLevel.setText(Integer.toString(SensorSingleton.VocDefault));
             pmAlarmLevel.setText(Float.toString(SensorSingleton.PmDefault));
-        }
-        else{
-            co2AlarmLevel.setText(Integer.toString(alarmPref.getInt("co2Alarm",0)));
-            vocAlarmLevel.setText(Integer.toString(alarmPref.getInt("vocAlarm",0)));
-            pmAlarmLevel.setText(Float.toString(alarmPref.getFloat("pmAlarm",0f)));
+        } else {
+            co2AlarmLevel.setText(Integer.toString(alarmPref.getInt("co2Alarm", 0)));
+            vocAlarmLevel.setText(Integer.toString(alarmPref.getInt("vocAlarm", 0)));
+            pmAlarmLevel.setText(Float.toString(alarmPref.getFloat("pmAlarm", 0f)));
 
         }
         if (sharedPref.getInt("Temp_Color", 0) == 0 || sharedPref.getInt("Co2_Color", 0) == 0) {
@@ -353,9 +339,8 @@ public class SettingsView extends AppCompatActivity {
             humDraw.setColorFilter(sharedPref.getInt("Hum_Color", 0), PorterDuff.Mode.MULTIPLY);
             HumPreview.setBackground(humDraw);
         }
-
-
     }
+
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
