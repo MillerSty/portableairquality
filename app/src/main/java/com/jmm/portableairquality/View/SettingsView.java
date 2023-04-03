@@ -284,9 +284,11 @@ public class SettingsView extends AppCompatActivity {
         if(!swissPref.getBoolean("swiss",false)){
         swiss.setChecked(false);
             swiss.setText("Set to Dark Mode");
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
         else{swiss.setChecked(true);
-            swiss.setText("Set to Light Mode");}
+            swiss.setText("Set to Light Mode");
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);}
         co2AlarmLevel = findViewById(R.id.etCo2Alarm);
         vocAlarmLevel = findViewById(R.id.etVocAlarm);
         pmAlarmLevel = findViewById(R.id.etPmAlarm);

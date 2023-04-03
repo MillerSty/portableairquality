@@ -4,6 +4,7 @@ package com.jmm.portableairquality.View;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
@@ -62,6 +63,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
     private static final int REQUEST_ENABLE_BT = 1;
     private static final int ACCESS_LOCATION_REQUEST = 2;
     private SensorSingleton sensorSingleton;
+    private SharedPreferences swissPref;
     BottomNavigationView navbot;
     TextView co2Display, vocDisplay, tempDisplay, humDisplay, pmDisplay;
     public int co2, voc;
@@ -77,6 +79,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         setContentView(R.layout.activity_main);
         Transition trans=new Fade();
         getWindow().setExitTransition(new Fade());
+        swissPref=getSharedPreferences("switch",Context.MODE_PRIVATE);
 //        getWindow().setAllowEnterTransitionOverlap(true);
 
         initView();
@@ -521,6 +524,13 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
 
     //init function for View and Alarm
     public void initView() {
+        if(!swissPref.getBoolean("swiss",false)){
+
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
+        else{
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
         co2Display = findViewById(R.id.co2Display);
         vocDisplay = findViewById(R.id.vocDisplay);
         tempDisplay = findViewById(R.id.tempDisplay);
