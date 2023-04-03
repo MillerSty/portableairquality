@@ -41,18 +41,21 @@ public class MapsFrag extends Fragment {
 
         //getting midnight timestamp for database fetch
         SensorDataDatabaseHelper db = SensorDataDatabaseHelper.getInstance(getActivity());
+        navbot=getActivity().findViewById(R.id.bottom_nav);
 
         //  get data from after timestamp and then reduce
         data = db.getEntriesAfterTimestamp(new Date().getTime() - DAY_IN_MILLIS);
-        color = new ArrayList<>();
-        ListLong = reduceRepeats(data, color);
-        navbot=getActivity().findViewById(R.id.bottom_nav);
 
-        SupportMapFragment supportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.MY_MAP);
-        supportMapFragment.getMapAsync(googleMap -> {
-            mMap = googleMap;
-            mMap = inflateMap(ListLong, mMap);
-        });
+        if (data.size() > 0) {
+            color = new ArrayList<>();
+            ListLong = reduceRepeats(data, color);
+
+            SupportMapFragment supportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.MY_MAP);
+            supportMapFragment.getMapAsync(googleMap -> {
+                mMap = googleMap;
+                mMap = inflateMap(ListLong, mMap);
+            });
+        }
         return view;
     }
 

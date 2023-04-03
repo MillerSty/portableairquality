@@ -101,7 +101,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
 
     protected void onStart() {
         super.onStart();
-        LocationControl.Instance.handleLocation(this);
+
 
         co2Display.addTextChangedListener(new TextWatcher() {
             @Override
@@ -323,9 +323,11 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         int targetSdkVersion = getApplicationInfo().targetSdkVersion;
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S && targetSdkVersion < Build.VERSION_CODES.S) {
             if (checkLocationServices()) {
+                LocationControl.Instance.handleLocation(this);
                 initBtHandler();
             }
         } else {
+            LocationControl.Instance.handleLocation(this);
             initBtHandler();
         }
     }
@@ -460,7 +462,6 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
 
     //TODO add proper bounds of Pm readings
     public void textViewHandler(String sensor, int readingInt,float readingPm) {
-        boolean flagRed = false, flagYellow = false, flagGreen = false;
         switch (sensor) {
             case "co2":
                 if (readingInt >= 0 && readingInt <= 1000) {
