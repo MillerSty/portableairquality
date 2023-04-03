@@ -15,7 +15,7 @@ import java.util.List;
 public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "sensor_data.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     private static final String TABLE_NAME = "sensor_data";
     private static final String COLUMN_TIMESTAMP = "timestamp";
@@ -141,7 +141,25 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public List<DataEntry> getEntriesAfterTimestamp(long timestamp) {
-        Cursor cursor = getSensorDataAfterTimestamp(timestamp);
+        SQLiteDatabase db = getReadableDatabase();
+        String[] columns = {
+                COLUMN_TIMESTAMP,
+                COLUMN_LATITUDE,
+                COLUMN_LONGITUDE,
+                COLUMN_TEMPERATURE,
+                COLUMN_HUMIDITY,
+                COLUMN_PM,
+                COLUMN_NOX,
+                COLUMN_CO,
+                COLUMN_VOC
+        };
+        String selection = COLUMN_TIMESTAMP + " >= ?";
+        String[] selectionArgs = {String.valueOf(timestamp)};
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        builder.setTables(TABLE_NAME);
+        Cursor cursor = builder.query(db, columns, selection,
+                selectionArgs, null, null, null);
+
         List<DataEntry> list = new ArrayList<>();
         if (cursor.getCount() > 0) {
             for (cursor.moveToFirst(); !cursor.isLast(); cursor.moveToNext()) {

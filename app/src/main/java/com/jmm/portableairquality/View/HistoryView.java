@@ -161,10 +161,10 @@ public class HistoryView extends AppCompatActivity {
         LineDataSet tempData, humData;
         if (chart_temp.getData() != null && chart_temp.getData().getDataSetCount() > 0) {
             tempData = (LineDataSet) chart_temp.getData().getDataSetByIndex(0);
-            tempData.setValues(co2);
+            tempData.setValues(temp);
 
             humData = (LineDataSet) chart_temp.getData().getDataSetByIndex(1);
-            humData.setValues(voc);
+            humData.setValues(hum);
 
             chart_temp.invalidate();
         } else {
@@ -173,7 +173,7 @@ public class HistoryView extends AppCompatActivity {
             tempData.setColor(0x32c3e2, 200);
             tempData.setDrawCircles(false);
 
-            humData = new LineDataSet(co2, "Relative Humidity");
+            humData = new LineDataSet(hum, "Relative Humidity");
             humData.setAxisDependency(YAxis.AxisDependency.RIGHT);
             humData.setColor(0x807fe2, 200);
             humData.setDrawCircles(false);
