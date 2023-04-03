@@ -252,9 +252,9 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         public void onReceive(Context context, Intent intent) {
             CcsMeasurement measurement = (CcsMeasurement) intent.getSerializableExtra(BluetoothHandler.MEASUREMENT_CCS_EXTRA);
             co2 = (int)measurement.co2;
-            co2Display.setText("Co2:\n" + Long.toString(measurement.co2));
+            co2Display.setText("Co2:\n" + Long.toString(measurement.co2) + "\nppm");
             voc = (int)measurement.voc;
-            vocDisplay.setText("VOC:\n" + Long.toString(measurement.voc));
+            vocDisplay.setText("VOC:\n" + Long.toString(measurement.voc) + "\nppb");
         }
     };
 
@@ -262,7 +262,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         @Override
         public void onReceive(Context context, Intent intent) {
             DhtMeasurement measurement = (DhtMeasurement) intent.getSerializableExtra(BluetoothHandler.MEASUREMENT_DHT_EXTRA);
-            tempDisplay.setText(Float.toString(measurement.temp) + "\u00B0");
+            tempDisplay.setText(Float.toString(measurement.temp) + "\u00B0C");
             humDisplay.setText(Float.toString(measurement.hum) + "%");
         }
     };
@@ -271,7 +271,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         @Override
         public void onReceive(Context context, Intent intent) {
             PmMeasurement measurement = (PmMeasurement) intent.getSerializableExtra(BluetoothHandler.MEASUREMENT_PM_EXTRA);
-            pmDisplay.setText("PM2.5:\n" + Integer.toString(measurement.pm));
+            pmDisplay.setText("PM2.5:\n" + Integer.toString(measurement.pm) + "\u00B5g/m\u00B3"); //micro gram per meter cubed, definitely not equivalent to ppb
         }
     };
 

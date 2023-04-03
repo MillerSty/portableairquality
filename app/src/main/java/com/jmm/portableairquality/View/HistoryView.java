@@ -279,17 +279,17 @@ public class HistoryView extends AppCompatActivity {
 
                 chart_air.invalidate();
             } else {
-                co2Data = new LineDataSet(co2, "CO2");
+                co2Data = new LineDataSet(co2, "CO\u2082(left in ppm)");
                 co2Data.setAxisDependency(YAxis.AxisDependency.LEFT); //set it to the left AXIS
                 co2Data.setColor(0xFF4C7C, 200); // set line colour (red) and opacity
                 co2Data.setDrawCircles(false);
 
-                vocData = new LineDataSet(voc, "VOC");
+                vocData = new LineDataSet(voc, "VOC(right in ppb");
                 vocData.setAxisDependency(YAxis.AxisDependency.RIGHT);
                 vocData.setColor(0x787EF4, 200); //light blue
                 vocData.setDrawCircles(false);
 
-                pmData = new LineDataSet(pm, "PM2.5");
+                pmData = new LineDataSet(pm, "PM2.5(right in \u00B5g/m\u00B3");
                 pmData.setAxisDependency(YAxis.AxisDependency.RIGHT);
                 pmData.setColor(0x279119, 200); //dark green
                 pmData.setDrawCircles(false);
