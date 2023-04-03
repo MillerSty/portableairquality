@@ -62,102 +62,72 @@ public class SettingsView extends AppCompatActivity {
         swissEdit = swissPref.edit();
         initView();
 
-        Co2Preview.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ColorDialogue CD = new ColorDialogue();
-                CD.show(getSupportFragmentManager(), "Co2");
-            }
+        Co2Preview.setOnClickListener(v -> {
+            ColorDialogue CD = new ColorDialogue();
+            CD.show(getSupportFragmentManager(), "Co2");
         });
-        VoCPreview.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ColorDialogue CD = new ColorDialogue();
-                CD.show(getSupportFragmentManager(), "VoC");
-            }
+        VoCPreview.setOnClickListener(v -> {
+            ColorDialogue CD = new ColorDialogue();
+            CD.show(getSupportFragmentManager(), "VoC");
         });
-        PmPreview.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ColorDialogue CD = new ColorDialogue();
-                CD.show(getSupportFragmentManager(), "Pm");
-            }
+        PmPreview.setOnClickListener(v -> {
+            ColorDialogue CD = new ColorDialogue();
+            CD.show(getSupportFragmentManager(), "Pm");
         });
-        TempPreview.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ColorDialogue CD = new ColorDialogue();
-                CD.show(getSupportFragmentManager(), "Temp");
-            }
+        TempPreview.setOnClickListener(v -> {
+            ColorDialogue CD = new ColorDialogue();
+            CD.show(getSupportFragmentManager(), "Temp");
         });
-        HumPreview.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ColorDialogue CD = new ColorDialogue();
-                CD.show(getSupportFragmentManager(), "Hum");
-            }
+        HumPreview.setOnClickListener(v -> {
+            ColorDialogue CD = new ColorDialogue();
+            CD.show(getSupportFragmentManager(), "Hum");
         });
-        getSupportFragmentManager().setFragmentResultListener("Co2_Color", this, new FragmentResultListener() {
-            @Override
-            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
-                mDefaultColor = result.getInt("Co2_Color");
+        getSupportFragmentManager().setFragmentResultListener("Co2_Color", this, (requestKey, result) -> {
+            mDefaultColor = result.getInt("Co2_Color");
 
-                co2Draw.clearColorFilter();
-                co2Draw.setColorFilter(mDefaultColor, PorterDuff.Mode.MULTIPLY);
-                Co2Preview.setBackground(co2Draw);
-                editor.putInt("Co2_Color", mDefaultColor);
-                editor.apply();
+            co2Draw.clearColorFilter();
+            co2Draw.setColorFilter(mDefaultColor, PorterDuff.Mode.MULTIPLY);
+            Co2Preview.setBackground(co2Draw);
+            editor.putInt("Co2_Color", mDefaultColor);
+            editor.apply();
 
-                int val = 1000;
-            }
+            int val = 1000;
         });
-        getSupportFragmentManager().setFragmentResultListener("VoC_Color", this, new FragmentResultListener() {
-            @Override
-            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
-                mDefaultColor = result.getInt("VoC_Color");
-                vocDraw.clearColorFilter();
-                vocDraw.setColorFilter(mDefaultColor, PorterDuff.Mode.MULTIPLY);
-                VoCPreview.setBackground(vocDraw);
-                editor.putInt("VoC_Color", mDefaultColor);
-                editor.apply();
-                int val = 1000;
-            }
+        getSupportFragmentManager().setFragmentResultListener("VoC_Color", this, (requestKey, result) -> {
+            mDefaultColor = result.getInt("VoC_Color");
+            vocDraw.clearColorFilter();
+            vocDraw.setColorFilter(mDefaultColor, PorterDuff.Mode.MULTIPLY);
+            VoCPreview.setBackground(vocDraw);
+            editor.putInt("VoC_Color", mDefaultColor);
+            editor.apply();
+            int val = 1000;
         });
-        getSupportFragmentManager().setFragmentResultListener("Pm_Color", this, new FragmentResultListener() {
-            @Override
-            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
-                mDefaultColor = result.getInt("Pm_Color");
-                pmDraw.clearColorFilter();
-                pmDraw.setColorFilter(mDefaultColor, PorterDuff.Mode.MULTIPLY);
-                PmPreview.setBackground(pmDraw);
-                editor.putInt("Pm_Color", mDefaultColor);
-                editor.apply();
-                int val = 1000;
-            }
+        getSupportFragmentManager().setFragmentResultListener("Pm_Color", this, (requestKey, result) -> {
+            mDefaultColor = result.getInt("Pm_Color");
+            pmDraw.clearColorFilter();
+            pmDraw.setColorFilter(mDefaultColor, PorterDuff.Mode.MULTIPLY);
+            PmPreview.setBackground(pmDraw);
+            editor.putInt("Pm_Color", mDefaultColor);
+            editor.apply();
+            int val = 1000;
         });
-        getSupportFragmentManager().setFragmentResultListener("Temp_Color", this, new FragmentResultListener() {
-            @Override
-            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
-                mDefaultColor = result.getInt("Temp_Color");
-                tempDraw.clearColorFilter();
-                tempDraw.setColorFilter(mDefaultColor, PorterDuff.Mode.MULTIPLY);
-                TempPreview.setBackground(tempDraw);
-                editor.putInt("Temp_Color", mDefaultColor);
-                editor.apply();
-                int val = 1000;
-            }
+        getSupportFragmentManager().setFragmentResultListener("Temp_Color", this, (requestKey, result) -> {
+            mDefaultColor = result.getInt("Temp_Color");
+            tempDraw.clearColorFilter();
+            tempDraw.setColorFilter(mDefaultColor, PorterDuff.Mode.MULTIPLY);
+            TempPreview.setBackground(tempDraw);
+            editor.putInt("Temp_Color", mDefaultColor);
+            editor.apply();
+            int val = 1000;
         });
-        getSupportFragmentManager().setFragmentResultListener("Hum_Color", this, new FragmentResultListener() {
-            @Override
-            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
-                mDefaultColor = result.getInt("Hum_Color");
-                humDraw.clearColorFilter();
-                humDraw.setColorFilter(mDefaultColor, PorterDuff.Mode.MULTIPLY);
-                HumPreview.setBackground(humDraw);
-                editor.putInt("Hum_Color", mDefaultColor);
-                editor.apply();
-                int val = 1000;
-            }
+        getSupportFragmentManager().setFragmentResultListener("Hum_Color", this, (requestKey, result) -> {
+            mDefaultColor = result.getInt("Hum_Color");
+            humDraw.clearColorFilter();
+            humDraw.setColorFilter(mDefaultColor, PorterDuff.Mode.MULTIPLY);
+            HumPreview.setBackground(humDraw);
+            editor.putInt("Hum_Color", mDefaultColor);
+            editor.apply();
+            int val = 1000;
         });
 
         //alarm.setOnClickListener(view -> showEditDialog());

@@ -78,7 +78,6 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_CO, CO);
         values.put(COLUMN_VOC, VOC);
         db.insert(TABLE_NAME, null, values);
-        db.close();
     }
 
     public Cursor getAllSensorData() {
@@ -134,7 +133,7 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
                 list.add(dataEntry);
             }
         }
-
+        cursor.close();
         return list;
     }
 
@@ -174,7 +173,7 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
                 list.add(dataEntry);
             }
         }
-
+        cursor.close();
         return list;
     }
 }
