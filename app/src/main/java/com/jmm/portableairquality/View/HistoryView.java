@@ -17,10 +17,11 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-
+import androidx.core.content.ContextCompat;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
@@ -281,17 +282,17 @@ public class HistoryView extends AppCompatActivity {
             } else {
                 co2Data = new LineDataSet(co2, "CO\u2082 ppm (left)");
                 co2Data.setAxisDependency(YAxis.AxisDependency.LEFT); //set it to the left AXIS
-                co2Data.setColor(0xFF4C7C, 200); // set line colour (red) and opacity
+                co2Data.setColor(sharedPref.getInt("Co2_Color",0), 200); // set line colour (red) and opacity
                 co2Data.setDrawCircles(false);
 
                 vocData = new LineDataSet(voc, "VOC ppb (right)");
                 vocData.setAxisDependency(YAxis.AxisDependency.RIGHT);
-                vocData.setColor(0x787EF4, 200); //light blue
+                vocData.setColor(sharedPref.getInt("VoC_Color",0), 200); //light blue
                 vocData.setDrawCircles(false);
 
                 pmData = new LineDataSet(pm, "PM2.5\u00B5g/m\u00B3 (right)");
                 pmData.setAxisDependency(YAxis.AxisDependency.RIGHT);
-                pmData.setColor(0x279119, 200); //dark green
+                pmData.setColor(sharedPref.getInt("Pm_Color",0), 200); //dark green
                 pmData.setDrawCircles(false);
 
 
@@ -309,6 +310,10 @@ public class HistoryView extends AppCompatActivity {
                 });
                 chart_air.setNoDataText("oh no! no data in this range, please select different dates");
 
+                chart_air.getLegend().setTextColor(textColor);
+                chart_air.getXAxis().setTextColor(textColor);
+                chart_air.getAxisLeft().setTextColor(textColor);
+                chart_air.getAxisRight().setTextColor(textColor);
                 Description desc_air = chart_air.getDescription();
                 desc_air.setText("Graph of air quality parameters over time!");
 
@@ -328,12 +333,12 @@ public class HistoryView extends AppCompatActivity {
             } else {
                 tempData = new LineDataSet(temp, "Temperature");
                 tempData.setAxisDependency(YAxis.AxisDependency.RIGHT);
-                tempData.setColor(0x32c3e2, 200);
+                tempData.setColor(sharedPref.getInt("Temp_Color",0), 200);
                 tempData.setDrawCircles(false);
 
                 humData = new LineDataSet(hum, "Relative Humidity");
                 humData.setAxisDependency(YAxis.AxisDependency.RIGHT);
-                humData.setColor(0x807fe2, 200);
+                humData.setColor(sharedPref.getInt("Hum_Color",0), 200);
                 humData.setDrawCircles(false);
 
                 LineData air_data = new LineData(tempData, humData);
@@ -350,6 +355,10 @@ public class HistoryView extends AppCompatActivity {
 
                 chart_temp.setNoDataText("no data selected in time range, please select a different time!");
 
+                chart_temp.getLegend().setTextColor(textColor);
+                chart_temp.getXAxis().setTextColor(textColor);
+                chart_temp.getAxisLeft().setTextColor(textColor);
+                chart_temp.getAxisRight().setTextColor(textColor);
                 Description desc_temp = chart_temp.getDescription();
                 desc_temp.setText("Graph of temperature and humidity!");
 
