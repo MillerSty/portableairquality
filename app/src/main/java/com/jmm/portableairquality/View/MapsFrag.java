@@ -105,16 +105,16 @@ public class MapsFrag extends Fragment {
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(arrayList.get(position), 20F));
 
         for (int i = 0; i < arrayList.size(); i++) {
-            markerOptions.position(arrayList.get(i));
-            line.color(color.get(i)).add(arrayList.get(i)).width(10);
+            //markerOptions.position(arrayList.get(i));
+            line.color(color.get(i)).add(arrayList.get(i)).width(10).geodesic(true);
             mMap.addPolyline(line);
         }
         MapStyleOptions viewmode;
         if(!swissPref.getBoolean("swiss",false)){
-                    viewmode=MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.retro);
+            viewmode=MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.retro);
         }
-        else{                    viewmode=MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.darkmode);
-
+        else{
+            viewmode=MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.darkmode);
         }
         mMap.setMapStyle(viewmode);
         return mMap;

@@ -258,9 +258,9 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         public void onReceive(Context context, Intent intent) {
             CcsMeasurement measurement = (CcsMeasurement) intent.getSerializableExtra(BluetoothHandler.MEASUREMENT_CCS_EXTRA);
             co2 = measurement.co2;
-            co2Display.setText("Co2:\n" + Long.toString(measurement.co2) + "\nppm");
+            co2Display.setText("Co2:\n" + Long.toString(measurement.co2) + " ppm");
             voc = measurement.voc;
-            vocDisplay.setText("VOC:\n" + Long.toString(measurement.voc) + "\nppb");
+            vocDisplay.setText("VOC:\n" + Long.toString(measurement.voc) + " ppb");
         }
     };
 
@@ -278,7 +278,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         public void onReceive(Context context, Intent intent) {
             PmMeasurement measurement = (PmMeasurement) intent.getSerializableExtra(BluetoothHandler.MEASUREMENT_PM_EXTRA);
             pm = measurement.pm;
-            pmDisplay.setText("PM2.5:\n" + Integer.toString(measurement.pm) + "\u00B5g/m\u00B3"); //micro gram per meter cubed, definitely not equivalent to ppb
+            pmDisplay.setText("PM2.5:\n" + Integer.toString(measurement.pm) + " \u00B5g/m\u00B3"); //micro gram per meter cubed, definitely not equivalent to ppb
         }
     };
 
