@@ -441,7 +441,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
 
         builder.setContentTitle(title)
                 .setContentText("Expand to see details")
-                .setSmallIcon(R.drawable.humidity)
+                .setSmallIcon(R.mipmap.ic_launcher2)
                 .setAutoCancel(true)
                 .setContentIntent(notifyPendingIntent)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(content));
