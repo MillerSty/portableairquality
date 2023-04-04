@@ -123,21 +123,16 @@ public class MapsFrag extends Fragment {
     public int sortColor(List<DataEntry> dataEntry, int position) {
         //TODO Dial in better global colors
 
-        int avgPollutants = (dataEntry.get(position).co2Entry + dataEntry.get(position).vocEntry + (int) dataEntry.get(position).pm) / 3;
+        int co2 = dataEntry.get(position).co2Entry;
+        int voc = dataEntry.get(position).vocEntry;
+        int pm = (int) dataEntry.get(position).pm;
 
-        if (avgPollutants <= (SensorSingleton.GlobalGreen + 1000)) {
-            int val = getResources().getColor(R.color.green_200);
-            green = val;
-            return val; //2131034216
-        } else if (avgPollutants <= (1000 + SensorSingleton.GlobalYellow)) {
-            int val = getResources().getColor(R.color.yellow_200);
-            yellow = val;
-            return val;//2131034771
-        } else {
-            int val = getResources().getColor(R.color.red_200);
-            red = val;
-            return val;//2131034753
-        }
+        int colour = R.color.green_200;
+
+        if (co2 > 2000 || voc > 200 || pm > 12) { colour = R.color.yellow_200; }
+        if (co2 > 6000 || voc > 600 || pm > 35) { colour = R.color.red_200; }
+
+        return getResources().getColor(colour);
     }
 
     private void showToast(String message) {
