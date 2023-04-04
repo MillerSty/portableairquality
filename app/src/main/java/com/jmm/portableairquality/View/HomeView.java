@@ -548,7 +548,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         if (alarmPref.getInt("co2Alarm", 0) != 0 || alarmPref.getInt("vocAlarm", 0) != 0) {
             sensorSingleton.getInstance().setCo2Alarm(alarmPref.getInt("co2Alarm", 0));
             sensorSingleton.getInstance().setVocAlarm(alarmPref.getInt("vocAlarm", 0));
-            sensorSingleton.getInstance().setPmAlarm(alarmPref.getFloat("pmAlarm", 0));
+            sensorSingleton.getInstance().setPmAlarm(alarmPref.getInt("pmAlarm", 0));
         }
         //if no then check if settings have been set for instance
         else if( sensorSingleton.getInstance().getCheck_flag()==0) {

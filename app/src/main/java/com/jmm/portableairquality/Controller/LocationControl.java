@@ -61,7 +61,7 @@ public class LocationControl implements LocationListener {
 
         if(!(newLocation.getLatitude()==0 || newLocation.getLongitude()==0))
         {
-            if (newLocation.hasSpeed() && newLocation.getSpeed() > 1.0) {
+            if (newLocation.hasSpeed() && newLocation.getSpeed() > 1.1) {
                 double latitude = newLocation.getLatitude();
                 double longitude = newLocation.getLongitude();
                 editor.putLong("Lat", Double.doubleToRawLongBits(latitude));

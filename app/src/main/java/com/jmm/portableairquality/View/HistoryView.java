@@ -379,7 +379,7 @@ public class HistoryView extends AppCompatActivity {
                 endTime = Calendar.getInstance();
                 if (startTime.after(endTime)) {
                     startTime = Calendar.getInstance();
-                    startTime.add(Calendar.HOUR, -24);
+                    startTime.add(Calendar.MINUTE, -30);
                 }
             }
 
