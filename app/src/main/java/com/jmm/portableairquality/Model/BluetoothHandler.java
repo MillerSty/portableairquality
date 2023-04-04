@@ -1,12 +1,12 @@
 // code adapted from https://github.com/weliem/blessed-android/blob/master/app/src/main/java/com/welie/blessedexample/BluetoothHandler.java
 package com.jmm.portableairquality.Model;
-import com.jmm.portableairquality.Model.SensorDataDatabaseHelper;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.util.Log;
 import androidx.annotation.NonNull;
@@ -25,7 +25,6 @@ import com.welie.blessed.HciStatus;
 
 public class BluetoothHandler {
     private static final String MAC_ADD = "24:6F:28:1A:72:9E"; //SparkFun Thing MAC Address
-//private static final String MAC_ADD = "70:B8:F6:5C:C3:6E"; //simulated device
     public static final String MEASUREMENT_CCS = "paq.measurement.css";
     public static final String MEASUREMENT_CCS_EXTRA = "paq.measurement.css.extra";
     public static final String MEASUREMENT_DHT = "paq.measurement.dht";
@@ -74,21 +73,27 @@ public class BluetoothHandler {
 
             if (characteristicUUID.equals(CCS_CHAR_UUID)) {
                 CcsMeasurement measurement = new CcsMeasurement(value);
+
                 co2 = measurement.co2;
                 voc = measurement.voc;
+
                 intent = new Intent(MEASUREMENT_CCS);
                 intent.putExtra(MEASUREMENT_CCS_EXTRA, measurement);
                 sendMeasurement(intent, peripheral);
             } else if (characteristicUUID.equals(DHT_CHAR_UUID)) {
                 DhtMeasurement measurement = new DhtMeasurement(value);
+
                 temp = measurement.temp;
                 hum = measurement.hum;
+
                 intent = new Intent(MEASUREMENT_DHT);
                 intent.putExtra(MEASUREMENT_DHT_EXTRA, measurement);
                 sendMeasurement(intent, peripheral);
             } else if (characteristicUUID.equals(PM_CHAR_UUID)) {
                 PmMeasurement measurement = new PmMeasurement(value);
+
                 pm = measurement.pm;
+
                 intent = new Intent(MEASUREMENT_PM);
                 intent.putExtra(MEASUREMENT_PM_EXTRA, measurement);
                 sendMeasurement(intent, peripheral);
@@ -105,6 +110,7 @@ public class BluetoothHandler {
         @Override
         public void onConnectedPeripheral(@NotNull BluetoothPeripheral peripheral) {
             Log.d("BTModel", "Connected to device");
+            db = new SensorDataDatabaseHelper(context.getApplicationContext());
         }
 
         @Override
@@ -112,18 +118,11 @@ public class BluetoothHandler {
             Log.d("BTModel", "Disconnected from device");
 
             // Reconnect to this device when it becomes available again
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    btCentral.autoConnectPeripheral(peripheral, peripheralCallback);
-                }
-            }, 5000);
+            handler.postDelayed(() -> btCentral.autoConnectPeripheral(peripheral, peripheralCallback), 2000);
         }
 
         @Override
         public void onDiscoveredPeripheral(@NotNull BluetoothPeripheral peripheral, @NotNull ScanResult scanResult) {
-            Log.d("BTModel", String.format("Found Peripheral", peripheral.getName()));
-
             if (peripheral.getAddress() == MAC_ADD && peripheral.getBondState() == BondState.NONE) {
                 btCentral.stopScan();
                 // Create a bond immediately to avoid double pairing popups
@@ -163,12 +162,14 @@ public class BluetoothHandler {
             public void run() {
                 SensorDataDatabaseHelper db = SensorDataDatabaseHelper.getInstance(context);
                 Date date;
+
                 while(true) {
-                    //todo getlocation
-                    int latitude = 0;
-                    int longitude = 0;
+                    SharedPreferences sharedPref = context.getSharedPreferences("hey",Context.MODE_PRIVATE);
+                    double latitude= Double.longBitsToDouble(sharedPref.getLong("Lat", 0));
+                    double longitude=Double.longBitsToDouble(sharedPref.getLong("Long",0));
+                    int nox = 0;
                     date = new Date();
-                    db.addSensorData(date, latitude, longitude, temp, hum, pm, 0, co2, voc);
+                    db.addSensorData(date, latitude, longitude, temp, hum, pm, nox, co2, voc);
                     try {
                         sleep(2000);
                     } catch (InterruptedException e) {
@@ -181,12 +182,7 @@ public class BluetoothHandler {
     }
 
     private void startScan() {
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                btCentral.scanForPeripheralsWithServices(new UUID[] {PAQ_SERVICE_UUID});
-            }
-        }, 1000);
+        handler.postDelayed(() -> btCentral.scanForPeripheralsWithServices(new UUID[] {PAQ_SERVICE_UUID}), 1000);
     }
 }
 

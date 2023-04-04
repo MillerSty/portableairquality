@@ -2,20 +2,311 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/settings"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/tvAlarmLimits"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="44dp"
-        android:layout_marginTop="68dp"
-        android:text="Set Alarm Limits"
-        android:textSize="20sp"
-        android:textColor="?attr/colorPrimary"
-        app:layout_constraintStart_toStartOf="parent"
+    <RelativeLayout
+        android:id="@+id/linear"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_nav"
+        app:layout_constraintTop_toTopOf="@id/settings"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvGraphColour"
+                android:layout_width="186dp"
+                android:layout_height="31dp"
+                android:layout_marginStart="60dp"
+                android:layout_marginTop="28dp"
+                android:layout_marginEnd="114dp"
+                android:text="Set Graph Colours"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/co2Graph"
+                android:layout_width="128dp"
+                android:layout_height="28dp"
+                android:layout_marginTop="41dp"
+                android:layout_marginEnd="32dp"
+                android:text="Set Co2 Graph color"
+                android:textColor="?attr/colorPrimary"
+                app:layout_constraintEnd_toStartOf="@+id/preview_Co2"
+                app:layout_constraintTop_toBottomOf="@+id/tvGraphColour" />
+
+            <View
+                android:id="@+id/preview_Co2"
+                android:layout_width="37dp"
+                android:layout_height="42dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="100dp"
+                android:layout_marginEnd="44dp"
+                android:background="@drawable/color_select"
+                android:clickable="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/vocGraph"
+                android:layout_width="128dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:layout_marginEnd="32dp"
+                android:text="Set  Voc Graph color"
+                android:textColor="?attr/colorPrimary"
+                app:layout_constraintEnd_toStartOf="@+id/preview_VoC"
+                app:layout_constraintTop_toBottomOf="@+id/co2Graph" />
+
+            <View
+                android:id="@+id/preview_VoC"
+                android:layout_width="37dp"
+                android:layout_height="42dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="19dp"
+                android:layout_marginEnd="44dp"
+                android:background="@drawable/color_select"
+                android:clickable="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/preview_Co2" />
+
+            <TextView
+                android:id="@+id/pmGraph"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="42dp"
+                android:layout_marginEnd="32dp"
+                android:text="Set Pm Graph color"
+                android:textColor="?attr/colorPrimary"
+                app:layout_constraintEnd_toStartOf="@+id/preview_Pm"
+                app:layout_constraintTop_toBottomOf="@+id/vocGraph" />
+
+            <View
+                android:id="@+id/preview_Pm"
+                android:layout_width="37dp"
+                android:layout_height="42dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="21dp"
+                android:layout_marginEnd="44dp"
+                android:background="@drawable/color_select"
+                android:clickable="true"
+                android:visibility="visible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/preview_VoC" />
+
+            <TextView
+                android:id="@+id/tempGraph"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="43dp"
+                android:layout_marginEnd="32dp"
+                android:text="Set temperatue Graph color"
+                android:textColor="?attr/colorPrimary"
+                app:layout_constraintEnd_toStartOf="@+id/preview_Temp"
+                app:layout_constraintTop_toBottomOf="@+id/pmGraph" />
+
+            <View
+                android:id="@+id/preview_Temp"
+                android:layout_width="37dp"
+                android:layout_height="42dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="44dp"
+                android:background="@drawable/color_select"
+                android:clickable="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/preview_Pm" />
+
+            <TextView
+                android:id="@+id/humGraph"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="41dp"
+                android:layout_marginEnd="31dp"
+                android:text="Set humidity Graph color"
+                android:textColor="?attr/colorPrimary"
+                app:layout_constraintEnd_toStartOf="@+id/preview_Hum"
+                app:layout_constraintTop_toBottomOf="@+id/tempGraph" />
+
+            <View
+                android:id="@+id/preview_Hum"
+                android:layout_width="37dp"
+                android:layout_height="42dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="44dp"
+                android:background="@drawable/color_select"
+                android:clickable="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/preview_Temp" />
+
+            <Switch
+                android:id="@+id/switch1"
+                android:layout_width="269dp"
+                android:layout_height="26dp"
+                android:layout_marginTop="21dp"
+                android:layout_marginEnd="44dp"
+                android:text="Switch to Dark Mode"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/preview_Hum" />
+
+            <TextView
+                android:id="@+id/tvAlarmLimits"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="36dp"
+                android:layout_marginEnd="111dp"
+                android:text="Set Alarm Limits"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/switch1" />
+
+            <TextView
+                android:id="@+id/tvCo2Alarm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:layout_marginEnd="111dp"
+                android:text="Set Co2 level"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvAlarmLimits" />
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="229dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="111dp"
+                android:text="Good Co2 levels are between 0-2000ppm . Decent is 2000-6000ppm. Hazardous is 6000+ppm"
+                android:textSize="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvCo2Alarm" />
+
+            <EditText
+                android:id="@+id/etCo2Alarm"
+                android:layout_width="88dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="20dp"
+                android:digits="0123456789"
+                android:ems="10"
+                android:inputType="number"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/textView4"
+                app:layout_constraintTop_toBottomOf="@+id/tvCo2Alarm"
+                android:focusableInTouchMode="true"/>
+
+            <TextView
+                android:id="@+id/tvVocAlarm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:layout_marginEnd="111dp"
+                android:text="Set VOC level"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView4"
+                android:focusableInTouchMode="true"/>
+
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="216dp"
+                android:layout_height="56dp"
+                android:layout_marginEnd="111dp"
+                android:text="Good Voc levels are between 0-200ppb . Decent is 200-600ppb. Hazardous is 600+ppb"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvVocAlarm"
+                android:focusableInTouchMode="true"/>
+
+            <EditText
+                android:id="@+id/etVocAlarm"
+                android:layout_width="88dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="20dp"
+                android:digits="0123456789"
+                android:ems="10"
+                android:inputType="number"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/textView5"
+                app:layout_constraintTop_toBottomOf="@+id/tvVocAlarm"
+                android:focusableInTouchMode="true"/>
+
+            <TextView
+                android:id="@+id/tvPm2Alarm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:layout_marginEnd="111dp"
+                android:text="Set Pm2.5 level"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView5" />
+
+            <EditText
+                android:id="@+id/etPmAlarm"
+                android:layout_width="88dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="20dp"
+                android:ems="10"
+                android:digits="0123456789."
+                android:inputType="number"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toEndOf="@+id/textView8"
+                app:layout_constraintTop_toBottomOf="@+id/tvPm2Alarm"
+                android:focusableInTouchMode="true"/>
+
+            <TextView
+                android:id="@+id/textView8"
+                android:layout_width="195dp"
+                android:layout_height="55dp"
+                android:layout_marginStart="52dp"
+
+                android:text="Good Pm2 levels are between 0-12ug/m^3 . Decent is 12-35ug/m^3. Hazardous is 35+ug/m^3"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvPm2Alarm" />
+
+            <Button
+                android:id="@+id/btnSave"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="36dp"
+                android:layout_marginEnd="36dp"
+                android:backgroundTint="#717070"
+                android:text="Save"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/etPmAlarm" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_nav"
@@ -27,31 +318,20 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/bottom_bar"
-
         tools:layout_editor_absoluteX="0dp" />
 
-    <ImageView
-        android:id="@+id/IvAlarm"
-        android:layout_width="35dp"
-        android:layout_height="30dp"
-        android:layout_marginTop="68dp"
-        android:clickable="true"
-
-        app:layout_constraintStart_toEndOf="@+id/tvAlarmLimits"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/button" />
-
-    <Switch
-        android:id="@+id/switch1"
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="88dp"
-        android:layout_marginTop="44dp"
-        android:checked="false"
-        android:text="Light/dark"
-        android:textColor="?attr/colorPrimary"
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvAlarmLimits" />
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="112dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="409dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

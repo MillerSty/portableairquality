@@ -78,7 +78,6 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_CO, CO);
         values.put(COLUMN_VOC, VOC);
         db.insert(TABLE_NAME, null, values);
-        db.close();
     }
 
     public Cursor getAllSensorData() {
@@ -95,48 +94,6 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
                 COLUMN_VOC
         };
         Cursor cursor = db.query(TABLE_NAME, columns, null, null, null, null, null);
-        return cursor;
-    }
-
-    public Cursor getSensorDataByTimestamp(long timestamp) {
-        SQLiteDatabase db = getReadableDatabase();
-        String[] columns = {
-                COLUMN_TIMESTAMP,
-                COLUMN_LATITUDE,
-                COLUMN_LONGITUDE,
-                COLUMN_TEMPERATURE,
-                COLUMN_HUMIDITY,
-                COLUMN_PM,
-                COLUMN_NOX,
-                COLUMN_CO,
-                COLUMN_VOC
-        };
-        String selection = COLUMN_TIMESTAMP + " = ?";
-        String[] selectionArgs = {String.valueOf(timestamp)};
-        Cursor cursor = db.query(TABLE_NAME, columns, selection, selectionArgs, null, null, null);
-        return cursor;
-    }
-
-    public Cursor getSensorDataAfterTimestamp(long timestamp) {
-        SQLiteDatabase db = getReadableDatabase();
-        String[] columns = {
-                COLUMN_TIMESTAMP,
-                COLUMN_LATITUDE,
-                COLUMN_LONGITUDE,
-                COLUMN_TEMPERATURE,
-                COLUMN_HUMIDITY,
-                COLUMN_PM,
-                COLUMN_NOX,
-                COLUMN_CO,
-                COLUMN_VOC
-        };
-        String selection = COLUMN_TIMESTAMP + " >= ?";
-        String[] selectionArgs = {String.valueOf(timestamp)};
-        // Cursor cursor = db.query(TABLE_NAME, columns, selection, selectionArgs, null, null, null);
-        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-        builder.setTables(TABLE_NAME);
-        Cursor cursor = builder.query(db, columns, selection,
-                selectionArgs, null, null, null);
         return cursor;
     }
 
@@ -169,12 +126,54 @@ public class SensorDataDatabaseHelper extends SQLiteOpenHelper {
                 float humEntry = cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_HUMIDITY));
                 float pm = cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_PM));
                 long timestmp = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_TIMESTAMP));
+                double latitude = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_LATITUDE));
+                double longitude = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_LONGITUDE));
 
-                DataEntry dataEntry = new DataEntry(co2Entry, vocEntry, tempEntry, humEntry, pm, timestmp);
+                DataEntry dataEntry = new DataEntry(co2Entry, vocEntry, tempEntry, humEntry, pm, timestmp,latitude,longitude);
                 list.add(dataEntry);
             }
         }
+        cursor.close();
+        return list;
+    }
 
+    public List<DataEntry> getEntriesBetweenTimestamps(long start, long end) {
+        SQLiteDatabase db = getReadableDatabase();
+        String[] columns = {
+                COLUMN_TIMESTAMP,
+                COLUMN_LATITUDE,
+                COLUMN_LONGITUDE,
+                COLUMN_TEMPERATURE,
+                COLUMN_HUMIDITY,
+                COLUMN_PM,
+                COLUMN_NOX,
+                COLUMN_CO,
+                COLUMN_VOC
+        };
+        String selection = COLUMN_TIMESTAMP + " >= ? AND " + COLUMN_TIMESTAMP + " <= ?";
+        String[] selectionArgs = {String.valueOf(start), String.valueOf(end)};
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        builder.setTables(TABLE_NAME);
+        Cursor cursor = builder.query(db, columns, selection,
+                selectionArgs, null, null, null);
+
+        List<DataEntry> list = new ArrayList<>();
+        if (cursor.getCount() > 0) {
+            for (cursor.moveToFirst(); !cursor.isLast(); cursor.moveToNext()) {
+                int co2Entry = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CO));
+                int vocEntry = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_VOC));
+                float tempEntry = cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_TEMPERATURE));
+                float humEntry = cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_HUMIDITY));
+                float pm = cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_PM));
+                long timestmp = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_TIMESTAMP));
+                double latitude = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_LATITUDE));
+                double longitude = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_LONGITUDE));
+
+                DataEntry dataEntry = new DataEntry(co2Entry, vocEntry, tempEntry, humEntry, pm, timestmp,latitude,longitude);
+                list.add(dataEntry);
+            }
+        }
+        cursor.close();
         return list;
     }
 }
