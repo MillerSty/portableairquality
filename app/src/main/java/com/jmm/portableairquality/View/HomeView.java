@@ -59,7 +59,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
     private static final int REQUEST_ENABLE_BT = 1;
     private static final int ACCESS_LOCATION_REQUEST = 2;
     private SensorSingleton sensorSingleton;
-    private SharedPreferences swissPref;
+    private SharedPreferences swissPref,alarmPref;
     BottomNavigationView navbot;
     TextView co2Display, vocDisplay, tempDisplay, humDisplay, pmDisplay;
     public int co2, voc;
@@ -527,9 +527,25 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
     }
 
     public void initSensorAlarm() {
-        sensorSingleton.Instance.setCo2Alarm(sensorSingleton.Co2Default);
-        sensorSingleton.Instance.setVocAlarm(sensorSingleton.VocDefault);
-        sensorSingleton.Instance.setPmAlarm(sensorSingleton.PmDefault);
+        alarmPref=getSharedPreferences("alarm", Context.MODE_PRIVATE);
+//first check is settings have been set, if yes set the alarm like that
+        if (alarmPref.getInt("co2Alarm", 0) != 0 || alarmPref.getInt("vocAlarm", 0) != 0) {
+            sensorSingleton.getInstance().setCo2Alarm(alarmPref.getInt("co2Alarm", 0));
+            sensorSingleton.getInstance().setVocAlarm(alarmPref.getInt("vocAlarm", 0));
+            sensorSingleton.getInstance().setPmAlarm(alarmPref.getFloat("pmAlarm", 0));
+        }
+        //if no then check if settings have been set for instance
+        else if( sensorSingleton.getInstance().getCheck_flag()==0) {
+            sensorSingleton.getInstance().setCo2Alarm(sensorSingleton.Co2Default);
+            sensorSingleton.getInstance().setVocAlarm(sensorSingleton.VocDefault);
+            sensorSingleton.getInstance().setPmAlarm(sensorSingleton.PmDefault);
+        }
+        else {
+            showToast("Cannot set Alarm Levels");
+
+        }
+
+
     }
 }
 
