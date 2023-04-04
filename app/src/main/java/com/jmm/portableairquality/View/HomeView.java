@@ -107,9 +107,11 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 textViewHandler("co2",co2,0);
-                if( co2>SensorSingleton.Instance.getCo2Alarm()){
+                if(co2 > SensorSingleton.Instance.getCo2Alarm()){
                     FN_co2=true;
-                    Notification("Co2");
+                    Notification();
+                } else {
+                    FN_co2=false;
                 }
             }
 
@@ -127,7 +129,9 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
                 textViewHandler("voc",voc,0);
                 if( voc>SensorSingleton.Instance.getVocAlarm()){
                     FN_voc=true;
-                    Notification("Voc");
+                    Notification();
+                } else {
+                    FN_voc=false;
                 }
             }
 
@@ -143,10 +147,12 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         pmDisplay.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                textViewHandler("pm2",0,pm);
-                if( pm>SensorSingleton.Instance.getPmAlarm()){
+                textViewHandler("pm",0,pm);
+                if(pm > SensorSingleton.Instance.getPmAlarm()){
                     FN_pm=true;
-                    Notification("Pm");
+                    Notification();
+                } else {
+                    FN_pm=false;
                 }
             }
 
@@ -400,7 +406,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
     }
 
     @SuppressLint("MissingPermission")
-    public void Notification(String sensor_alert) {
+    public void Notification() {
         Intent notifyIntent = new Intent(this, HomeView.class);
 
         // Set the Activity to start in a new, empty task
@@ -409,7 +415,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         // Create the PendingIntent
         PendingIntent notifyPendingIntent = PendingIntent.getActivity(
                 this, 0, notifyIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT
+                PendingIntent.FLAG_CANCEL_CURRENT
         );
 
         NotificationCompat.Builder builder;
@@ -424,11 +430,20 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
             builder = new NotificationCompat.Builder(HomeView.this, "my notif");
         }
 
-        builder.setContentTitle(sensor_alert + " beyond threshold")
-                .setContentText(sensor_alert + " has gone beyond the limit set.")
+        String title = "Threshold Alert";
+        //String overview =
+        String content = "";
+
+        if (FN_co2) { content += "CO\u2082 beyond limit at " + co2 + "\n"; }
+        if (FN_voc) { content += "VOC beyond limit at " + voc + "\n"; }
+        if (FN_pm) { content += "PM2.5 beyond limit at " + pm + "\n"; }
+
+        builder.setContentTitle(title)
+                .setContentText("Expand to see details")
                 .setSmallIcon(R.drawable.humidity)
                 .setAutoCancel(true)
-                .setContentIntent(notifyPendingIntent);
+                .setContentIntent(notifyPendingIntent)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(content));
 
         //can also set intent to go to when clicked
         NotificationManagerCompat managerCompat = NotificationManagerCompat.from(HomeView.this);
