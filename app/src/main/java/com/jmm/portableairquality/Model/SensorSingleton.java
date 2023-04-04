@@ -5,19 +5,39 @@ public class SensorSingleton {
     float PmAlarm;
     public static int  Co2Default=8500;
     public static int  VocDefault=2500;
-    public static float  PmDefault=35;
+    public static float  PmDefault=35f;
+
 
     public static int  GlobalGreen=456;
     public static int  GlobalYellow=1367;
     public static int  GlobalRed=4532;
-    public static SensorSingleton Instance=new SensorSingleton();
+    public static int check_flag=0;
+    public static SensorSingleton Instance=null;
+    public SensorSingleton(){}
 
+    public int getCheck_flag() {
+        return check_flag;
+    }
+
+    public void setCheck_flag(int check_flag) {
+        this.check_flag = check_flag;
+    }
+
+    public static SensorSingleton getInstance(){
+        if(Instance==null){
+            Instance=new SensorSingleton();
+
+        }
+
+        return Instance;
+
+    }
     public int getCo2Alarm() {
         return Co2Alarm;
     }
 
     public void setCo2Alarm(int co2Alarm) {
-        Co2Alarm = co2Alarm;
+        check_flag=1;Co2Alarm = co2Alarm;
     }
 
     public int getVocAlarm() {
@@ -25,7 +45,7 @@ public class SensorSingleton {
     }
 
     public void setVocAlarm(int vocAlarm) {
-        VocAlarm = vocAlarm;
+        check_flag=1;VocAlarm = vocAlarm;
     }
 
     public float getPmAlarm() {
@@ -33,7 +53,7 @@ public class SensorSingleton {
     }
 
     public void setPmAlarm(float pmAlarm) {
-        PmAlarm = pmAlarm;
+        check_flag=1;PmAlarm = pmAlarm;
     }
 
     public String toString(){
