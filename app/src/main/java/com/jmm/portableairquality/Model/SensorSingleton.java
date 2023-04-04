@@ -5,7 +5,7 @@ public class SensorSingleton {
     float PmAlarm;
     public static int  Co2Default=8500;
     public static int  VocDefault=2500;
-    public static float  PmDefault=35f;
+    public static int  PmDefault=35;
 
 
     public static int  GlobalGreen=456;

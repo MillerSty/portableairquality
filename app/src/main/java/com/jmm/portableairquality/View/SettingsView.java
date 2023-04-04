@@ -1,6 +1,7 @@
 package com.jmm.portableairquality.View;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.transition.Fade;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Switch;
@@ -19,6 +21,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.view.ViewCompat;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.jmm.portableairquality.Controller.ColorDialogue;
@@ -156,12 +159,14 @@ public class SettingsView extends AppCompatActivity {
                         sensorSingleton.Instance.setVocAlarm(Integer.parseInt(vocAlarmLevel.getText().toString()));
                         alarmEdit.putInt("vocAlarm",Integer.parseInt(vocAlarmLevel.getText().toString()));}
                     if(!pmAlarmLevel.getText().toString().isEmpty()){
-                        sensorSingleton.Instance.setPmAlarm(Float.parseFloat(pmAlarmLevel.getText().toString()));
-                        alarmEdit.putFloat("pmAlarm",Float.parseFloat(pmAlarmLevel.getText().toString()));
+                        sensorSingleton.Instance.setPmAlarm(Integer.parseInt(pmAlarmLevel.getText().toString()));
+                        alarmEdit.putInt("pmAlarm",Integer.parseInt(pmAlarmLevel.getText().toString()));
                     }
 
                     alarmEdit.apply();
                     showToast("Settings Saved");
+                    InputMethodManager imm = (InputMethodManager) getApplicationContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getRootView().getWindowToken(), 0);
                 }
                 catch(Exception e){
                     showToast("Enter Valid alarm levels please");
@@ -235,11 +240,11 @@ public class SettingsView extends AppCompatActivity {
         if (alarmPref.getInt("co2Alarm", 0) == 0 || alarmPref.getInt("vocAlarm", 0) == 0) {
             co2AlarmLevel.setText(Integer.toString(SensorSingleton.Co2Default));
             vocAlarmLevel.setText(Integer.toString(SensorSingleton.VocDefault));
-            pmAlarmLevel.setText(Float.toString(SensorSingleton.PmDefault));
+            pmAlarmLevel.setText(Integer.toString(SensorSingleton.PmDefault));
         } else {
             co2AlarmLevel.setText(Integer.toString(alarmPref.getInt("co2Alarm", 0)));
             vocAlarmLevel.setText(Integer.toString(alarmPref.getInt("vocAlarm", 0)));
-            pmAlarmLevel.setText(Float.toString(alarmPref.getFloat("pmAlarm", 0f)));
+            pmAlarmLevel.setText(Integer.toString(alarmPref.getInt("pmAlarm", 0)));
 
         }
         if (sharedPref.getInt("Temp_Color", 0) == 0 || sharedPref.getInt("Co2_Color", 0) == 0) {
