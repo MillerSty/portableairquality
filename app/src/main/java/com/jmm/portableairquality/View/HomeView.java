@@ -63,7 +63,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
     BottomNavigationView navbot;
     TextView co2Display, vocDisplay, tempDisplay, humDisplay, pmDisplay;
     public int co2, voc;
-    public float pm;
+    public int pm;
     boolean FN_co2=false,FN_voc=false,FN_pm=false;
 
     @Override
@@ -106,7 +106,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         co2Display.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                textViewHandler("co2",co2,0);
+                textViewHandler("co2",co2);
                 if(co2 > SensorSingleton.Instance.getCo2Alarm()){
                     FN_co2=true;
                     Notification();
@@ -126,7 +126,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         vocDisplay.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                textViewHandler("voc",voc,0);
+                textViewHandler("voc",voc);
                 if( voc>SensorSingleton.Instance.getVocAlarm()){
                     FN_voc=true;
                     Notification();
@@ -147,7 +147,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         pmDisplay.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                textViewHandler("pm",0,pm);
+                textViewHandler("pm",pm);
                 if(pm > SensorSingleton.Instance.getPmAlarm()){
                     FN_pm=true;
                     Notification();
@@ -257,9 +257,9 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         @Override
         public void onReceive(Context context, Intent intent) {
             CcsMeasurement measurement = (CcsMeasurement) intent.getSerializableExtra(BluetoothHandler.MEASUREMENT_CCS_EXTRA);
-            co2 = (int)measurement.co2;
+            co2 = measurement.co2;
             co2Display.setText("Co2:\n" + Long.toString(measurement.co2) + "\nppm");
-            voc = (int)measurement.voc;
+            voc = measurement.voc;
             vocDisplay.setText("VOC:\n" + Long.toString(measurement.voc) + "\nppb");
         }
     };
@@ -277,6 +277,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         @Override
         public void onReceive(Context context, Intent intent) {
             PmMeasurement measurement = (PmMeasurement) intent.getSerializableExtra(BluetoothHandler.MEASUREMENT_PM_EXTRA);
+            pm = measurement.pm;
             pmDisplay.setText("PM2.5:\n" + Integer.toString(measurement.pm) + "\u00B5g/m\u00B3"); //micro gram per meter cubed, definitely not equivalent to ppb
         }
     };
@@ -476,7 +477,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
     }
 
     //TODO add proper bounds of Pm readings
-    public void textViewHandler(String sensor, int readingInt,float readingPm) {
+    public void textViewHandler(String sensor, int readingInt) {
         switch (sensor) {
             case "co2":
                 if (readingInt >= 0 && readingInt <= 1000) {
@@ -504,14 +505,14 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
                 break;//0-220 is good (green), 220-660 ( yellow), 660-2000(orange), 2000+(red) [ppb]
             case "pm":
                 //TODO Set default for PM values, these are copied from Co2
-                if (readingPm >= 0f && readingPm <= 12f) {
-                    pmDisplay.setBackground(getResources().getDrawable(R.drawable.sensor_display_green));
+                if (readingInt >= 0 && readingInt <= 12) {
+                    pmDisplay.setBackground(ContextCompat.getDrawable(this, R.drawable.sensor_display_green));
 //                flagGreen
-                } else if (readingPm > 12f && readingPm <= 35f) {
-                    pmDisplay.setBackground(getResources().getDrawable(R.drawable.sensor_display_yellow));
+                } else if (readingInt > 12 && readingInt <= 35) {
+                    pmDisplay.setBackground(ContextCompat.getDrawable(this, R.drawable.sensor_display_yellow));
 //                flagYellow
                 } else {
-                    pmDisplay.setBackground(getResources().getDrawable(R.drawable.sensor_display_red));
+                    pmDisplay.setBackground(ContextCompat.getDrawable(this, R.drawable.sensor_display_red));
 //                flagRed
                 }
                 break;
