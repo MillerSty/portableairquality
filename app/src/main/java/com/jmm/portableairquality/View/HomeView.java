@@ -409,7 +409,7 @@ public class HomeView extends AppCompatActivity implements BottomNavigationView.
         // Create the PendingIntent
         PendingIntent notifyPendingIntent = PendingIntent.getActivity(
                 this, 0, notifyIntent,
-                PendingIntent.FLAG_CANCEL_CURRENT
+                PendingIntent.FLAG_UPDATE_CURRENT
         );
 
         NotificationCompat.Builder builder;
